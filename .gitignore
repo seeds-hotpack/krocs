@@ -1,0 +1,46 @@
+# ===== 공통 =====
+*.log
+*.tmp
+.DS_Store
+.env
+application-secret.yml
+
+# ===== IDE =====
+.idea/
+.vscode/
+
+# ===== OS별 =====
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ===== 백엔드 (Gradle + Java) =====
+/backend/build/
+/backend/out/
+**/target/
+**/.classpath
+**/.project
+**/.settings/
+backend/.gradle/
+backend/griddles
+backend/gradlew.bat
+backend/HELP.md
+
+# ===== 프론트엔드 (React 등 추정) =====
+/frontend/node_modules/
+/frontend/.next/
+/frontend/.parcel-cache/
+frontend/.env.local
+frontend/build/
+/frontend/dist/
+
+# ===== 테스트 커버리지 =====
+**/coverage/
+**/test-output/
+
+# ===== OS 환경 =====
+*.swp
+*.swo
+
+# ===== 기타 =====
+!.gitignore
