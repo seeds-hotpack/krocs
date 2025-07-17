@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: dev
+  jackson:
+    time-zone: Asia/Seoul
+  servlet:
+    encoding:
+      enabled: true
+      force: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
