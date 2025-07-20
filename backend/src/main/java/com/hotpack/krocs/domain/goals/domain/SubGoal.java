@@ -1,4 +1,4 @@
-package com.hotpack.krocs.common.entity.templates;
+package com.hotpack.krocs.domain.goals.domain;
 
 import com.hotpack.krocs.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -8,21 +8,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "sub_templates")
+@Table(name = "sub_goals")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubTemplate extends BaseTimeEntity {
+public class SubGoal extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sub_template_id")
-    private Long subTemplateId;
+    @Column(name = "sub_goal_id")
+    private Long subGoalId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "template_id", nullable = false)
-    private Template template;
+    @JoinColumn(name = "goal_id", nullable = false)
+    private Goal goal;
 
     @Column(name = "title", nullable = false, length = 200)
     private String title;
