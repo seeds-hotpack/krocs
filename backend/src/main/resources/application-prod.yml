@@ -1,11 +1,11 @@
 spring:
   config:
-    import: optional:file:application-secret.yml
+    import: optional:file:./config/application-secret.yml
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: ${database.url}
+    username: ${database.user}
+    password: ${database.password}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -14,6 +14,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: false
     open-in-view: false
 
