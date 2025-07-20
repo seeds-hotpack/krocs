@@ -1,7 +1,6 @@
 package com.hotpack.krocs.domain.goals.controller;
 
 import com.hotpack.krocs.common.response.ApiResponse;
-import com.hotpack.krocs.common.response.ApiResponseUtil;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
 import com.hotpack.krocs.common.response.exception.handler.GoalHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +26,7 @@ public class GoalController {
         }
         
         // 성공 응답
-        return ApiResponseUtil.success("목표 조회 성공: " + goalId);
+        return ApiResponse.success("목표 조회 성공: " + goalId);
     }
 
     /**
@@ -42,7 +41,7 @@ public class GoalController {
         }
         
         // 성공 응답
-        return ApiResponseUtil.success("목표 완료 처리 성공: " + goalId);
+        return ApiResponse.success("목표 완료 처리 성공: " + goalId);
     }
 
     /**
@@ -62,7 +61,7 @@ public class GoalController {
         }
         
         // 성공 응답
-        return ApiResponseUtil.success("목표 생성 성공: " + request.getTitle());
+        return ApiResponse.success("목표 생성 성공: " + request.getTitle());
     }
 
     /**
@@ -79,7 +78,7 @@ public class GoalController {
             case "invalid":
                 throw new GoalHandler(GoalExceptionType.INVALID_GOAL_DATE_RANGE);
             default:
-                return ApiResponseUtil.success("정상 처리: " + condition);
+                return ApiResponse.success("정상 처리: " + condition);
         }
     }
 
