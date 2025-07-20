@@ -1,4 +1,4 @@
-package com.hotpack.krocs.common.entity.templates;
+package com.hotpack.krocs.domain.templates.domain;
 
 import com.hotpack.krocs.common.entity.BaseTimeEntity;
 import com.hotpack.krocs.common.entity.Priority;
