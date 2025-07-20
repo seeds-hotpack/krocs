@@ -31,8 +31,16 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, code.getReasonHttpStatus().getCode() , code.getReasonHttpStatus().getMessage(), result);
     }
 
+    // 성공 응답 (데이터 없음)
+    public static <T> ApiResponse<T> onSuccess(){
+        return new ApiResponse<>(true, SuccessStatus._OK.getCode() , SuccessStatus._OK.getMessage(), null);
+    }
 
     // 실패한 경우 응답 생성
+    public static <T> ApiResponse<T> onFailure(String code, String message){
+        return new ApiResponse<>(false, code, message, null);
+    }
+
     public static <T> ApiResponse<T> onFailure(String code, String message, T data){
         return new ApiResponse<>(false, code, message, data);
     }

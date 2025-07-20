@@ -2,7 +2,7 @@ package com.hotpack.krocs.common.response.exception;
 
 
 import com.hotpack.krocs.common.response.ApiResponse;
-import com.hotpack.krocs.common.response.code.ErrorReason;
+import com.hotpack.krocs.common.response.code.Reason;
 import com.hotpack.krocs.common.response.code.resultCode.ErrorStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -30,26 +30,37 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("ConstraintViolationException 추출 도중 에러 발생"));
 
-        return handleExceptionInternalConstraint(e, ErrorStatus.valueOf(errorMessage), HttpHeaders.EMPTY,request);
+        return handleExceptionInternalConstraint(e, ErrorStatus.VALIDATION_ERROR, HttpHeaders.EMPTY,request);
     }
 
     @ExceptionHandler
     public ResponseEntity<Object> exception(Exception e, WebRequest request) {
-        e.printStackTrace();
-
+        log.error("예상치 못한 예외 발생: {}", e.getMessage(), e);
         return handleExceptionInternalFalse(e, ErrorStatus.INTERNAL_SERVER_ERROR, HttpHeaders.EMPTY, ErrorStatus.INTERNAL_SERVER_ERROR.getHttpStatus(),request, e.getMessage());
     }
 
     @ExceptionHandler(value = GeneralException.class)
     public ResponseEntity onThrowException(GeneralException generalException, HttpServletRequest request) {
-        ErrorReason errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
+        Reason errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
         return handleExceptionInternal(generalException,errorReasonHttpStatus,null,request);
     }
 
-    private ResponseEntity<Object> handleExceptionInternal(Exception e, ErrorReason reason,
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e, WebRequest request) {
+        log.warn("잘못된 인자가 전달됨: {}", e.getMessage());
+        return handleExceptionInternalFalse(e, ErrorStatus.BAD_REQUEST, HttpHeaders.EMPTY, ErrorStatus.BAD_REQUEST.getHttpStatus(), request, e.getMessage());
+    }
+
+    @ExceptionHandler(value = IllegalStateException.class)
+    public ResponseEntity<Object> handleIllegalStateException(IllegalStateException e, WebRequest request) {
+        log.warn("잘못된 상태: {}", e.getMessage());
+        return handleExceptionInternalFalse(e, ErrorStatus.BUSINESS_LOGIC_ERROR, HttpHeaders.EMPTY, ErrorStatus.BUSINESS_LOGIC_ERROR.getHttpStatus(), request, e.getMessage());
+    }
+
+    private ResponseEntity<Object> handleExceptionInternal(Exception e, Reason reason,
                                                            HttpHeaders headers, HttpServletRequest request) {
 
-        ApiResponse<Object> body = ApiResponse.onFailure(reason.getCode(),reason.getMessage(),null);
+        ApiResponse<Object> body = ApiResponse.onFailure(reason.getCode(),reason.getMessage());
 //        e.printStackTrace();
 
         WebRequest webRequest = new ServletWebRequest(request);
@@ -88,7 +99,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> handleExceptionInternalConstraint(Exception e, ErrorStatus errorCommonStatus,
                                                                      HttpHeaders headers, WebRequest request) {
-        ApiResponse<Object> body = ApiResponse.onFailure(errorCommonStatus.getCode(), errorCommonStatus.getMessage(), null);
+        ApiResponse<Object> body = ApiResponse.onFailure(errorCommonStatus.getCode(), errorCommonStatus.getMessage());
         return super.handleExceptionInternal(
                 e,
                 body,
