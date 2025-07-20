@@ -12,7 +12,17 @@ import {
 import { Feather } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function AddButton({ styles, onAddGoal, editingGoal, onUpdateGoal, showGoalForm, setShowGoalForm }) {
+export default function AddButton({   styles, 
+  onAddGoal, 
+  editingGoal, 
+  onUpdateGoal, 
+  onDeleteGoal,
+  showGoalForm, 
+  setShowGoalForm,
+  goals,
+  setGoals,
+  editingIndex,       // 👈 여기에 추가
+  setEditingIndex,}) {
 
   // 세부 목표 추가 
   const [title, setTitle] = useState('');
@@ -49,8 +59,8 @@ const handleDurationSelect = (days) => {
 // 여기 까지 관련된 것들 
 
   // 날짜 상태(Date 객체)
-  const [startDate, setStartDate] = useState(new Date(2025, 6, 19)); // 7월은 6 (0부터 시작)
-  const [endDate, setEndDate] = useState(new Date(2025, 6, 20));
+  const [startDate, setStartDate] = useState(new Date()); // ⬅ 오늘 날짜
+  const [endDate, setEndDate] = useState(addDays(new Date(), 1));
 
   // 어떤 날짜 선택중인지 ('start' or 'end' or null)
   const [pickerMode, setPickerMode] = useState(null);
@@ -104,6 +114,14 @@ const parseDate = (str) => {
   const [y, m, d] = str.split('.').map(Number);
   return new Date(y, m - 1, d);
 };
+// 애는 초기화 시 오늘 날짜를 유지하는 코드
+useEffect(() => {
+  if (showGoalForm && !editingGoal) {
+    const today = new Date();
+    setStartDate(today);
+    setEndDate(addDays(today, 1));
+  }
+}, [showGoalForm]);
 // 여기 까지
 
 const saveGoal = () => {
@@ -113,14 +131,14 @@ const saveGoal = () => {
     }
 
     const newGoal = {
-    title,
-    startDate: formatDate(startDate),
-    endDate: formatDate(endDate),
-    subGoals: subGoals.map(text => ({ text, done: false })),
-    completed: false,
-    progress: 0,
-    color: 'red',
-  };
+  title,
+  startDate: formatDate(startDate),
+  endDate: formatDate(endDate),
+  subGoals: subGoals.map(text => ({ text, done: false })),
+  completed: editingGoal ? editingGoal.completed : false,
+  progress: editingGoal ? editingGoal.progress : 0,
+  color: 'red',
+};
     if (editingGoal) {
     onUpdateGoal(newGoal); // 👉 기존 목표 수정
   } else {
@@ -400,7 +418,7 @@ const saveGoal = () => {
 )}
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 14 }}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={{
                 backgroundColor: '#e11d48',
                 width: 48,
@@ -421,7 +439,35 @@ const saveGoal = () => {
 }}
             >
               <Feather name="trash-2" size={20} color="white" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <TouchableOpacity
+  style={{
+    backgroundColor: '#e11d48',
+    width: 48,
+    height: 48,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }}
+  onPress={() => {
+    if (editingGoal) {
+      // 수정 중이면 삭제 기능
+      onDeleteGoal(editingIndex);
+    } else {
+      // 새 목표 작성 중이면 창 닫기
+      setShowGoalForm(false);
+      setStartDate(new Date());
+      setEndDate(addDays(new Date(), 1));
+      setIsStartDateTouched(false);
+      setCustomDaysInput('');
+      setSubGoals([]);
+      setNewSubGoalText('');
+      setTitle('');
+    }
+  }}
+>
+  <Feather name="trash-2" size={20} color="white" />
+</TouchableOpacity> 
 
             <TouchableOpacity
               style={{
