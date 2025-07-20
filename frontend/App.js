@@ -17,7 +17,7 @@ import Header from './Components/Header';
 // import DateTimePicker from '@react-native-community/datetimepicker';
 // import DateRangePicker from './Components/DateRangePicker';
 
-//
+
 export default function App() {
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -25,19 +25,27 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('goal');
   const [activeCategory, setActiveCategory] = useState('progress');
 
+  const deleteGoal = (indexToDelete) => {
+  setGoals((prev) => prev.filter((_, i) => i !== indexToDelete));
+  setEditingIndex(null);
+  setShowGoalForm(false);
+  };
+
   const addGoal = (newGoal) => {
     setGoals(prev => [...prev, newGoal]);
   };
 
   const handleCompleteEarly = (index) => {
   setGoals((prevGoals) => {
-    const newGoals = [...prevGoals];
-    newGoals[index] = {
-      ...newGoals[index],
-      completed: true,
-      progress: 1, // 100% 완료로 처리
-    };
-    return newGoals;
+    const updatedGoals = [...prevGoals];
+    if (!updatedGoals[index].completed) {
+      updatedGoals[index] = {
+        ...updatedGoals[index],
+        completed: true,
+        progress: 1,
+      };
+    }
+    return updatedGoals;
   });
 };
 
@@ -86,20 +94,23 @@ export default function App() {
         </Text>
       ) : (
         goals.filter(goal => !goal.completed) // 완료 안 된 목표만 보여줌
-        .map((goal, idx) => (
-          <GoalCard
-            key={idx}
-            color={goal.color}
-            progress={goal.progress}
-            title={goal.title}
-            subGoals={goal.subGoals}
-            completed={goal.completed}
-            startDate={goal.startDate}
-            endDate={goal.endDate}
-            onCompleteEarly={() => handleCompleteEarly(idx)}  
-            onEdit={() => handleEditGoal(idx)}    
-          />
-        ))
+        .map((goal) => {
+  const originalIndex = goals.findIndex(g => g === goal); // 원래 goals 배열에서의 인덱스
+  return (
+    <GoalCard
+      key={originalIndex}
+      color={goal.color}
+      progress={goal.progress}
+      title={goal.title}
+      subGoals={goal.subGoals}
+      completed={goal.completed}
+      startDate={goal.startDate}
+      endDate={goal.endDate}
+      onCompleteEarly={() => handleCompleteEarly(originalIndex)}
+      onEdit={() => handleEditGoal(originalIndex)}
+    />
+  );
+})
       )}
     </>
   )}
@@ -142,7 +153,7 @@ export default function App() {
 )}
 
       {/* Add Button */}
-      <AddButton styles={styles} onAddGoal={addGoal} editingGoal={editingIndex !== null ? goals[editingIndex] : null}
+      {/* <AddButton styles={styles} onAddGoal={addGoal} editingGoal={editingIndex !== null ? goals[editingIndex] : null}
   onUpdateGoal={(updatedGoal) => {
     const newGoals = [...goals];
     newGoals[editingIndex] = updatedGoal;
@@ -151,7 +162,25 @@ export default function App() {
   }}
   showGoalForm={showGoalForm}
   setShowGoalForm={setShowGoalForm}
-  />
+  /> */}
+  <AddButton
+  styles={styles}
+  onAddGoal={addGoal}
+  editingGoal={editingIndex !== null ? goals[editingIndex] : null}
+  onUpdateGoal={(updatedGoal) => {
+    const newGoals = [...goals];
+    newGoals[editingIndex] = updatedGoal;
+    setGoals(newGoals);
+    setEditingIndex(null); // 수정 상태 초기화
+  }}
+  onDeleteGoal={deleteGoal}
+  showGoalForm={showGoalForm}
+  setShowGoalForm={setShowGoalForm}
+  goals={goals}
+  setGoals={setGoals}
+  editingIndex={editingIndex}
+  setEditingIndex={setEditingIndex}
+/>
       {/* Bottom Navigation */}
       <BottomNav styles={styles}/>
     </SafeAreaView>
