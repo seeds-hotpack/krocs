@@ -1,8 +1,7 @@
 package com.hotpack.krocs.domain.goals.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hotpack.krocs.common.entity.BaseTimeEntity;
-import com.hotpack.krocs.common.entity.Priority;
+import com.hotpack.krocs.global.common.entity.Priority;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

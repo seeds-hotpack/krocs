@@ -1,4 +1,4 @@
-package com.hotpack.krocs.common.response.code;
+package com.hotpack.krocs.global.common.response.code;
 
 public interface BaseCode {
     public Reason getReason();

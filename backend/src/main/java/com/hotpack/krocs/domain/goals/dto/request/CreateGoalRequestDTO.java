@@ -1,7 +1,7 @@
 package com.hotpack.krocs.domain.goals.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hotpack.krocs.common.entity.Priority;
+import com.hotpack.krocs.global.common.entity.Priority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -22,7 +22,8 @@ public class CreateGoalRequestDTO {
     @Size(max = 200, message = "목표 제목은 200자를 초과할 수 없습니다")
     private String title;
 
-    private Priority priority;
+    @Builder.Default
+    private Priority priority = Priority.MEDIUM;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;

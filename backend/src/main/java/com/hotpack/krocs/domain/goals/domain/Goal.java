@@ -1,7 +1,7 @@
 package com.hotpack.krocs.domain.goals.domain;
 
-import com.hotpack.krocs.common.entity.BaseTimeEntity;
-import com.hotpack.krocs.common.entity.Priority;
+import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
+import com.hotpack.krocs.global.common.entity.Priority;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

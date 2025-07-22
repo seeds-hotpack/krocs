@@ -1,12 +1,12 @@
-package com.hotpack.krocs.common.response;
+package com.hotpack.krocs.global.common.response;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.hotpack.krocs.common.response.code.BaseCode;
-import com.hotpack.krocs.common.response.code.resultCode.ErrorStatus;
-import com.hotpack.krocs.common.response.code.resultCode.SuccessStatus;
+import com.hotpack.krocs.global.common.response.code.BaseCode;
+import com.hotpack.krocs.global.common.response.code.resultCode.ErrorStatus;
+import com.hotpack.krocs.global.common.response.code.resultCode.SuccessStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
