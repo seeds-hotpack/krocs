@@ -1,7 +1,7 @@
 package com.hotpack.krocs.common.response.code.resultCode;
 
 
-import com.hotpack.krocs.common.response.code.BaseErrorCode;
+import com.hotpack.krocs.common.response.code.BaseCode;
 import com.hotpack.krocs.common.response.code.Reason;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorStatus implements BaseErrorCode {
+public enum ErrorStatus implements BaseCode {
     // 글로벌 에러
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "GLOBAL500", "서버 오류"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "GLOBAL400", "잘못된 요청"),

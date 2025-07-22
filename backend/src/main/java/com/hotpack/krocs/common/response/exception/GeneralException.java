@@ -1,6 +1,6 @@
 package com.hotpack.krocs.common.response.exception;
 
-import com.hotpack.krocs.common.response.code.BaseErrorCode;
+import com.hotpack.krocs.common.response.code.BaseCode;
 import com.hotpack.krocs.common.response.code.Reason;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class GeneralException extends RuntimeException {
 
-    private BaseErrorCode errorCode;
+    private BaseCode errorCode;
 
     public Reason getErrorReason() {
         return this.errorCode.getReason();

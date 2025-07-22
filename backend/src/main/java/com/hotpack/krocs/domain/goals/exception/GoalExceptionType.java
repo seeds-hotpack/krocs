@@ -1,6 +1,6 @@
 package com.hotpack.krocs.domain.goals.exception;
 
-import com.hotpack.krocs.common.response.code.BaseErrorCode;
+import com.hotpack.krocs.common.response.code.BaseCode;
 import com.hotpack.krocs.common.response.code.Reason;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum GoalExceptionType implements BaseErrorCode {
+public enum GoalExceptionType implements BaseCode {
     GOAL_NOT_FOUND(HttpStatus.NOT_FOUND, "GOAL404", "목표를 찾을 수 없습니다."),
     GOAL_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "GOAL400", "이미 완료된 목표입니다."),
     INVALID_GOAL_DATE_RANGE(HttpStatus.BAD_REQUEST, "GOAL400", "유효하지 않은 목표 기간입니다."),
