@@ -24,7 +24,7 @@ public enum SuccessStatus implements BaseCode {
                 .message(message)
                 .code(code)
                 .isSuccess(true)
-                .data(null)
+                .data("")
                 .build();
     }
 
@@ -35,7 +35,7 @@ public enum SuccessStatus implements BaseCode {
                 .code(code)
                 .isSuccess(true)
                 .httpStatus(httpStatus)
-                .data(null)
+                .data("")
                 .build();
     }
 }

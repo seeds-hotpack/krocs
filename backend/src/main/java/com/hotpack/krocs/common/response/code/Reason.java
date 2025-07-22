@@ -13,7 +13,7 @@ public class Reason {
     private final boolean isSuccess;
     private final String code;
     private final String message;
-    private final Object data; // 추가 데이터 필드
+    private final String data; // 추가 데이터 필드 (Object에서 String으로 변경)
 
     public boolean getIsSuccess(){return isSuccess;}
 }

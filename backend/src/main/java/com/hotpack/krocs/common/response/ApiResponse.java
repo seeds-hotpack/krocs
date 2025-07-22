@@ -10,6 +10,8 @@ import com.hotpack.krocs.common.response.code.resultCode.SuccessStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
@@ -99,6 +101,20 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> onFailure(String code, String message) {
         return failure(code, message);
+    }
+
+    /**
+     * 실패 응답 생성 (에러 포인트 포함)
+     */
+    public static <T> ApiResponse<T> onFailure(String code, String message, String errorPoint) {
+        return new ApiResponse<>(false, code, message + (errorPoint != null ? " - " + errorPoint : ""), null);
+    }
+
+    /**
+     * 실패 응답 생성 (에러 인자 포함)
+     */
+    public static <T> ApiResponse<T> onFailure(String code, String message, Map<String, String> errorArgs) {
+        return new ApiResponse<>(false, code, message, (T) errorArgs);
     }
 
     /**

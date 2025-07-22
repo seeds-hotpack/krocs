@@ -25,7 +25,7 @@ public enum GoalExceptionType implements BaseErrorCode {
                 .message(message)
                 .code(code)
                 .isSuccess(false)
-                .data(null)
+                .data("")
                 .build();
     }
 
@@ -36,7 +36,7 @@ public enum GoalExceptionType implements BaseErrorCode {
                 .code(code)
                 .isSuccess(false)
                 .httpStatus(httpStatus)
-                .data(null)
+                .data("")
                 .build();
     }
 }

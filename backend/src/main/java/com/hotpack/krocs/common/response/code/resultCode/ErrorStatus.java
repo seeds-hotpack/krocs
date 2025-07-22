@@ -38,7 +38,7 @@ public enum ErrorStatus implements BaseErrorCode {
                 .message(message)
                 .code(code)
                 .isSuccess(false)
-                .data(null)
+                .data("")
                 .build();
     }
 
@@ -49,7 +49,7 @@ public enum ErrorStatus implements BaseErrorCode {
                 .code(code)
                 .isSuccess(false)
                 .httpStatus(httpStatus)
-                .data(null)
+                .data("")
                 .build();
     }
 }
