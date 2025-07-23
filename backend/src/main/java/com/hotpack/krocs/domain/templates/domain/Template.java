@@ -1,8 +1,8 @@
 package com.hotpack.krocs.domain.templates.domain;
 
-import com.hotpack.krocs.common.entity.BaseTimeEntity;
-import com.hotpack.krocs.common.entity.Priority;
-import com.hotpack.krocs.common.entity.RepeatType;
+import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
+import com.hotpack.krocs.global.common.entity.Priority;
+import com.hotpack.krocs.global.common.entity.RepeatType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,8 +1,8 @@
-package com.hotpack.krocs.common.response.code.resultCode;
+package com.hotpack.krocs.global.common.response.code.resultCode;
 
 
-import com.hotpack.krocs.common.response.code.BaseCode;
-import com.hotpack.krocs.common.response.code.Reason;
+import com.hotpack.krocs.global.common.response.code.BaseCode;
+import com.hotpack.krocs.global.common.response.code.Reason;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

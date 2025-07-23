@@ -1,98 +1,49 @@
 package com.hotpack.krocs.domain.goals.controller;
 
-import com.hotpack.krocs.common.response.ApiResponse;
+import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
+import com.hotpack.krocs.domain.goals.exception.GoalException;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
-import com.hotpack.krocs.common.response.exception.handler.GoalHandler;
+import com.hotpack.krocs.domain.goals.service.GoalService;
+import com.hotpack.krocs.global.common.response.ApiResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * GoalHandler 사용 예시 컨트롤러
+ * 대목표 관련 컨트롤러
  */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/goals")
 public class GoalController {
 
-    /**
-     * 예시 1: 목표를 찾을 수 없는 경우
-     */
-    @GetMapping("/{goalId}")
-    public ApiResponse<String> getGoal(@PathVariable Long goalId) {
-        
-        // 목표가 존재하지 않는 경우
-        if (goalId == null || goalId <= 0) {
-            throw new GoalHandler(GoalExceptionType.GOAL_NOT_FOUND);
-        }
-        
-        // 성공 응답
-        return ApiResponse.success("목표 조회 성공: " + goalId);
-    }
+    private final GoalService goalService;
 
     /**
-     * 예시 2: 목표 완료 처리
-     */
-    @PatchMapping("/{goalId}/complete")
-    public ApiResponse<String> completeGoal(@PathVariable Long goalId) {
-        
-        // 이미 완료된 목표인 경우 (goalId가 짝수인 경우)
-        if (goalId % 2 == 0) {
-            throw new GoalHandler(GoalExceptionType.GOAL_ALREADY_COMPLETED);
-        }
-        
-        // 성공 응답
-        return ApiResponse.success("목표 완료 처리 성공: " + goalId);
-    }
-
-    /**
-     * 예시 3: 목표 생성 (입력값 검증)
+     * 대목표(goal) 생성 API
+     * 
+     * @param requestDTO 대목표 생성 요청 데이터
+     * @param userId 사용자 ID (query param, 선택, 토큰 전 테스트용)
+     * @return ApiResponse<CreateGoalResponseDTO>
      */
     @PostMapping
-    public ApiResponse<String> createGoal(@RequestBody CreateGoalRequest request) {
-        
-        // 제목이 비어있는 경우
-        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
-            throw new GoalHandler(GoalExceptionType.GOAL_TITLE_EMPTY);
-        }
-        
-        // 기간이 유효하지 않은 경우
-        if (request.getDuration() != null && request.getDuration() < 1) {
-            throw new GoalHandler(GoalExceptionType.GOAL_DURATION_INVALID);
-        }
-        
-        // 성공 응답
-        return ApiResponse.success("목표 생성 성공: " + request.getTitle());
-    }
+    public ApiResponse<CreateGoalResponseDTO> createGoal(
+            @Valid @RequestBody CreateGoalRequestDTO requestDTO,
+            @RequestParam(value = "user_id", required = false) Long userId
+    ) {
+        try {
+            CreateGoalResponseDTO responseDTO = goalService.createGoal(requestDTO, userId);
+            return ApiResponse.success(responseDTO);
 
-    /**
-     * 예시 4: 조건부 예외 발생
-     */
-    @GetMapping("/test/{condition}")
-    public ApiResponse<String> testCondition(@PathVariable String condition) {
-        
-        switch (condition) {
-            case "not-found":
-                throw new GoalHandler(GoalExceptionType.GOAL_NOT_FOUND);
-            case "completed":
-                throw new GoalHandler(GoalExceptionType.GOAL_ALREADY_COMPLETED);
-            case "invalid":
-                throw new GoalHandler(GoalExceptionType.INVALID_GOAL_DATE_RANGE);
-            default:
-                return ApiResponse.success("정상 처리: " + condition);
+        } catch (GoalException e) {
+            throw e;
+
+        } catch (Exception e) {
+            throw new GoalException(GoalExceptionType.GOAL_CREATION_FAILED);
+
         }
-    }
-
-    /**
-     * 간단한 요청 DTO
-     */
-    public static class CreateGoalRequest {
-        private String title;
-        private Integer duration;
-
-        // Getters and Setters
-        public String getTitle() { return title; }
-        public void setTitle(String title) { this.title = title; }
-        public Integer getDuration() { return duration; }
-        public void setDuration(Integer duration) { this.duration = duration; }
     }
 }

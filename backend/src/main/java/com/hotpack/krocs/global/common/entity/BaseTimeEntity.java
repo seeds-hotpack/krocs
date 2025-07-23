@@ -1,4 +1,4 @@
-package com.hotpack.krocs.common.entity;
+package com.hotpack.krocs.global.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -1,7 +1,7 @@
-package com.hotpack.krocs.common.response.exception;
+package com.hotpack.krocs.global.common.response.exception;
 
-import com.hotpack.krocs.common.response.code.BaseCode;
-import com.hotpack.krocs.common.response.code.Reason;
+import com.hotpack.krocs.global.common.response.code.BaseCode;
+import com.hotpack.krocs.global.common.response.code.Reason;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

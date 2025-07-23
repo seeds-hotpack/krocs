@@ -1,9 +1,9 @@
-package com.hotpack.krocs.common.response.exception;
+package com.hotpack.krocs.global.common.response.exception;
 
 
-import com.hotpack.krocs.common.response.ApiResponse;
-import com.hotpack.krocs.common.response.code.Reason;
-import com.hotpack.krocs.common.response.code.resultCode.ErrorStatus;
+import com.hotpack.krocs.global.common.response.ApiResponse;
+import com.hotpack.krocs.global.common.response.code.Reason;
+import com.hotpack.krocs.global.common.response.code.resultCode.ErrorStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Map;
