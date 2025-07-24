@@ -42,4 +42,8 @@ public class GoalRepositoryFacade {
     public List<Goal> findAllGoals() {
         return goalRepository.findAll();
     }
+
+    public Goal findGoalByGoalId(Long goalId) {
+        return goalRepository.findGoalByGoalId(goalId);
+    }
 }

@@ -44,7 +44,7 @@ public class GoalController {
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "201",
+                    responseCode = "200",
                     description = "목표 생성 성공",
                     content = @Content(schema = @Schema(implementation = CreateGoalResponseDTO.class))
             ),
@@ -105,7 +105,7 @@ public class GoalController {
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "500",
-                    description = "서버 오류",
+                    description = "목표 조회 실패",
                     content = @Content
             )
     })
@@ -118,6 +118,52 @@ public class GoalController {
                 dateTime = LocalDateTime.now();
             }
             List<GoalResponseDTO> responseDTO = goalService.getGoalByUser(userId, dateTime);
+            return ApiResponse.success(responseDTO);
+        } catch (GoalException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GoalException(GoalExceptionType.GOAL_FOUND_FAILED);
+        }
+    }
+
+    @Operation(
+            summary = "특정 목표 상세 조회",
+            description = "특정 목표의 상세 정보를 조회합니다."
+//            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "목표 상세 조회 성공",
+                    content = @Content(schema = @Schema(implementation = GoalResponseDTO.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청 데이터",
+                    content = @Content
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "접근 권한 없음",
+                    content = @Content
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "일정을 찾을 수 없음",
+                    content = @Content
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "500",
+                    description = "목표 조회 실패",
+                    content = @Content
+            )
+    })
+    @GetMapping("/{goalId}")
+    public ApiResponse<GoalResponseDTO> getCalendar(
+            @PathVariable Long goalId,
+            @RequestParam(value = "user_id", required = false) Long userId) {
+        try{
+            GoalResponseDTO responseDTO = goalService.getGoalByGoalId(userId, goalId);
             return ApiResponse.success(responseDTO);
         } catch (GoalException e) {
             throw e;

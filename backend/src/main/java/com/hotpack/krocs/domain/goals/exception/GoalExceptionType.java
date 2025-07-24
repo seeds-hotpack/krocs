@@ -19,7 +19,8 @@ public enum GoalExceptionType implements BaseCode {
     GOAL_DUPLICATE_TITLE(HttpStatus.CONFLICT, "GOAL409", "동일한 제목의 목표가 이미 존재합니다."),
     GOAL_INVALID_PRIORITY(HttpStatus.BAD_REQUEST, "GOAL400", "유효하지 않은 우선순위입니다."),
     GOAL_DATE_IN_PAST(HttpStatus.BAD_REQUEST, "GOAL400", "시작 날짜는 현재 날짜 이후여야 합니다."),
-    GOAL_FOUND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GOAL500", "목표 조회에 실패했습니다.");
+    GOAL_FOUND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GOAL500", "목표 조회에 실패했습니다."),
+    GOAL_FOUND_EMPTY(HttpStatus.BAD_REQUEST, "GOAL400", "목표가 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

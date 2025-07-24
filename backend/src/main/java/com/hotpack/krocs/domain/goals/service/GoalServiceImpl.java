@@ -60,7 +60,29 @@ public class GoalServiceImpl implements GoalService {
             throw e;
         }catch (Exception e) {
             log.error("대목표 조회 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
-            throw new GoalException(GoalExceptionType.GOAL_CREATION_FAILED);
+            throw new GoalException(GoalExceptionType.GOAL_FOUND_FAILED);
+        }
+    }
+
+    @Override
+    public GoalResponseDTO getGoalByGoalId(Long userId, Long goalId) {
+        try{
+            if(goalId == null) {
+                throw new GoalException(GoalExceptionType.GOAL_FOUND_EMPTY);
+            }
+
+            Goal goal = goalRepositoryFacade.findGoalByGoalId(goalId);
+
+            if(goal == null) {
+                throw new GoalException(GoalExceptionType.GOAL_FOUND_EMPTY);
+            }
+
+            return goalConvertor.toGoalResponseDTO(goal);
+        }catch (GoalException e) {
+            throw e;
+        }catch (Exception e) {
+            log.error("대목표 조회 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new GoalException(GoalExceptionType.GOAL_FOUND_FAILED);
         }
     }
 
