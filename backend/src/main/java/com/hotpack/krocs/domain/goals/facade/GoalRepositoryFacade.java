@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Goal Repository Facade
@@ -45,5 +46,13 @@ public class GoalRepositoryFacade {
 
     public Goal findGoalByGoalId(Long goalId) {
         return goalRepository.findGoalByGoalId(goalId);
+    }
+
+    public Goal updateGoal(Goal goal) {
+        return goalRepository.save(goal);
+    }
+
+    public Optional<Goal> findById(Long goalId) {
+        return goalRepository.findById(goalId);
     }
 }

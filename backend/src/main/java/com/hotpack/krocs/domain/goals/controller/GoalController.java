@@ -1,6 +1,7 @@
 package com.hotpack.krocs.domain.goals.controller;
 
 import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.request.UpdateGoalRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
 import com.hotpack.krocs.domain.goals.exception.GoalException;
@@ -149,7 +150,7 @@ public class GoalController {
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
-                    description = "일정을 찾을 수 없음",
+                    description = "목표를 찾을 수 없음",
                     content = @Content
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -159,11 +160,59 @@ public class GoalController {
             )
     })
     @GetMapping("/{goalId}")
-    public ApiResponse<GoalResponseDTO> getCalendar(
+    public ApiResponse<GoalResponseDTO> getGoalById(
             @PathVariable Long goalId,
             @RequestParam(value = "user_id", required = false) Long userId) {
         try{
             GoalResponseDTO responseDTO = goalService.getGoalByGoalId(userId, goalId);
+            return ApiResponse.success(responseDTO);
+        } catch (GoalException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GoalException(GoalExceptionType.GOAL_FOUND_FAILED);
+        }
+    }
+
+    @Operation(
+            summary = "목표 수정",
+            description = "기존 목표의 정보를 수정합니다."
+//            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "목표 수정 성공",
+                    content = @Content(schema = @Schema(implementation = GoalResponseDTO.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청 데이터",
+                    content = @Content
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "수정 권한 없음",
+                    content = @Content
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "목표를 찾을 수 없음",
+                    content = @Content
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류",
+                    content = @Content
+            )
+    })
+    @PatchMapping("/{goalId}")
+    public ApiResponse<GoalResponseDTO> updateGoalById(
+            @PathVariable Long goalId,
+            @Valid @RequestBody UpdateGoalRequestDTO request,
+            @RequestParam(value = "user_id", required = false) Long userId) {
+        try{
+            GoalResponseDTO responseDTO = goalService.updateGoalById(goalId, request, userId);
+
             return ApiResponse.success(responseDTO);
         } catch (GoalException e) {
             throw e;
