@@ -12,20 +12,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * 대목표 관련 컨트롤러
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -34,13 +28,6 @@ public class GoalController {
 
     private final GoalService goalService;
 
-    /**
-     * 대목표(goal) 생성 API
-     * 
-     * @param requestDTO 대목표 생성 요청 데이터
-     * @param userId 사용자 ID (query param, 선택, 토큰 전 테스트용)
-     * @return ApiResponse<CreateGoalResponseDTO>
-     */
     @Operation(
             summary = "대목표 생성",
             description = "새로운 대목표를 생성합니다."

@@ -135,28 +135,4 @@ public class GoalConvertor {
                 .updatedAt(goal.getUpdatedAt())
                 .build();
     }
-
-    public GoalResponseDTO toUpdateResponseDTO(Goal goal) {
-        List<SubGoalResponseDTO> subGoalResponseDTOs = goal.getSubGoals() != null ?
-                goal.getSubGoals().stream()
-                        .map(this::toSubGoalResponseDTO)
-                        .collect(Collectors.toList()) :
-                List.of();
-
-        int completionPercentage = calculateCompletionPercentage(goal);
-
-        return GoalResponseDTO.builder()
-                .goalId(goal.getGoalId())
-                .title(goal.getTitle())
-                .priority(goal.getPriority())
-                .startDate(goal.getStartDate())
-                .endDate(goal.getEndDate())
-                .duration(goal.getDuration())
-                .isCompleted(goal.getIsCompleted())
-                .subGoals(subGoalResponseDTOs)
-                .completionPercentage(completionPercentage)
-                .createdAt(goal.getCreatedAt())
-                .updatedAt(goal.getUpdatedAt())
-                .build();
-    }
 }

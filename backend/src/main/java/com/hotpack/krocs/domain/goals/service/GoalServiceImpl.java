@@ -123,7 +123,7 @@ public class GoalServiceImpl implements GoalService {
 
             Goal goal = goalRepositoryFacade.updateGoal(existingGoal);
 
-            return goalConvertor.toUpdateResponseDTO(goal);
+            return goalConvertor.toGoalResponseDTO(goal);
         } catch (GoalException e) {
             throw e;
         } catch (Exception e) {
@@ -180,12 +180,6 @@ public class GoalServiceImpl implements GoalService {
         }
     }
 
-    /**
-     * 대목표 생성 시 비즈니스 규칙 검증을 수행합니다.
-     * 
-     * @param requestDTO 생성 요청 DTO
-     * @param userId 사용자 ID
-     */
     private void validateBusinessRules(CreateGoalRequestDTO requestDTO, Long userId) {
         // 시작 날짜가 과거인지 검증
         if (requestDTO.getStartDate() != null) {
