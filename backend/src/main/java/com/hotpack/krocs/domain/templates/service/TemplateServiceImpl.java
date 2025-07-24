@@ -1,7 +1,7 @@
 package com.hotpack.krocs.domain.templates.service;
 
 
-import com.hotpack.krocs.domain.templates.converter.TemplateConvertor;
+import com.hotpack.krocs.domain.templates.converter.TemplateConverter;
 import com.hotpack.krocs.domain.templates.domain.Template;
 import com.hotpack.krocs.domain.templates.dto.request.CreateTemplateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.CreateTemplateResponseDTO;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TemplateServiceImpl implements TemplateService {
 
     private final TemplateRepositoryFacade templateRepositoryFacade;
-    private final TemplateConvertor templateConvertor;
+    private final TemplateConverter templateConverter;
     private final TemplateValidator templateValidator;
 
 
@@ -46,10 +46,10 @@ public class TemplateServiceImpl implements TemplateService {
             }
 
             // 변환 및 저장
-            Template template = templateConvertor.toEntity(requestDTO);
+            Template template = templateConverter.toEntity(requestDTO);
             Template savedTemplate = templateRepositoryFacade.saveTemplate(template);
 
-            return templateConvertor.toCreateResponseDTO(savedTemplate);
+            return templateConverter.toCreateResponseDTO(savedTemplate);
         } catch (TemplateException e) {
             throw e;
         } catch (Exception e) {

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class TemplateConvertor {
+public class TemplateConverter {
 
     /**
      * CreateTemplateRequestDTO를 Template 엔티티로 변환합니다.
