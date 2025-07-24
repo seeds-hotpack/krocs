@@ -27,10 +27,5 @@ public class SubTemplate extends BaseTimeEntity {
     @Column(name = "title", nullable = false, length = 200)
     private String title;
 
-    @Column(name = "energy")
-    private Integer energy;
 
-    @Column(name = "is_completed", nullable = false)
-    @Builder.Default
-    private Boolean isCompleted = false;
 }

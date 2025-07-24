@@ -35,14 +35,6 @@ public class Template extends BaseTimeEntity {
     @Column(name = "duration", nullable = false)
     private Integer duration;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "repeat")
-    private RepeatType repeat;
-
-    @Column(name = "is_completed", nullable = false)
-    @Builder.Default
-    private Boolean isCompleted = false;
-
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SubTemplate> subTemplates;
 }
