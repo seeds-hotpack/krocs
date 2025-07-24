@@ -4,6 +4,7 @@ import com.hotpack.krocs.domain.goals.convertor.GoalConvertor;
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
 import com.hotpack.krocs.domain.goals.exception.GoalException;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
 import com.hotpack.krocs.domain.goals.facade.GoalRepositoryFacade;
@@ -12,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Slf4j
@@ -38,6 +42,24 @@ public class GoalServiceImpl implements GoalService {
             throw e;
         } catch (Exception e) {
             log.error("대목표 생성 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new GoalException(GoalExceptionType.GOAL_CREATION_FAILED);
+        }
+    }
+
+    @Override
+    public List<GoalResponseDTO> getGoalByUser(Long userId, LocalDateTime dateTime) {
+        try{
+            List<Goal> goals;
+            if (dateTime != null) {
+                goals = goalRepositoryFacade.findGoalByDate(dateTime);
+            } else {
+                goals = goalRepositoryFacade.findAllGoals();
+            }
+            return goalConvertor.toGoalResponseDTO(goals);
+        }catch (GoalException e) {
+            throw e;
+        }catch (Exception e) {
+            log.error("대목표 조회 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
             throw new GoalException(GoalExceptionType.GOAL_CREATION_FAILED);
         }
     }

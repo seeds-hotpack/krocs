@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * Goal Repository Facade
  * 데이터 접근 계층을 추상화합니다.
@@ -31,4 +34,12 @@ public class GoalRepositoryFacade {
     public Goal saveGoal(Goal goal) {
         return goalRepository.save(goal);
     }
-} 
+
+    public List<Goal> findGoalByDate(LocalDateTime dateTime) {
+        return goalRepository.findByDateTime(dateTime.toLocalDate());
+    }
+
+    public List<Goal> findAllGoals() {
+        return goalRepository.findAll();
+    }
+}

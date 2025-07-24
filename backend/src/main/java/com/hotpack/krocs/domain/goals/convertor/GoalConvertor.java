@@ -3,6 +3,7 @@ package com.hotpack.krocs.domain.goals.convertor;
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalResponseDTO;
 import com.hotpack.krocs.global.common.entity.Priority;
 import org.springframework.stereotype.Component;
@@ -92,4 +93,34 @@ public class GoalConvertor {
 
         return (int) ((completedCount * 100) / goal.getSubGoals().size());
     }
-} 
+
+    public List<GoalResponseDTO> toGoalResponseDTO(List<Goal> goals) {
+        return goals.stream()
+                .map(this::toGoalResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public GoalResponseDTO toGoalResponseDTO(Goal goal) {
+        List<SubGoalResponseDTO> subGoalResponseDTOs = goal.getSubGoals() != null ?
+                goal.getSubGoals().stream()
+                        .map(this::toSubGoalResponseDTO)
+                        .collect(Collectors.toList()) :
+                List.of();
+
+        int completionPercentage = calculateCompletionPercentage(goal);
+
+        return GoalResponseDTO.builder()
+                .goalId(goal.getGoalId())
+                .title(goal.getTitle())
+                .priority(goal.getPriority())
+                .startDate(goal.getStartDate())
+                .endDate(goal.getEndDate())
+                .duration(goal.getDuration())
+                .isCompleted(goal.getIsCompleted())
+                .subGoals(subGoalResponseDTOs)
+                .completionPercentage(completionPercentage)
+                .createdAt(goal.getCreatedAt())
+                .updatedAt(goal.getUpdatedAt())
+                .build();
+    }
+}

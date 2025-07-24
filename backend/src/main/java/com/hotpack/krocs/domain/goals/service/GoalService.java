@@ -2,6 +2,10 @@ package com.hotpack.krocs.domain.goals.service;
 
 import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public interface GoalService {
     /**
@@ -12,4 +16,6 @@ public interface GoalService {
      * @return 생성된 대목표 정보
      */
     CreateGoalResponseDTO createGoal(CreateGoalRequestDTO requestDTO, Long userId);
-} 
+
+    List<GoalResponseDTO> getGoalByUser(Long userId, LocalDateTime dateTime);
+}
