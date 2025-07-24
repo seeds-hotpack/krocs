@@ -24,4 +24,6 @@ public interface GoalService {
     GoalResponseDTO getGoalByGoalId(Long userId, Long goalId);
 
     GoalResponseDTO updateGoalById(Long goalId, UpdateGoalRequestDTO request, Long userId);
+
+    void deleteGoal(Long userId, Long goalId);
 }

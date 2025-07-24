@@ -127,7 +127,25 @@ public class GoalServiceImpl implements GoalService {
         } catch (GoalException e) {
             throw e;
         } catch (Exception e) {
-            log.error("대목표 생성 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            log.error("대목표 수정 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new GoalException(GoalExceptionType.GOAL_CREATION_FAILED);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteGoal(Long userId, Long goalId) {
+        try {
+            if (!goalRepositoryFacade.existsById(goalId)) {
+                throw new GoalException(GoalExceptionType.GOAL_NOT_FOUND);
+            }
+
+            goalRepositoryFacade.deleteGoal(goalId);
+
+        } catch (GoalException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("대목표 삭제 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
             throw new GoalException(GoalExceptionType.GOAL_CREATION_FAILED);
         }
     }

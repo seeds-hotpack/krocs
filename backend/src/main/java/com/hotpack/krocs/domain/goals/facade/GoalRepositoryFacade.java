@@ -48,11 +48,21 @@ public class GoalRepositoryFacade {
         return goalRepository.findGoalByGoalId(goalId);
     }
 
+    @Transactional
     public Goal updateGoal(Goal goal) {
         return goalRepository.save(goal);
     }
 
     public Optional<Goal> findById(Long goalId) {
         return goalRepository.findById(goalId);
+    }
+
+    @Transactional
+    public void deleteGoal(Long goalId) {
+        goalRepository.deleteById(goalId);
+    }
+
+    public boolean existsById(Long goalId) {
+        return goalRepository.existsById(goalId);
     }
 }

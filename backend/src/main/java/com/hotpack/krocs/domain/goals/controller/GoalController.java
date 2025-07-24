@@ -12,9 +12,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -214,6 +217,52 @@ public class GoalController {
             GoalResponseDTO responseDTO = goalService.updateGoalById(goalId, request, userId);
 
             return ApiResponse.success(responseDTO);
+        } catch (GoalException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GoalException(GoalExceptionType.GOAL_FOUND_FAILED);
+        }
+    }
+
+    @Operation(
+            summary = "목표 삭제",
+            description = "기존 목표를 삭제합니다."
+//            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "목표 삭제 성공",
+                    content = @Content
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청 데이터",
+                    content = @Content
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "삭제 권한 없음",
+                    content = @Content
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "목표를 찾을 수 없음",
+                    content = @Content
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류",
+                    content = @Content
+            )
+    })
+    @DeleteMapping("/{goalId}")
+    public ApiResponse<Void> deleteGoal(
+            @PathVariable Long goalId,
+            @RequestParam(value = "user_id", required = false) Long userId) {
+        try{
+            goalService.deleteGoal(userId, goalId);
+            return ApiResponse.success(null);
         } catch (GoalException e) {
             throw e;
         } catch (Exception e) {
