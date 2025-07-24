@@ -16,5 +16,5 @@ public interface GoalService {
    */
   CreateGoalResponseDTO createGoal(CreateGoalRequestDTO requestDTO, Long userId);
 
-  SubGoalCreateResponseDTO createSubGoal(Long goalId, SubGoalCreateRequestDTO requestDTO);
+  SubGoalCreateResponseDTO createSubGoals(Long goalId, SubGoalCreateRequestDTO requestDTO);
 } 
