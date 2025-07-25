@@ -209,22 +209,6 @@ class GoalServiceTest {
     }
 
     @Test
-    @DisplayName("대목표 생성 - 시작 날짜가 과거인 경우")
-    void createGoal_StartDateInPast() {
-        // given
-        CreateGoalRequestDTO invalidRequest = CreateGoalRequestDTO.builder()
-                .title("테스트 목표")
-                .startDate(LocalDate.now().minusDays(1))
-                .duration(30)
-                .build();
-
-        // when & then
-        assertThatThrownBy(() -> goalService.createGoal(invalidRequest, 1L))
-                .isInstanceOf(GoalException.class)
-                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_DATE_IN_PAST);
-    }
-
-    @Test
     @DisplayName("대목표 생성 - Repository에서 예외 발생")
     void createGoal_RepositoryException() {
         // given

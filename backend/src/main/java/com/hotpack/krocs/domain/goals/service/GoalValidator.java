@@ -59,22 +59,6 @@ public class GoalValidator {
     }
 
     public void validateBusinessRules(CreateGoalRequestDTO requestDTO, Long userId) {
-        LocalDate today = LocalDate.now();
-
-        // 시작 날짜 검증
-        if (requestDTO.getStartDate() != null) {
-            if (requestDTO.getStartDate().isBefore(today)) {
-                throw new GoalException(GoalExceptionType.GOAL_DATE_IN_PAST);
-            }
-        }
-
-        // 종료 날짜 검증
-        if (requestDTO.getEndDate() != null) {
-            if (requestDTO.getEndDate().isBefore(today)) {
-                throw new GoalException(GoalExceptionType.GOAL_END_DATE_IN_PAST);
-            }
-        }
-
         // 중복 제목 검증
         if (goalRepositoryFacade.existsByTitle(requestDTO.getTitle())) {
             throw new GoalException(GoalExceptionType.GOAL_DUPLICATE_TITLE);
@@ -82,21 +66,10 @@ public class GoalValidator {
     }
 
     public void validateUpdateDates(UpdateGoalRequestDTO request, Goal existingGoal) {
-        LocalDate today = LocalDate.now();
-
         LocalDate finalStartDate = request.getStartDate() != null ? request.getStartDate() : existingGoal.getStartDate();
         LocalDate finalEndDate = request.getEndDate() != null ? request.getEndDate() : existingGoal.getEndDate();
 
-        // 1. 개별 날짜가 과거인지 검증
-        if (request.getStartDate() != null && request.getStartDate().isBefore(today)) {
-            throw new GoalException(GoalExceptionType.GOAL_DATE_IN_PAST);
-        }
-
-        if (request.getEndDate() != null && request.getEndDate().isBefore(today)) {
-            throw new GoalException(GoalExceptionType.GOAL_END_DATE_IN_PAST);
-        }
-
-        // 2. 최종 날짜 범위 검증
+        // 최종 날짜 범위 검증
         if (finalStartDate != null && finalEndDate != null) {
             if (finalStartDate.isAfter(finalEndDate)) {
                 throw new GoalException(GoalExceptionType.INVALID_GOAL_DATE_RANGE);

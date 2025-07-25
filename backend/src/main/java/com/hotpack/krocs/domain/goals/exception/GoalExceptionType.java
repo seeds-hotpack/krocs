@@ -21,10 +21,8 @@ public enum GoalExceptionType implements BaseCode {
     GOAL_DURATION_INVALID(HttpStatus.BAD_REQUEST, "GOAL400", "목표 기간은 1일 이상이어야 합니다."),
     GOAL_TITLE_TOO_LONG(HttpStatus.BAD_REQUEST, "GOAL400", "목표 제목이 너무 깁니다."),
     GOAL_INVALID_PRIORITY(HttpStatus.BAD_REQUEST, "GOAL400", "유효하지 않은 우선순위입니다."),
-    GOAL_DATE_IN_PAST(HttpStatus.BAD_REQUEST, "GOAL400", "시작 날짜는 현재 날짜 이후여야 합니다."),
-    GOAL_END_DATE_IN_PAST(HttpStatus.BAD_REQUEST, "GOAL400", "종료 날짜는 현재 날짜 이후여야 합니다."),
     GOAL_DURATION_TOO_LONG(HttpStatus.BAD_REQUEST, "GOAL400", "목표 기간이 너무 깁니다."),
-    GOAL_INVALID_GOAL_ID(HttpStatus.BAD_REQUEST, "GOAL400", "유효하지 않은 목표 ID입니다."),;
+    GOAL_INVALID_GOAL_ID(HttpStatus.BAD_REQUEST, "GOAL400", "유효하지 않은 목표 ID입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
