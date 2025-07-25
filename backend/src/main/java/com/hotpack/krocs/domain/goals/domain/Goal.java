@@ -18,7 +18,6 @@ import java.util.List;
                 @Index(name = "idx_goals_date_range", columnList = "start_date, end_date")
         })
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

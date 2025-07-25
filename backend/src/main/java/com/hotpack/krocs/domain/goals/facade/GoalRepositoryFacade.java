@@ -65,4 +65,12 @@ public class GoalRepositoryFacade {
     public boolean existsById(Long goalId) {
         return goalRepository.existsById(goalId);
     }
+
+    public boolean existsByTitle(String title) {
+        return goalRepository.existsByTitle(title);
+    }
+
+    public boolean existsByTitleAndGoalIdNot(String title, Long goalId) {
+        return goalRepository.existsByTitleAndGoalIdNot(title, goalId);
+    }
 }

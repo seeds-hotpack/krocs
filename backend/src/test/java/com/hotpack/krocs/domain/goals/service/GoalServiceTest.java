@@ -587,7 +587,7 @@ class GoalServiceTest {
         // when & then
         assertThatThrownBy(() -> goalService.getGoalByGoalId(userId, goalId))
                 .isInstanceOf(GoalException.class)
-                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_FOUND_EMPTY);
+                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_NOT_FOUND);
     }
 
     @Test
@@ -602,7 +602,7 @@ class GoalServiceTest {
         // when & then
         assertThatThrownBy(() -> goalService.getGoalByGoalId(userId, goalId))
                 .isInstanceOf(GoalException.class)
-                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_FOUND_EMPTY);
+                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_NOT_FOUND);
     }
 
     @Test

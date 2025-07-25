@@ -13,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,13 +26,14 @@ public class GoalServiceImpl implements GoalService {
 
     private final GoalRepositoryFacade goalRepositoryFacade;
     private final GoalConvertor goalConvertor;
+    private final GoalValidator goalValidator;
 
     @Override
     @Transactional
     public CreateGoalResponseDTO createGoal(CreateGoalRequestDTO requestDTO, Long userId) {
         try {
-            validateGoalCreation(requestDTO);
-            validateBusinessRules(requestDTO, userId);
+            goalValidator.validateGoalCreation(requestDTO);
+            goalValidator.validateBusinessRules(requestDTO, userId);
 
             Goal goal = goalConvertor.toEntity(requestDTO);
             Goal savedGoal = goalRepositoryFacade.saveGoal(goal);
@@ -69,17 +68,12 @@ public class GoalServiceImpl implements GoalService {
     @Override
     public GoalResponseDTO getGoalByGoalId(Long userId, Long goalId) {
         try{
-            if(goalId == null) {
-                throw new GoalException(GoalExceptionType.GOAL_FOUND_EMPTY);
-            }
+            goalValidator.validateGoalIdParameter(goalId);
 
-            Goal goal = goalRepositoryFacade.findGoalByGoalId(goalId);
+            Goal existingGoal = goalRepositoryFacade.findById(goalId)
+                    .orElseThrow(() -> new GoalException(GoalExceptionType.GOAL_NOT_FOUND));
 
-            if(goal == null) {
-                throw new GoalException(GoalExceptionType.GOAL_FOUND_EMPTY);
-            }
-
-            return goalConvertor.toGoalResponseDTO(goal);
+            return goalConvertor.toGoalResponseDTO(existingGoal);
         }catch (GoalException e) {
             throw e;
         }catch (Exception e) {
@@ -92,43 +86,42 @@ public class GoalServiceImpl implements GoalService {
     @Transactional
     public GoalResponseDTO updateGoalById(Long goalId, UpdateGoalRequestDTO request, Long userId) {
         try {
-            if (request.getTitle() != null) {
-                validateTitle(request.getTitle());
-            }
-            if (request.getDuration() != null) {
-                validateDuration(request.getDuration());
-            }
-            if (request.getStartDate() != null && request.getEndDate() != null) {
-                validateDateRange(request.getStartDate(), request.getEndDate());
-            }
+            goalValidator.validateGoalIdParameter(goalId);
 
             Goal existingGoal = goalRepositoryFacade.findById(goalId)
                     .orElseThrow(() -> new GoalException(GoalExceptionType.GOAL_NOT_FOUND));
 
             if (request.getTitle() != null) {
-                existingGoal.setTitle(request.getTitle());
+                goalValidator.validateTitle(request.getTitle());
+                if (goalRepositoryFacade.existsByTitleAndGoalIdNot(request.getTitle(), goalId)) {
+                    throw new GoalException(GoalExceptionType.GOAL_DUPLICATE_TITLE);
+                }
             }
-            if (request.getPriority() != null) {
-                existingGoal.setPriority(request.getPriority());
-            }
-            if (request.getStartDate() != null) {
-                existingGoal.setStartDate(request.getStartDate());
-            }
-            if (request.getEndDate() != null) {
-                existingGoal.setEndDate(request.getEndDate());
-            }
+
             if (request.getDuration() != null) {
-                existingGoal.setDuration(request.getDuration());
+                goalValidator.validateDuration(request.getDuration());
             }
 
-            Goal goal = goalRepositoryFacade.updateGoal(existingGoal);
+            goalValidator.validateUpdateDates(request, existingGoal);
 
-            return goalConvertor.toGoalResponseDTO(goal);
+            Goal updatedGoal = Goal.builder()
+                    .goalId(existingGoal.getGoalId())
+                    .title(request.getTitle() != null ? request.getTitle() : existingGoal.getTitle())
+                    .priority(request.getPriority() != null ? request.getPriority() : existingGoal.getPriority())
+                    .startDate(request.getStartDate() != null ? request.getStartDate() : existingGoal.getStartDate())
+                    .endDate(request.getEndDate() != null ? request.getEndDate() : existingGoal.getEndDate())
+                    .duration(request.getDuration() != null ? request.getDuration() : existingGoal.getDuration())
+                    .isCompleted(existingGoal.getIsCompleted())
+                    .subGoals(existingGoal.getSubGoals())
+                    .build();
+
+            Goal savedGoal = goalRepositoryFacade.updateGoal(updatedGoal);
+            return goalConvertor.toGoalResponseDTO(savedGoal);
         } catch (GoalException e) {
             throw e;
         } catch (Exception e) {
             log.error("대목표 수정 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
-            throw new GoalException(GoalExceptionType.GOAL_CREATION_FAILED);
+            throw new GoalException(GoalExceptionType.GOAL_UPDATE_FAILED);
         }
     }
 
@@ -136,59 +129,17 @@ public class GoalServiceImpl implements GoalService {
     @Transactional
     public void deleteGoal(Long userId, Long goalId) {
         try {
+            goalValidator.validateGoalIdParameter(goalId);
             if (!goalRepositoryFacade.existsById(goalId)) {
                 throw new GoalException(GoalExceptionType.GOAL_NOT_FOUND);
             }
 
             goalRepositoryFacade.deleteGoal(goalId);
-
         } catch (GoalException e) {
             throw e;
         } catch (Exception e) {
             log.error("대목표 삭제 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
-            throw new GoalException(GoalExceptionType.GOAL_CREATION_FAILED);
+            throw new GoalException(GoalExceptionType.GOAL_DELETE_FAILED);
         }
-    }
-
-
-    private void validateGoalCreation(CreateGoalRequestDTO requestDTO) {
-        validateTitle(requestDTO.getTitle());
-        validateDuration(requestDTO.getDuration());
-        validateDateRange(requestDTO.getStartDate(), requestDTO.getEndDate());
-    }
-
-    private void validateTitle(String title) {
-        if (!StringUtils.hasText(title)) {
-            throw new GoalException(GoalExceptionType.GOAL_TITLE_EMPTY);
-        }
-        if (title.length() > 200) {
-            throw new GoalException(GoalExceptionType.GOAL_TITLE_TOO_LONG);
-        }
-    }
-
-    private void validateDuration(Integer duration) {
-        if (duration == null || duration <= 0) {
-            throw new GoalException(GoalExceptionType.GOAL_DURATION_INVALID);
-        }
-    }
-
-    private void validateDateRange(LocalDate startDate, LocalDate endDate) {
-        if (startDate != null && endDate != null) {
-            if (startDate.isAfter(endDate)) {
-                throw new GoalException(GoalExceptionType.INVALID_GOAL_DATE_RANGE);
-            }
-        }
-    }
-
-    private void validateBusinessRules(CreateGoalRequestDTO requestDTO, Long userId) {
-        // 시작 날짜가 과거인지 검증
-        if (requestDTO.getStartDate() != null) {
-            java.time.LocalDate today = java.time.LocalDate.now();
-            if (requestDTO.getStartDate().isBefore(today)) {
-                throw new GoalException(GoalExceptionType.GOAL_DATE_IN_PAST);
-            }
-        }
-
-
     }
 } 

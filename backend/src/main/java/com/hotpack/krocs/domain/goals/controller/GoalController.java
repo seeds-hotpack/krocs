@@ -9,9 +9,6 @@ import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
 import com.hotpack.krocs.domain.goals.service.GoalService;
 import com.hotpack.krocs.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,33 +25,9 @@ public class GoalController {
 
     private final GoalService goalService;
 
-    @Operation(
-            summary = "대목표 생성",
-            description = "새로운 대목표를 생성합니다."
+    @Operation(summary = "대목표 생성", description = "새로운 대목표를 생성합니다."
 //            security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "목표 생성 성공",
-                    content = @Content(schema = @Schema(implementation = CreateGoalResponseDTO.class))
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "400",
-                    description = "잘못된 요청 데이터",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "404",
-                    description = "사용자를 찾을 수 없음",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "500",
-                    description = "서버 오류",
-                    content = @Content
-            )
-    })
     @PostMapping
     public ApiResponse<CreateGoalResponseDTO> createGoal(
             @Valid @RequestBody CreateGoalRequestDTO requestDTO,
@@ -73,33 +46,9 @@ public class GoalController {
         }
     }
 
-    @Operation(
-            summary = "내 대목표 목록 조회",
-            description = "사용자의 대목표 목록을 조회합니다."
+    @Operation(summary = "대목표 목록 조회", description = "사용자의 대목표 목록을 조회합니다."
 //            security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "대목표 목록 조회 성공",
-                    content = @Content(schema = @Schema(implementation = GoalResponseDTO.class))
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "400",
-                    description = "잘못된 요청 데이터",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "404",
-                    description = "사용자를 찾을 수 없음",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "500",
-                    description = "목표 조회 실패",
-                    content = @Content
-            )
-    })
     @GetMapping
     public ApiResponse<List<GoalResponseDTO>> getGoal(
             @RequestParam(value = "user_id", required = false) Long userId, @RequestParam(required = false) LocalDateTime dateTime
@@ -117,38 +66,9 @@ public class GoalController {
         }
     }
 
-    @Operation(
-            summary = "특정 목표 상세 조회",
-            description = "특정 목표의 상세 정보를 조회합니다."
+    @Operation(summary = "특정 목표 상세 조회", description = "특정 목표의 상세 정보를 조회합니다."
 //            security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "목표 상세 조회 성공",
-                    content = @Content(schema = @Schema(implementation = GoalResponseDTO.class))
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "400",
-                    description = "잘못된 요청 데이터",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "403",
-                    description = "접근 권한 없음",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "404",
-                    description = "목표를 찾을 수 없음",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "500",
-                    description = "목표 조회 실패",
-                    content = @Content
-            )
-    })
     @GetMapping("/{goalId}")
     public ApiResponse<GoalResponseDTO> getGoalById(
             @PathVariable Long goalId,
@@ -163,38 +83,9 @@ public class GoalController {
         }
     }
 
-    @Operation(
-            summary = "목표 수정",
-            description = "기존 목표의 정보를 수정합니다."
+    @Operation(summary = "목표 수정", description = "기존 목표의 정보를 수정합니다."
 //            security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "목표 수정 성공",
-                    content = @Content(schema = @Schema(implementation = GoalResponseDTO.class))
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "400",
-                    description = "잘못된 요청 데이터",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "403",
-                    description = "수정 권한 없음",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "404",
-                    description = "목표를 찾을 수 없음",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "500",
-                    description = "서버 오류",
-                    content = @Content
-            )
-    })
     @PatchMapping("/{goalId}")
     public ApiResponse<GoalResponseDTO> updateGoalById(
             @PathVariable Long goalId,
@@ -207,42 +98,13 @@ public class GoalController {
         } catch (GoalException e) {
             throw e;
         } catch (Exception e) {
-            throw new GoalException(GoalExceptionType.GOAL_FOUND_FAILED);
+            throw new GoalException(GoalExceptionType.GOAL_UPDATE_FAILED);
         }
     }
 
-    @Operation(
-            summary = "목표 삭제",
-            description = "기존 목표를 삭제합니다."
+    @Operation(summary = "목표 삭제", description = "기존 목표를 삭제합니다."
 //            security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "목표 삭제 성공",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "400",
-                    description = "잘못된 요청 데이터",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "403",
-                    description = "삭제 권한 없음",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "404",
-                    description = "목표를 찾을 수 없음",
-                    content = @Content
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "500",
-                    description = "서버 오류",
-                    content = @Content
-            )
-    })
     @DeleteMapping("/{goalId}")
     public ApiResponse<Void> deleteGoal(
             @PathVariable Long goalId,
@@ -253,7 +115,7 @@ public class GoalController {
         } catch (GoalException e) {
             throw e;
         } catch (Exception e) {
-            throw new GoalException(GoalExceptionType.GOAL_FOUND_FAILED);
+            throw new GoalException(GoalExceptionType.GOAL_DELETE_FAILED);
         }
     }
 }

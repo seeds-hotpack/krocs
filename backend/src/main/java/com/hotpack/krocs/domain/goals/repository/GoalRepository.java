@@ -16,4 +16,8 @@ public interface GoalRepository extends JpaRepository<Goal, Long> {
     List<Goal> findByDateTime(@Param("date") LocalDate date);
 
     Goal findGoalByGoalId(Long goalId);
+
+    boolean existsByTitle(String title);
+
+    boolean existsByTitleAndGoalIdNot(String title, Long goalId);
 }
