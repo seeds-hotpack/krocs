@@ -6,4 +6,6 @@ import com.hotpack.krocs.domain.goals.dto.response.SubGoalUpdateResponseDTO;
 public interface SubGoalService {
 
   SubGoalUpdateResponseDTO updateSubGoal(Long subGoalId, SubGoalUpdateRequestDTO requestDTO);
+
+  void deleteSubGoal(Long subGoalId);
 }

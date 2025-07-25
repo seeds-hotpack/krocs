@@ -35,6 +35,17 @@ public class GoalServiceImpl implements GoalService {
   private final SubGoalRepositoryFacade subGoalRepositoryFacade;
   private final GoalConvertor goalConvertor;
 
+  /**
+   * 대목표를 생성합니다.
+   *
+   * <p>요청 DTO의 유효성 검증 및 비즈니스 로직 검증을 거친 후,
+   * Goal 엔티티를 생성하고 저장하며 응답 DTO로 반환합니다.
+   *
+   * @param requestDTO 대목표 생성 요청 DTO
+   * @param userId     요청한 사용자 ID
+   * @return 생성된 Goal에 대한 응답 DTO
+   * @throws GoalException 유효성 검사 실패 또는 저장 중 오류 발생 시
+   */
   @Override
   @Transactional
   public CreateGoalResponseDTO createGoal(CreateGoalRequestDTO requestDTO, Long userId) {
@@ -98,6 +109,17 @@ public class GoalServiceImpl implements GoalService {
     }
   }
 
+  /**
+   * 대목표(Goal)에 소속된 소목표(SubGoal)들을 일괄 생성합니다.
+   *
+   * <p>요청으로 전달된 소목표 리스트에 대해 유효성 검증을 수행하고,
+   * 각 소목표를 Goal과 매핑하여 저장한 뒤, 응답 DTO로 반환합니다.
+   *
+   * @param goalId     소목표들을 등록할 대상 대목표의 ID
+   * @param requestDTO 생성할 소목표 리스트를 포함한 요청 DTO
+   * @return 생성된 소목표들의 정보가 담긴 응답 DTO
+   * @throws SubGoalException goalId가 null이거나, 소목표 유효성 검증에 실패한 경우 또는 저장 중 오류 발생 시
+   */
   @Override
   @Transactional
   public SubGoalCreateResponseDTO createSubGoals(Long goalId, SubGoalCreateRequestDTO requestDTO) {
@@ -191,6 +213,17 @@ public class GoalServiceImpl implements GoalService {
     }
   }
 
+  /**
+   * 단일 소목표를 조회합니다.
+   *
+   * <p>goalId에 해당하는 Goal 내에 subGoalId가 포함되어 있는지 검증하고,
+   * 존재할 경우 해당 소목표 정보를 반환합니다.
+   *
+   * @param goalId    대목표 ID
+   * @param subGoalId 소목표 ID
+   * @return 해당 소목표의 응답 DTO
+   * @throws SubGoalException ID가 null이거나, 소속되지 않은 경우 또는 조회 실패 시
+   */
   @Override
   public SubGoalResponseDTO getSubGoal(Long goalId, Long subGoalId) {
     try {

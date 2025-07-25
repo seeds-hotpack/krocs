@@ -12,4 +12,6 @@ public interface SubGoalRepository extends JpaRepository<SubGoal, Long> {
   List<SubGoal> findSubGoalsByGoal(Goal goal);
 
   SubGoal findSubGoalsBySubGoalId(Long subGoalId);
+
+  void deleteSubGoalBySubGoalId(Long subGoalId);
 }

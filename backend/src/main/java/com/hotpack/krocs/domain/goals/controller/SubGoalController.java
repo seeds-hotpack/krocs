@@ -7,6 +7,7 @@ import com.hotpack.krocs.domain.goals.exception.SubGoalExceptionType;
 import com.hotpack.krocs.domain.goals.service.SubGoalService;
 import com.hotpack.krocs.global.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,4 +36,19 @@ public class SubGoalController {
       throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_UPDATE_FAILED);
     }
   }
+
+  @DeleteMapping("/{subGoalId}")
+  public ApiResponse<Void> deleteSubGoal(
+      @PathVariable Long subGoalId
+  ) {
+    try {
+      subGoalService.deleteSubGoal(subGoalId);
+      return ApiResponse.success();
+    } catch (SubGoalException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_DELETE_FAILED);
+    }
+  }
+
 }
