@@ -1,4 +1,4 @@
-package com.hotpack.krocs.domain.goals.convertor;
+package com.hotpack.krocs.domain.goals.converter;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
@@ -11,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,14 +19,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GoalConvertorTest {
 
-    private GoalConvertor goalConvertor;
+    private GoalConverter goalConvertor;
 
     private CreateGoalRequestDTO validRequestDTO;
     private Goal validGoal;
 
     @BeforeEach
     void setUp() {
-        goalConvertor = new GoalConvertor();
+        goalConvertor = new GoalConverter();
 
         validRequestDTO = CreateGoalRequestDTO.builder()
                 .title("테스트 목표")

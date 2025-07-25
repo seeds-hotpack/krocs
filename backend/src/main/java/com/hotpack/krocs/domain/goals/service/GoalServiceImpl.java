@@ -1,6 +1,6 @@
 package com.hotpack.krocs.domain.goals.service;
 
-import com.hotpack.krocs.domain.goals.convertor.GoalConvertor;
+import com.hotpack.krocs.domain.goals.converter.GoalConverter;
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.request.UpdateGoalRequestDTO;
@@ -25,7 +25,7 @@ import java.util.List;
 public class GoalServiceImpl implements GoalService {
 
     private final GoalRepositoryFacade goalRepositoryFacade;
-    private final GoalConvertor goalConvertor;
+    private final GoalConverter goalConvertor;
     private final GoalValidator goalValidator;
 
     @Override

@@ -1,4 +1,4 @@
-package com.hotpack.krocs.domain.goals.convertor;
+package com.hotpack.krocs.domain.goals.converter;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class GoalConvertor {
+public class GoalConverter {
 
     /**
      * CreateGoalRequestDTO를 Goal 엔티티로 변환합니다.
