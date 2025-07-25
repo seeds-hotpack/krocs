@@ -2,6 +2,9 @@ package com.hotpack.krocs.domain.templates.service;
 
 import com.hotpack.krocs.domain.templates.dto.request.CreateTemplateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.CreateTemplateResponseDTO;
+import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
+
+import java.util.List;
 
 public interface TemplateService {
 
@@ -12,4 +15,13 @@ public interface TemplateService {
      * @return 생성된 탬플릿 정보
      */
     CreateTemplateResponseDTO createTemplate(CreateTemplateRequestDTO requestDTO, Long userId);
+
+    /**
+     *
+     * @param userId 사용자 ID (나중에 토큰으로 대체)
+     * @param title 검색할 내용
+     * @return 검색한 템플릿 정보
+     */
+    List<TemplateResponseDTO> getTemplatesByUserAndTitle(Long userId, String title);
+
 }

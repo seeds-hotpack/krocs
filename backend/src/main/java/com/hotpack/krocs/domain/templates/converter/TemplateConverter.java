@@ -5,6 +5,7 @@ import com.hotpack.krocs.domain.templates.domain.Template;
 import com.hotpack.krocs.domain.templates.dto.request.CreateTemplateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.CreateTemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateResponseDTO;
+import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
 import com.hotpack.krocs.global.common.entity.Priority;
 import org.springframework.stereotype.Component;
 
@@ -63,6 +64,27 @@ public class TemplateConverter {
         return SubTemplateResponseDTO.builder()
                 .subTemplateId(subTemplate.getSubTemplateId())
                 .title(subTemplate.getTitle())
+                .build();
+    }
+
+
+    /**
+     * Template 엔티티를 TemplateResponseDTO로 변환합니다.
+     *
+     * @param template
+     * @return
+     */
+    public TemplateResponseDTO toTemplateResponseDTO(Template template) {
+        return TemplateResponseDTO.builder()
+                .templateId(template.getTemplateId())
+                .title(template.getTitle())
+                .priority(template.getPriority())
+                .duration(template.getDuration())
+                .createdAt(template.getCreatedAt().toString())
+                .updatedAt(template.getUpdatedAt().toString())
+                .subTemplates(template.getSubTemplates().stream()
+                        .map(this::toSubTemplateResponseDTO)
+                        .toList())
                 .build();
     }
 }

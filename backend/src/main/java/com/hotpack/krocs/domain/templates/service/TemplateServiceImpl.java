@@ -5,14 +5,18 @@ import com.hotpack.krocs.domain.templates.converter.TemplateConverter;
 import com.hotpack.krocs.domain.templates.domain.Template;
 import com.hotpack.krocs.domain.templates.dto.request.CreateTemplateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.CreateTemplateResponseDTO;
+import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.exception.TemplateException;
 import com.hotpack.krocs.domain.templates.exception.TemplateExceptionType;
 import com.hotpack.krocs.domain.templates.facade.TemplateRepositoryFacade;
 import com.hotpack.krocs.domain.templates.validator.TemplateValidator;
+import com.hotpack.krocs.global.common.response.exception.handler.TemplateHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -57,4 +61,30 @@ public class TemplateServiceImpl implements TemplateService {
             throw new TemplateException(TemplateExceptionType.TEMPLATE_CREATION_FAILED);
         }
     }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TemplateResponseDTO> getTemplatesByUserAndTitle(Long userId, String title) {
+        try {
+            List<Template> templates;
+
+            if (title != null && !title.isBlank()) {
+                templates = templateRepositoryFacade.findByTitle(title);
+            } else {
+                templates = templateRepositoryFacade.findAll();
+            }
+
+            return templates.stream()
+                    .map(templateConverter::toTemplateResponseDTO)
+                    .toList();
+
+        } catch (TemplateException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("템플릿 조회 중 예외 발생: {}", e.getMessage(), e);
+            throw new TemplateException(TemplateExceptionType.TEMPLATE_FOUND_FAILED);
+        }
+    }
+
 }

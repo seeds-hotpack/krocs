@@ -1,11 +1,14 @@
 package com.hotpack.krocs.domain.templates.facade;
 
 import com.hotpack.krocs.domain.templates.domain.Template;
+import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.repository.TemplateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Goal Repository Facade
@@ -29,4 +32,26 @@ public class TemplateRepositoryFacade {
     public Template saveTemplate(Template template) {
         return templateRepository.save(template);
     }
+
+    /**
+     * 대소문자 구분 없이 키워드로 검색합니다.
+     *
+     * @param title
+     * @return List<Template>
+     */
+    public List<Template> findByTitle(String title) {
+        return templateRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    /**
+     * 모든 template을 가져옵니다.
+     *
+     * @param
+     * @return List<Template>
+     */
+    public List<Template> findAll() {
+        return templateRepository.findAll();
+    }
+
+
 }
