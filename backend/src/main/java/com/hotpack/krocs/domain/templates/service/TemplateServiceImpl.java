@@ -34,7 +34,7 @@ public class TemplateServiceImpl implements TemplateService {
 
 
     /**
-     *
+     * 생성
      * @param requestDTO 탬플릿 생성 요청 데이터
      * @param userId 사용자 ID
      * @return
@@ -68,7 +68,7 @@ public class TemplateServiceImpl implements TemplateService {
 
 
     /**
-     *
+     * 조회 / 검색(title)
      * @param userId 사용자 ID (나중에 토큰으로 대체)
      * @param title 검색할 내용
      * @return
@@ -97,19 +97,20 @@ public class TemplateServiceImpl implements TemplateService {
         }
     }
 
+
     /**
      *
-     * @param template_id 탬플릿 id
-     * @param user_id 사용자 ID
+     * @param templateId 탬플릿 id
+     * @param userId 사용자 ID
      * @param requestDTO 업데이트할 dto
      * @return
      */
     @Transactional
     @Override
-    public TemplateResponseDTO updateTemplate(Long template_id, Long user_id, UpdateTemplateRequestDTO requestDTO) {
+    public TemplateResponseDTO updateTemplate(Long templateId, Long userId, UpdateTemplateRequestDTO requestDTO) {
         try {
 
-            Template template = templateRepositoryFacade.findByTemplateId(template_id)
+            Template template = templateRepositoryFacade.findByTemplateId(templateId)
                     .orElseThrow(() -> new TemplateException(TemplateExceptionType.TEMPLATE_NOT_FOUND));
 
             // ⚠️ 유저 소유권 검증 로직 필요 시 여기에 추가
@@ -148,6 +149,30 @@ public class TemplateServiceImpl implements TemplateService {
         } catch (Exception e) {
             log.error("템플릿 수정 중 예외 발생: {}", e.getMessage(), e);
             throw new TemplateException(TemplateExceptionType.TEMPLATE_UPDATE_FAILED);
+        }
+    }
+
+    /**
+     * 삭제
+     * @param templateId
+     * @param userId
+     */
+    @Transactional
+    @Override
+    public void deleteTemplate(Long templateId, Long userId) {
+        log.info("Template 호출: templateId={}, userId={}", templateId, userId);
+        Template template = templateRepositoryFacade.findByTemplateId(templateId)
+                .orElseThrow(() -> new TemplateException(TemplateExceptionType.TEMPLATE_NOT_FOUND));
+
+        // UNAUTHORIZED_TEMPLATE_ACCESS 검사
+
+        try {
+            templateRepositoryFacade.delete(template);
+        } catch (TemplateException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("템플릿 삭제 중 예외 발생: {}", e.getMessage(), e);
+            throw new TemplateException(TemplateExceptionType.TEMPLATE_DELETE_FAILED);
         }
     }
 

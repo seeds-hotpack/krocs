@@ -63,5 +63,14 @@ public class TemplateRepositoryFacade {
         return templateRepository.findByTemplateId(templateId);
     }
 
-
+    /**
+     * 템플릿을 삭제합니다.
+     *
+     * @param template 삭제할 템플릿
+     */
+    @Transactional
+    public void delete(Template template) {
+        log.info("삭제할 Template 정보: {}", template);
+        templateRepository.delete(template);
+    }
 }

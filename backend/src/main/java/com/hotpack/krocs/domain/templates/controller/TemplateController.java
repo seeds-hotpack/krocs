@@ -55,17 +55,17 @@ public class TemplateController {
 
     /**
      *
-     * @param user_id
+     * @param userId
      * @param title
      * @return
      */
-    @Operation(summary = "템플릿 조회 및 검색", description = "사용자 ID 기반으로 템플릿을 조회하며, title 키워드로 부분 검색이 가능합니다.")
+    @Operation(summary = "템플릿 전체 조회 및 검색", description = "사용자 ID 기반으로 템플릿을 조회하며, title 키워드로 부분 검색이 가능합니다.")
     @GetMapping
     public ApiResponse<List<TemplateResponseDTO>> getTemplates(
-            @RequestParam Long user_id,
+            @RequestParam(value = "user_id") Long userId,
             @RequestParam(required = false) String title) {
         try {
-            List<TemplateResponseDTO> responseDTO = templateService.getTemplatesByUserAndTitle(user_id, title);
+            List<TemplateResponseDTO> responseDTO = templateService.getTemplatesByUserAndTitle(userId, title);
             return ApiResponse.success(responseDTO);
 
         } catch (TemplateException e) {
@@ -78,20 +78,20 @@ public class TemplateController {
 
 
     /**
-     *
-     * @param template_id
-     * @param user_id
+     * 수정
+     * @param templateId
+     * @param userId
      * @param requestDTO
      * @return
      */
     @Operation(summary = "템플릿 수정", description = "탬플릿을 id 기준으로 수정합니다.")
     @PatchMapping("/{template_id}")
     public ApiResponse<TemplateResponseDTO> getTemplates(
-            @PathVariable Long template_id,
-            @RequestParam Long user_id,
+            @PathVariable(value = "template_id") Long templateId,
+            @RequestParam(value = "user_id") Long userId,
             @RequestBody UpdateTemplateRequestDTO requestDTO){
         try {
-            TemplateResponseDTO responseDTO = templateService.updateTemplate(template_id, user_id, requestDTO);
+            TemplateResponseDTO responseDTO = templateService.updateTemplate(templateId, userId, requestDTO);
             return ApiResponse.success(responseDTO);
 
         } catch (TemplateException e) {
@@ -102,5 +102,22 @@ public class TemplateController {
         }
     }
 
+    @Operation(summary = "템플릿 삭제", description = "템플릿을 탬플릿ID로 삭제합니다.")
+    @DeleteMapping("/{template_id}")
+    public ApiResponse<Void> deleteTemplate(
+            @PathVariable(value = "template_id") Long templateId,
+            @RequestParam(value = "user_id") Long userId) {
+        try {
 
+            log.info("Template 호출: templateId={}, userId={}", templateId, userId);
+            templateService.deleteTemplate(templateId, userId);
+            return ApiResponse.success(null);
+
+        } catch (TemplateException e) {
+            throw e;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
