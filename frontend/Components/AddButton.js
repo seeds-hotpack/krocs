@@ -43,7 +43,14 @@ export default function AddButton({   styles,
   result.setDate(result.getDate() + days);
   return result;
 };
-
+const resetGoalForm = () => {
+  setShowGoalForm(false);
+  setEditingIndex(null);
+  setTitle('');
+  setSubGoals([]);
+  setStartDate(new Date());
+  setEndDate(addDays(new Date(), 1));
+};
 const handleDurationSelect = (days) => {
   const baseDate = isStartDateTouched ? startDate : new Date();
   const newStartDate = isStartDateTouched ? startDate : new Date();
@@ -199,7 +206,7 @@ const saveGoal = () => {
 )}
           <View style={styles.goalFormHeader}>
             <Text style={styles.goalFormTitle}>새로운 목표</Text>
-            <TouchableOpacity onPress={() => setShowGoalForm(false)}>
+            <TouchableOpacity onPress={resetGoalForm}>
               <Text style={{ fontSize: 18 }}>✕</Text>
             </TouchableOpacity>
           </View>
@@ -453,6 +460,8 @@ const saveGoal = () => {
     if (editingGoal) {
       // 수정 중이면 삭제 기능
       onDeleteGoal(editingIndex);
+      resetGoalForm();
+
     } else {
       // 새 목표 작성 중이면 창 닫기
       setShowGoalForm(false);
