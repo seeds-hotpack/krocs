@@ -34,17 +34,19 @@ public class TemplateValidator {
 
     public TemplateValidationResult validateTemplateCreation(CreateTemplateRequestDTO dto) {
         return new TemplateValidationResult(
-                !isTitleEmpty(dto.getTitle()) && !isTitleTooLong(dto.getTitle()),
+                isTitleEmpty(dto.getTitle()),
+                isTitleTooLong(dto.getTitle()),
                 isValidDuration(dto.getDuration())
         );
     }
 
     public record TemplateValidationResult(
-            boolean validTitle,
+            boolean validTitleEmpty,
+            boolean validTitleTooLong,
             boolean validDuration
     ) {
         public boolean isAllValid() {
-            return validTitle && validDuration;
+            return validTitleEmpty && validTitleTooLong && validDuration;
         }
     }
 }

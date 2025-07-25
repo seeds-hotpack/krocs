@@ -1,7 +1,6 @@
 package com.hotpack.krocs.domain.templates.facade;
 
 import com.hotpack.krocs.domain.templates.domain.Template;
-import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.repository.TemplateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,7 @@ public class TemplateRepositoryFacade {
      * @return 저장된 탬플릿
      */
     @Transactional
-    public Template saveTemplate(Template template) {
+    public Template save(Template template) {
         return templateRepository.save(template);
     }
 
@@ -70,7 +69,6 @@ public class TemplateRepositoryFacade {
      */
     @Transactional
     public void delete(Template template) {
-        log.info("삭제할 Template 정보: {}", template);
         templateRepository.delete(template);
     }
 }

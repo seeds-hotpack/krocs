@@ -27,7 +27,7 @@ public interface TemplateRepository extends JpaRepository<Template, Long> {
     /**
      * id로 탬플릿 찾기
      * @param templateId
-     * @return
+     * @return Optional<Template>
      */
     Optional<Template> findByTemplateId(Long templateId);
 
