@@ -3,6 +3,8 @@ package com.hotpack.krocs.domain.goals.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
@@ -23,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class SubGoalServiceImplTest {
+class SubGoalServiceTest {
 
   @Mock
   private SubGoalRepositoryFacade subGoalRepositoryFacade;
@@ -112,6 +114,49 @@ class SubGoalServiceImplTest {
         .isInstanceOf(SubGoalException.class)
         .hasFieldOrPropertyWithValue("subGoalExceptionType",
             SubGoalExceptionType.SUB_GOAL_UPDATE_FAILED);
+  }
+  
+  @Test
+  @DisplayName("소목표 삭제 성공")
+  void deleteSubGoal_Success() {
+    // given
+    Long subGoalId = 1L;
+
+    // when
+    subGoalService.deleteSubGoal(subGoalId);
+
+    // then
+    verify(subGoalRepositoryFacade).deleteSubGoalBySubGoalId(subGoalId);
+  }
+
+  @Test
+  @DisplayName("소목표 삭제 - 조회 실패")
+  void deleteSubGoal_ReadFailure() {
+    // given
+    doThrow(new SubGoalException(SubGoalExceptionType.SUB_GOAL_NOT_FOUND))
+        .when(subGoalRepositoryFacade)
+        .deleteSubGoalBySubGoalId(any());
+
+    // when & then
+    assertThatThrownBy(() -> subGoalService.deleteSubGoal(1L))
+        .isInstanceOf(SubGoalException.class)
+        .hasFieldOrPropertyWithValue("subGoalExceptionType",
+            SubGoalExceptionType.SUB_GOAL_NOT_FOUND);
+
+  }
+
+  @Test
+  @DisplayName("소목표 삭제 - 예상치 못한 예외 발생")
+  void deleteSubGoal_UnknownException() {
+    doThrow(new RuntimeException())
+        .when(subGoalRepositoryFacade)
+        .deleteSubGoalBySubGoalId(any());
+
+    // when & then
+    assertThatThrownBy(() -> subGoalService.deleteSubGoal(1L))
+        .isInstanceOf(SubGoalException.class)
+        .hasFieldOrPropertyWithValue("subGoalExceptionType",
+            SubGoalExceptionType.SUB_GOAL_DELETE_FAILED);
   }
 
 }
