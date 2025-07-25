@@ -9,11 +9,11 @@ import lombok.Getter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SubGoalResponseDTO {
 
-    private final Long subGoalId;
+  private final Long subGoalId;
 
-    private final String title;
+  private final String title;
 
-    private final boolean completed;
+  private final Boolean completed;
 
-    private final Integer completionPercentage;
+  private final Integer completionPercentage;
 }
