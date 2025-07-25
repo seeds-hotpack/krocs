@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TemplateRepository extends JpaRepository<Template, Long> {
@@ -21,5 +22,13 @@ public interface TemplateRepository extends JpaRepository<Template, Long> {
      * @return List<Template>
      */
     List<Template> findAll();
+
+
+    /**
+     * id로 탬플릿 찾기
+     * @param templateId
+     * @return
+     */
+    Optional<Template> findByTemplateId(Long templateId);
 
 }

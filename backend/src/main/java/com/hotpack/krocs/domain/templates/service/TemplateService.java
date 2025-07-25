@@ -1,6 +1,7 @@
 package com.hotpack.krocs.domain.templates.service;
 
 import com.hotpack.krocs.domain.templates.dto.request.CreateTemplateRequestDTO;
+import com.hotpack.krocs.domain.templates.dto.request.UpdateTemplateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.CreateTemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
 
@@ -23,5 +24,15 @@ public interface TemplateService {
      * @return 검색한 템플릿 정보
      */
     List<TemplateResponseDTO> getTemplatesByUserAndTitle(Long userId, String title);
+
+
+    /**
+     *
+     * @param templateId 탬플릿 id
+     * @param userId 사용자 ID
+     * @param requestDTO 업데이트할 dto
+     * @return 업데이트 완료한 template
+     */
+    TemplateResponseDTO updateTemplate(Long templateId, Long userId, UpdateTemplateRequestDTO requestDTO);
 
 }

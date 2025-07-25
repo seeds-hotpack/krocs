@@ -4,11 +4,9 @@ import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import com.hotpack.krocs.global.common.entity.Priority;
 import com.hotpack.krocs.global.common.entity.RepeatType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -24,14 +22,17 @@ public class Template extends BaseTimeEntity {
     @Column(name = "template_id")
     private Long templateId;
 
+    @Setter
     @Column(name = "title", nullable = false, length = 200)
     private String title;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "priority", nullable = false, length = 10)
     @Builder.Default
     private Priority priority = Priority.MEDIUM;
 
+    @Setter
     @Column(name = "duration", nullable = false)
     private Integer duration;
 

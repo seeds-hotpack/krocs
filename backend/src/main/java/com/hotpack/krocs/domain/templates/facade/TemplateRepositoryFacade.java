@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Goal Repository Facade
@@ -51,6 +52,15 @@ public class TemplateRepositoryFacade {
      */
     public List<Template> findAll() {
         return templateRepository.findAll();
+    }
+
+    /**
+     *
+     * @param templateId
+     * @return
+     */
+    public Optional<Template> findByTemplateId(Long templateId){
+        return templateRepository.findByTemplateId(templateId);
     }
 
 
