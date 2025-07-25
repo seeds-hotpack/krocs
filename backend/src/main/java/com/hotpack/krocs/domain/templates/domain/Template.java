@@ -4,11 +4,9 @@ import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import com.hotpack.krocs.global.common.entity.Priority;
 import com.hotpack.krocs.global.common.entity.RepeatType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -35,14 +33,28 @@ public class Template extends BaseTimeEntity {
     @Column(name = "duration", nullable = false)
     private Integer duration;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "repeat")
-    private RepeatType repeat;
-
-    @Column(name = "is_completed", nullable = false)
-    @Builder.Default
-    private Boolean isCompleted = false;
-
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SubTemplate> subTemplates;
+
+    public void setTitle(String title) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("제목은 비어 있을 수 없습니다.");
+        }
+        this.title = title;
+    }
+
+    public void setPriority(Priority priority) {
+        if (priority == null) {
+            this.priority = Priority.MEDIUM; // 기본값 설정
+        } else {
+            this.priority = priority;
+        }
+    }
+
+    public void setDuration(Integer duration) {
+        if (duration == null || duration <= 0) {
+            throw new IllegalArgumentException("기간은 1 이상이어야 합니다.");
+        }
+        this.duration = duration;
+    }
 }
