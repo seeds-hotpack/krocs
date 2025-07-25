@@ -21,7 +21,6 @@ import com.hotpack.krocs.domain.goals.exception.SubGoalException;
 import com.hotpack.krocs.domain.goals.exception.SubGoalExceptionType;
 import com.hotpack.krocs.domain.goals.facade.GoalRepositoryFacade;
 import com.hotpack.krocs.domain.goals.facade.SubGoalRepositoryFacade;
-import com.hotpack.krocs.domain.goals.repository.SubGoalRepository;
 import com.hotpack.krocs.global.common.entity.Priority;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,8 +40,6 @@ class GoalServiceTest {
   @Mock
   private GoalRepositoryFacade goalRepositoryFacade;
   @Mock
-  private SubGoalRepository subGoalRepository;
-  @Mock
   private SubGoalRepositoryFacade subGoalRepositoryFacade;
 
 
@@ -57,7 +54,6 @@ class GoalServiceTest {
   private CreateGoalResponseDTO validResponseDTO;
 
   private SubGoalCreateRequestDTO validSubGoalCreateRequestDTO;
-  private SubGoalCreateResponseDTO validSubGoalCreateResponseDTO;
   private SubGoal validSubGoal;
   private SubGoalResponseDTO validSubGoalResponseDTO;
   private SubGoalRequestDTO validSubGoalRequestDTO;
@@ -94,8 +90,7 @@ class GoalServiceTest {
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .build();
-
-    // 소목표 valid mock data
+    
     validSubGoalRequestDTO = SubGoalRequestDTO.builder()
         .title("테스트 소목표1")
         .build();
@@ -116,11 +111,6 @@ class GoalServiceTest {
         .title(validSubGoal.getTitle())
         .completed(validSubGoal.getIsCompleted())
         .completionPercentage(0)
-        .build();
-
-    validSubGoalCreateResponseDTO = SubGoalCreateResponseDTO.builder()
-        .goalId(1L)
-        .createdSubGoals(List.of(validSubGoalResponseDTO))
         .build();
   }
 
@@ -522,7 +512,7 @@ class GoalServiceTest {
         .hasFieldOrPropertyWithValue("subGoalExceptionType",
             SubGoalExceptionType.SUB_GOAL_NOT_FOUND);
   }
-  
+
   @Test
   @DisplayName("소목표 단건 조회 성공")
   void getSubGoal_Success() {
