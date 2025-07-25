@@ -8,6 +8,7 @@ import com.hotpack.krocs.domain.goals.dto.request.SubGoalCreateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.request.SubGoalRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalCreateResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.response.SubGoalListResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalResponseDTO;
 import com.hotpack.krocs.domain.goals.exception.GoalException;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
@@ -101,12 +102,12 @@ public class GoalServiceImpl implements GoalService {
   @Transactional
   public SubGoalCreateResponseDTO createSubGoals(Long goalId, SubGoalCreateRequestDTO requestDTO) {
     try {
+      if (goalId == null) {
+        throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_GOAL_ID_IS_NULL);
+      }
       validateSubGoalCreation(requestDTO);
 
       Goal goal = goalRepositoryFacade.findGoalById(goalId);
-      if (goal == null) {
-        throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_GOAL_NOT_FOUND);
-      }
 
       List<SubGoal> subGoals = new ArrayList<>();
       for (SubGoalRequestDTO subGoalRequestDTO : requestDTO.subGoals()) {
@@ -114,10 +115,8 @@ public class GoalServiceImpl implements GoalService {
       }
 
       List<SubGoal> createdSubGoals = subGoalRepositoryFacade.saveSubGoals(subGoals);
-      List<SubGoalResponseDTO> subGoalResponseDTOs = new ArrayList<>();
-      for (SubGoal subGoal : createdSubGoals) {
-        subGoalResponseDTOs.add(goalConvertor.toSubGoalResponseDTO(subGoal));
-      }
+      List<SubGoalResponseDTO> subGoalResponseDTOs = convertToListSubGoalResponseDTO(
+          createdSubGoals);
 
       return new SubGoalCreateResponseDTO(goalId, subGoalResponseDTOs);
     } catch (SubGoalException e) {
@@ -148,4 +147,74 @@ public class GoalServiceImpl implements GoalService {
     }
   }
 
-} 
+  /**
+   * List<SubGoal>을 List<SubGoalResponseDTO>로 변환합니다.
+   *
+   * @param subGoals 변환할 SubGoal
+   * @return List<SubGoalResponseDTO>
+   */
+  private List<SubGoalResponseDTO> convertToListSubGoalResponseDTO(List<SubGoal> subGoals) {
+    List<SubGoalResponseDTO> subGoalResponseDTOs = new ArrayList<>();
+    for (SubGoal subGoal : subGoals) {
+      subGoalResponseDTOs.add(goalConvertor.toSubGoalResponseDTO(subGoal));
+    }
+    return subGoalResponseDTOs;
+  }
+
+  /**
+   * 모든 subGoal을 반환합니다.
+   *
+   * @param goalId 소목표(SubGoal)를 조회할 대목표(Goal) ID
+   * @return SubGoalListResponseDTO
+   */
+  @Override
+  public SubGoalListResponseDTO getAllSubGoals(Long goalId) {
+    try {
+      if (goalId == null) {
+        throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_GOAL_ID_IS_NULL);
+      }
+
+      Goal goal = goalRepositoryFacade.findGoalById(goalId);
+
+      List<SubGoal> subGoals = subGoalRepositoryFacade.findSubGoalsByGoal(goal);
+      if (subGoals.isEmpty()) {
+        throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_NOT_FOUND);
+      }
+      List<SubGoalResponseDTO> subGoalResponseDTOS = convertToListSubGoalResponseDTO(subGoals);
+
+      return new SubGoalListResponseDTO(subGoalResponseDTOS);
+    } catch (SubGoalException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error("소목표 전체 조회 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+      throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_READ_FAILED);
+    }
+  }
+
+  @Override
+  public SubGoalResponseDTO getSubGoal(Long goalId, Long subGoalId) {
+    try {
+
+      if (goalId == null) {
+        throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_GOAL_ID_IS_NULL);
+      }
+      if (subGoalId == null) {
+        throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_ID_IS_NULL);
+      }
+
+      Goal goal = goalRepositoryFacade.findGoalById(goalId);
+      List<SubGoal> subGoals = subGoalRepositoryFacade.findSubGoalsByGoal(goal);
+      SubGoal subGoal = subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId);
+      if (!subGoals.contains(subGoal)) {
+        throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_NOT_BELONG_TO_GOAL);
+      }
+      return goalConvertor.toSubGoalResponseDTO(subGoal);
+
+    } catch (SubGoalException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error("소목표 단건 조회 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+      throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_READ_FAILED);
+    }
+  }
+}

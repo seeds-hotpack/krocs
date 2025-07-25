@@ -4,6 +4,8 @@ import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.request.SubGoalCreateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalCreateResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.response.SubGoalListResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.response.SubGoalResponseDTO;
 import com.hotpack.krocs.domain.goals.exception.GoalException;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
 import com.hotpack.krocs.domain.goals.exception.SubGoalException;
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -85,8 +88,27 @@ public class GoalController {
     } catch (Exception e) {
       throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_CREATE_FAILED);
     }
-
-
   }
+
+  @GetMapping("/{goalId}/subgoals")
+  public ApiResponse<SubGoalListResponseDTO> getSubGoals(
+      @PathVariable @Parameter(description = "Goal ID", example = "1")
+      Long goalId
+  ) {
+    SubGoalListResponseDTO response = goalService.getAllSubGoals(goalId);
+    return ApiResponse.success(response);
+  }
+
+  @GetMapping("/{goalId}/subgoals/{subGoalId}")
+  public ApiResponse<SubGoalResponseDTO> getSubGoal(
+      @PathVariable @Parameter(description = "Goal ID", example = "1")
+      Long goalId,
+      @PathVariable @Parameter(description = "SubGoal ID", example = "23")
+      Long subGoalId
+  ) {
+    SubGoalResponseDTO response = goalService.getSubGoal(goalId, subGoalId);
+    return ApiResponse.success(response);
+  }
+
 
 }

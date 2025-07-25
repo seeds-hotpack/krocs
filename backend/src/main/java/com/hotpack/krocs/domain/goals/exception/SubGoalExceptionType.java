@@ -21,9 +21,13 @@ public enum SubGoalExceptionType implements BaseCode {
   SUB_GOAL_CREATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "SUBGOAL500", "소목표 생성에 실패했습니다."),
   SUB_GOAL_UPDATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "SUBGOAL500", "소목표 수정에 실패했습니다."),
   SUB_GOAL_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "SUBGOAL500", "소목표 삭제에 실패했습니다."),
+  SUB_GOAL_READ_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "SUBGOAL500", "소목표 조회에 실패했습니다."),
   SUB_GOAL_INVALID_STATE(HttpStatus.BAD_REQUEST, "SUBGOAL400", "소목표의 상태가 유효하지 않습니다."),
   SUB_GOAL_INVALID_ID_FORMAT(HttpStatus.BAD_REQUEST, "SUBGOAL400", "소목표 ID 형식이 잘못되었습니다."),
-  SUB_GOAL_CREATE_EMPTY(HttpStatus.BAD_REQUEST, "SUBGOAL400", "생성할 소목표가 없습니다.");
+  SUB_GOAL_CREATE_EMPTY(HttpStatus.BAD_REQUEST, "SUBGOAL400", "생성할 소목표가 없습니다."),
+  SUB_GOAL_GOAL_ID_IS_NULL(HttpStatus.BAD_REQUEST, "SUBGOAL400", "대목표 ID가 null 입니다."),
+  SUB_GOAL_ID_IS_NULL(HttpStatus.BAD_REQUEST, "SUBGOAL400", "소목표 ID가 null 입니다."),
+  SUB_GOAL_NOT_BELONG_TO_GOAL(HttpStatus.BAD_REQUEST, "SUBGOAL400", "소목표가 해당 목표에 속하지 않습니다.");
 
   private final HttpStatus httpStatus;
   private final String code;

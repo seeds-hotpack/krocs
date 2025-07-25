@@ -1,6 +1,8 @@
 package com.hotpack.krocs.domain.goals.facade;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
+import com.hotpack.krocs.domain.goals.exception.SubGoalException;
+import com.hotpack.krocs.domain.goals.exception.SubGoalExceptionType;
 import com.hotpack.krocs.domain.goals.repository.GoalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public class GoalRepositoryFacade {
   }
 
   public Goal findGoalById(Long id) {
-    return goalRepository.findGoalByGoalId(id);
+    return goalRepository.findById(id)
+        .orElseThrow(() -> new SubGoalException(SubGoalExceptionType.SUB_GOAL_GOAL_NOT_FOUND));
   }
 } 
