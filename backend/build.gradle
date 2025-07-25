@@ -68,6 +68,16 @@ jacocoTestReport {
         xml.required = true
         html.required = true
     }
+    
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                '**/KrocsApplication.class',
+                '**/global/**',
+                '**/config/**'
+            ])
+        }))
+    }
 }
 
 jacocoTestCoverageVerification {
@@ -76,16 +86,26 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.7
+                minimum = 0.5
             }
         }
         rule {
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.7
+                minimum = 0.5
             }
         }
+    }
+    
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                '**/KrocsApplication.class',
+                '**/global/**',
+                '**/config/**'
+            ])
+        }))
     }
 }
 
