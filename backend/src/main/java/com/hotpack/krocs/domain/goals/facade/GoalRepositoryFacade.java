@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +24,8 @@ public class GoalRepositoryFacade {
         return goalRepository.save(goal);
     }
 
-    public List<Goal> findGoalByDate(LocalDateTime dateTime) {
-        return goalRepository.findByDateTime(dateTime.toLocalDate());
+    public List<Goal> findGoalByDate(LocalDate date) {
+        return goalRepository.findByDate(date);
     }
 
     public List<Goal> findAllGoals() {
@@ -41,8 +41,8 @@ public class GoalRepositoryFacade {
         return goalRepository.save(goal);
     }
 
-    public Optional<Goal> findById(Long goalId) {
-        return goalRepository.findById(goalId);
+    public Goal findById(Long goalId) {
+        return goalRepository.findGoalByGoalId(goalId);
     }
 
     @Transactional

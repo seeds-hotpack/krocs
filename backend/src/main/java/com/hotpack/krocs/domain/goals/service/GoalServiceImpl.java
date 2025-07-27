@@ -2,9 +2,9 @@ package com.hotpack.krocs.domain.goals.service;
 
 import com.hotpack.krocs.domain.goals.converter.GoalConverter;
 import com.hotpack.krocs.domain.goals.domain.Goal;
-import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.request.UpdateGoalRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.response.GoalCreateResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
 import com.hotpack.krocs.domain.goals.exception.GoalException;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -30,10 +30,13 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     @Transactional
-    public CreateGoalResponseDTO createGoal(CreateGoalRequestDTO requestDTO, Long userId) {
+    public GoalCreateResponseDTO createGoal(GoalCreateRequestDTO requestDTO, Long userId) {
         try {
             goalValidator.validateGoalCreation(requestDTO);
-            goalValidator.validateBusinessRules(requestDTO, userId);
+
+            if (goalRepositoryFacade.existsByTitle(requestDTO.getTitle())) {
+                throw new GoalException(GoalExceptionType.GOAL_DUPLICATE_TITLE);
+            }
 
             Goal goal = goalConvertor.toEntity(requestDTO);
             Goal savedGoal = goalRepositoryFacade.saveGoal(goal);
@@ -48,11 +51,11 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public List<GoalResponseDTO> getGoalByUser(Long userId, LocalDateTime dateTime) {
+    public List<GoalResponseDTO> getGoalByUser(Long userId, LocalDate date) {
         try{
             List<Goal> goals;
-            if (dateTime != null) {
-                goals = goalRepositoryFacade.findGoalByDate(dateTime);
+            if (date != null) {
+                goals = goalRepositoryFacade.findGoalByDate(date);
             } else {
                 goals = goalRepositoryFacade.findAllGoals();
             }
@@ -70,8 +73,10 @@ public class GoalServiceImpl implements GoalService {
         try{
             goalValidator.validateGoalIdParameter(goalId);
 
-            Goal existingGoal = goalRepositoryFacade.findById(goalId)
-                    .orElseThrow(() -> new GoalException(GoalExceptionType.GOAL_NOT_FOUND));
+            Goal existingGoal = goalRepositoryFacade.findById(goalId);
+            if (existingGoal == null) {
+                throw new GoalException(GoalExceptionType.GOAL_NOT_FOUND);
+            }
 
             return goalConvertor.toGoalResponseDTO(existingGoal);
         }catch (GoalException e) {
@@ -84,12 +89,14 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     @Transactional
-    public GoalResponseDTO updateGoalById(Long goalId, UpdateGoalRequestDTO request, Long userId) {
+    public GoalResponseDTO updateGoalById(Long goalId, GoalUpdateRequestDTO request, Long userId) {
         try {
             goalValidator.validateGoalIdParameter(goalId);
 
-            Goal existingGoal = goalRepositoryFacade.findById(goalId)
-                    .orElseThrow(() -> new GoalException(GoalExceptionType.GOAL_NOT_FOUND));
+            Goal existingGoal = goalRepositoryFacade.findById(goalId);
+            if (existingGoal == null) {
+                throw new GoalException(GoalExceptionType.GOAL_NOT_FOUND);
+            }
 
             if (request.getTitle() != null) {
                 goalValidator.validateTitle(request.getTitle());
@@ -98,9 +105,7 @@ public class GoalServiceImpl implements GoalService {
                 }
             }
 
-            if (request.getDuration() != null) {
-                goalValidator.validateDuration(request.getDuration());
-            }
+            goalValidator.validateDuration(request.getDuration());
 
             goalValidator.validateUpdateDates(request, existingGoal);
 

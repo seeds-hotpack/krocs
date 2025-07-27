@@ -1,11 +1,10 @@
 package com.hotpack.krocs.domain.goals.service;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
-import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.request.UpdateGoalRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
 import com.hotpack.krocs.domain.goals.exception.GoalException;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
-import com.hotpack.krocs.domain.goals.facade.GoalRepositoryFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +17,7 @@ import java.time.LocalDate;
 @Transactional(readOnly = true)
 public class GoalValidator {
 
-    private final GoalRepositoryFacade goalRepositoryFacade;
-
-    public void validateGoalCreation(CreateGoalRequestDTO requestDTO) {
+    public void validateGoalCreation(GoalCreateRequestDTO requestDTO) {
         validateTitle(requestDTO.getTitle());
         validateDuration(requestDTO.getDuration());
         validateDateRange(requestDTO.getStartDate(), requestDTO.getEndDate());
@@ -51,21 +48,15 @@ public class GoalValidator {
     }
 
     public void validateDateRange(LocalDate startDate, LocalDate endDate) {
-        if (startDate != null && endDate != null) {
-            if (startDate.isAfter(endDate)) {
-                throw new GoalException(GoalExceptionType.INVALID_GOAL_DATE_RANGE);
-            }
+        if (startDate == null || endDate == null) {
+            return;
+        }
+        if (startDate.isAfter(endDate)) {
+            throw new GoalException(GoalExceptionType.INVALID_GOAL_DATE_RANGE);
         }
     }
 
-    public void validateBusinessRules(CreateGoalRequestDTO requestDTO, Long userId) {
-        // 중복 제목 검증
-        if (goalRepositoryFacade.existsByTitle(requestDTO.getTitle())) {
-            throw new GoalException(GoalExceptionType.GOAL_DUPLICATE_TITLE);
-        }
-    }
-
-    public void validateUpdateDates(UpdateGoalRequestDTO request, Goal existingGoal) {
+    public void validateUpdateDates(GoalUpdateRequestDTO request, Goal existingGoal) {
         LocalDate finalStartDate = request.getStartDate() != null ? request.getStartDate() : existingGoal.getStartDate();
         LocalDate finalEndDate = request.getEndDate() != null ? request.getEndDate() : existingGoal.getEndDate();
 

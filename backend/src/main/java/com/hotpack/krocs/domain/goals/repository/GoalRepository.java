@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface GoalRepository extends JpaRepository<Goal, Long> {
     @Query("SELECT g FROM Goal g WHERE :date BETWEEN g.startDate AND g.endDate")
-    List<Goal> findByDateTime(@Param("date") LocalDate date);
+    List<Goal> findByDate(@Param("date") LocalDate date);
 
     Goal findGoalByGoalId(Long goalId);
 

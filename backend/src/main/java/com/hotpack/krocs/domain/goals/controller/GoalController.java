@@ -1,8 +1,8 @@
 package com.hotpack.krocs.domain.goals.controller;
 
-import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.request.UpdateGoalRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.response.GoalCreateResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
 import com.hotpack.krocs.domain.goals.exception.GoalException;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -26,15 +26,14 @@ public class GoalController {
     private final GoalService goalService;
 
     @Operation(summary = "대목표 생성", description = "새로운 대목표를 생성합니다."
-//            security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping
-    public ApiResponse<CreateGoalResponseDTO> createGoal(
-            @Valid @RequestBody CreateGoalRequestDTO requestDTO,
+    public ApiResponse<GoalCreateResponseDTO> createGoal(
+            @Valid @RequestBody GoalCreateRequestDTO requestDTO,
             @RequestParam(value = "user_id", required = false) Long userId
     ) {
         try {
-            CreateGoalResponseDTO responseDTO = goalService.createGoal(requestDTO, userId);
+            GoalCreateResponseDTO responseDTO = goalService.createGoal(requestDTO, userId);
             return ApiResponse.success(responseDTO);
 
         } catch (GoalException e) {
@@ -47,17 +46,16 @@ public class GoalController {
     }
 
     @Operation(summary = "대목표 목록 조회", description = "사용자의 대목표 목록을 조회합니다."
-//            security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
     public ApiResponse<List<GoalResponseDTO>> getGoal(
-            @RequestParam(value = "user_id", required = false) Long userId, @RequestParam(required = false) LocalDateTime dateTime
+            @RequestParam(value = "user_id", required = false) Long userId, @RequestParam(required = false) LocalDate date
     ){
         try{
-            if(dateTime == null) {
-                dateTime = LocalDateTime.now();
+            if(date == null) {
+                date = LocalDate.now();
             }
-            List<GoalResponseDTO> responseDTO = goalService.getGoalByUser(userId, dateTime);
+            List<GoalResponseDTO> responseDTO = goalService.getGoalByUser(userId, date);
             return ApiResponse.success(responseDTO);
         } catch (GoalException e) {
             throw e;
@@ -67,7 +65,6 @@ public class GoalController {
     }
 
     @Operation(summary = "특정 목표 상세 조회", description = "특정 목표의 상세 정보를 조회합니다."
-//            security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{goalId}")
     public ApiResponse<GoalResponseDTO> getGoalById(
@@ -84,12 +81,11 @@ public class GoalController {
     }
 
     @Operation(summary = "목표 수정", description = "기존 목표의 정보를 수정합니다."
-//            security = @SecurityRequirement(name = "bearerAuth")
     )
     @PatchMapping("/{goalId}")
     public ApiResponse<GoalResponseDTO> updateGoalById(
             @PathVariable Long goalId,
-            @Valid @RequestBody UpdateGoalRequestDTO request,
+            @Valid @RequestBody GoalUpdateRequestDTO request,
             @RequestParam(value = "user_id", required = false) Long userId) {
         try{
             GoalResponseDTO responseDTO = goalService.updateGoalById(goalId, request, userId);
@@ -103,7 +99,6 @@ public class GoalController {
     }
 
     @Operation(summary = "목표 삭제", description = "기존 목표를 삭제합니다."
-//            security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{goalId}")
     public ApiResponse<Void> deleteGoal(
@@ -111,7 +106,7 @@ public class GoalController {
             @RequestParam(value = "user_id", required = false) Long userId) {
         try{
             goalService.deleteGoal(userId, goalId);
-            return ApiResponse.success(null);
+            return ApiResponse.success();
         } catch (GoalException e) {
             throw e;
         } catch (Exception e) {

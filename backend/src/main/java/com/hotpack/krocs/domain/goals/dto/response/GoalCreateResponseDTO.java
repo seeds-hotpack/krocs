@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CreateGoalResponseDTO{
+public class GoalCreateResponseDTO {
     private final Long goalId;
 
     private final String title;

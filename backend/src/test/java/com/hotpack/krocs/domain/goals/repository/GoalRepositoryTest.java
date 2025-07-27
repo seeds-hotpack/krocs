@@ -90,7 +90,7 @@ class GoalRepositoryTest {
         LocalDate searchDate = LocalDate.of(2025, 7, 25);
 
         // when
-        List<Goal> result = goalRepository.findByDateTime(searchDate);
+        List<Goal> result = goalRepository.findByDate(searchDate);
 
         // then
         assertThat(result).hasSize(2);
@@ -105,7 +105,7 @@ class GoalRepositoryTest {
         LocalDate searchDate = LocalDate.of(2025, 8, 10);
 
         // when
-        List<Goal> result = goalRepository.findByDateTime(searchDate);
+        List<Goal> result = goalRepository.findByDate(searchDate);
 
         // then
         assertThat(result).hasSize(2);
@@ -120,7 +120,7 @@ class GoalRepositoryTest {
         LocalDate searchDate = LocalDate.of(2025, 7, 1);
 
         // when
-        List<Goal> result = goalRepository.findByDateTime(searchDate);
+        List<Goal> result = goalRepository.findByDate(searchDate);
 
         // then
         assertThat(result).hasSize(1);
@@ -134,7 +134,7 @@ class GoalRepositoryTest {
         LocalDate searchDate = LocalDate.of(2025, 7, 31);
 
         // when
-        List<Goal> result = goalRepository.findByDateTime(searchDate);
+        List<Goal> result = goalRepository.findByDate(searchDate);
 
         // then
         assertThat(result).hasSizeGreaterThanOrEqualTo(1);
@@ -149,7 +149,7 @@ class GoalRepositoryTest {
         LocalDate searchDate = LocalDate.of(2025, 9, 15);
 
         // when
-        List<Goal> result = goalRepository.findByDateTime(searchDate);
+        List<Goal> result = goalRepository.findByDate(searchDate);
 
         // then
         assertThat(result).isEmpty();
@@ -187,7 +187,7 @@ class GoalRepositoryTest {
         LocalDate searchDate = LocalDate.of(2025, 7, 15);
 
         // when
-        List<Goal> result = goalRepository.findByDateTime(searchDate);
+        List<Goal> result = goalRepository.findByDate(searchDate);
 
         // then
         assertThat(result).hasSize(2);

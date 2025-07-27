@@ -1,9 +1,9 @@
 package com.hotpack.krocs.domain.goals.converter;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
-import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.request.UpdateGoalRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.response.GoalCreateResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
 import com.hotpack.krocs.global.common.entity.Priority;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,14 +21,14 @@ class GoalConvertorTest {
 
     private GoalConverter goalConvertor;
 
-    private CreateGoalRequestDTO validRequestDTO;
+    private GoalCreateRequestDTO validRequestDTO;
     private Goal validGoal;
 
     @BeforeEach
     void setUp() {
         goalConvertor = new GoalConverter();
 
-        validRequestDTO = CreateGoalRequestDTO.builder()
+        validRequestDTO = GoalCreateRequestDTO.builder()
                 .title("테스트 목표")
                 .priority(Priority.HIGH)
                 .startDate(LocalDate.of(2024, 1, 1))
@@ -66,10 +66,10 @@ class GoalConvertorTest {
     }
 
     @Test
-    @DisplayName("Goal 엔티티를 CreateGoalResponseDTO로 변환")
+    @DisplayName("Goal 엔티티를 GoalCreateResponseDTO로 변환")
     void toCreateResponseDTO_Success() {
         // when
-        CreateGoalResponseDTO result = goalConvertor.toCreateResponseDTO(validGoal);
+        GoalCreateResponseDTO result = goalConvertor.toCreateResponseDTO(validGoal);
 
         // then
         assertThat(result).isNotNull();
@@ -87,7 +87,7 @@ class GoalConvertorTest {
     @DisplayName("최소 데이터로 DTO를 엔티티로 변환")
     void toEntity_MinimalData() {
         // given
-        CreateGoalRequestDTO minimalRequest = CreateGoalRequestDTO.builder()
+        GoalCreateRequestDTO minimalRequest = GoalCreateRequestDTO.builder()
                 .title("최소 목표")
                 .duration(1)
                 .build();
@@ -109,7 +109,7 @@ class GoalConvertorTest {
     @DisplayName("null 값이 포함된 DTO를 엔티티로 변환")
     void toEntity_WithNullValues() {
         // given
-        CreateGoalRequestDTO requestWithNulls = CreateGoalRequestDTO.builder()
+        GoalCreateRequestDTO requestWithNulls = GoalCreateRequestDTO.builder()
                 .title("null 테스트")
                 .priority(null)
                 .startDate(null)
@@ -142,7 +142,7 @@ class GoalConvertorTest {
                 .build();
 
         // when
-        CreateGoalResponseDTO result = goalConvertor.toCreateResponseDTO(completedGoal);
+        GoalCreateResponseDTO result = goalConvertor.toCreateResponseDTO(completedGoal);
 
         // then
         assertThat(result).isNotNull();
@@ -167,7 +167,7 @@ class GoalConvertorTest {
                 .build();
 
         // when
-        CreateGoalResponseDTO result = goalConvertor.toCreateResponseDTO(goalWithNulls);
+        GoalCreateResponseDTO result = goalConvertor.toCreateResponseDTO(goalWithNulls);
 
         // then
         assertThat(result).isNotNull();
@@ -186,7 +186,7 @@ class GoalConvertorTest {
     @DisplayName("UpdateGoalRequestDTO를 Goal 엔티티로 변환")
     void toEntity_UpdateRequest_Success() {
         // given
-        UpdateGoalRequestDTO updateRequest = UpdateGoalRequestDTO.builder()
+        GoalUpdateRequestDTO updateRequest = GoalUpdateRequestDTO.builder()
                 .title("수정된 목표")
                 .priority(Priority.LOW)
                 .startDate(LocalDate.of(2025, 6, 1))
@@ -211,7 +211,7 @@ class GoalConvertorTest {
     @DisplayName("UpdateGoalRequestDTO 부분 변환 - null 필드들")
     void toEntity_UpdateRequest_PartialData() {
         // given
-        UpdateGoalRequestDTO updateRequest = UpdateGoalRequestDTO.builder()
+        GoalUpdateRequestDTO updateRequest = GoalUpdateRequestDTO.builder()
                 .title("부분 수정")
                 .priority(null)
                 .startDate(null)
@@ -336,7 +336,7 @@ class GoalConvertorTest {
                 .build();
 
         // when
-        CreateGoalResponseDTO result1 = goalConvertor.toCreateResponseDTO(incompleteGoal);
+        GoalCreateResponseDTO result1 = goalConvertor.toCreateResponseDTO(incompleteGoal);
 
         // then
         assertThat(result1.getCompletionPercentage()).isEqualTo(0);
@@ -350,7 +350,7 @@ class GoalConvertorTest {
                 .build();
 
         // when
-        CreateGoalResponseDTO result2 = goalConvertor.toCreateResponseDTO(completeGoal);
+        GoalCreateResponseDTO result2 = goalConvertor.toCreateResponseDTO(completeGoal);
 
         // then
         assertThat(result2.getCompletionPercentage()).isEqualTo(100);
@@ -372,7 +372,7 @@ class GoalConvertorTest {
         // createdAt, updatedAt는 null로 남겨둠
 
         // when
-        CreateGoalResponseDTO result = goalConvertor.toCreateResponseDTO(goalWithNullDates);
+        GoalCreateResponseDTO result = goalConvertor.toCreateResponseDTO(goalWithNullDates);
 
         // then
         assertThat(result.getCreatedAt()).isNull();

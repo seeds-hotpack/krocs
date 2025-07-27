@@ -1,9 +1,9 @@
 package com.hotpack.krocs.domain.goals.converter;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
-import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.request.UpdateGoalRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.response.GoalCreateResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalResponseDTO;
 import com.hotpack.krocs.global.common.entity.Priority;
@@ -21,7 +21,7 @@ public class GoalConverter {
      * @param requestDTO 생성 요청 DTO
      * @return Goal 엔티티
      */
-    public Goal toEntity(CreateGoalRequestDTO requestDTO) {
+    public Goal toEntity(GoalCreateRequestDTO requestDTO) {
         return Goal.builder()
                 .title(requestDTO.getTitle())
                 .priority(requestDTO.getPriority() != null ? requestDTO.getPriority() : Priority.MEDIUM)
@@ -32,7 +32,7 @@ public class GoalConverter {
                 .build();
     }
 
-    public Goal toEntity(UpdateGoalRequestDTO requestDTO) {
+    public Goal toEntity(GoalUpdateRequestDTO requestDTO) {
         return Goal.builder()
                 .title(requestDTO.getTitle())
                 .priority(requestDTO.getPriority())
@@ -49,7 +49,7 @@ public class GoalConverter {
      * @param goal Goal 엔티티
      * @return CreateGoalResponseDTO
      */
-    public CreateGoalResponseDTO toCreateResponseDTO(Goal goal) {
+    public GoalCreateResponseDTO toCreateResponseDTO(Goal goal) {
         List<SubGoalResponseDTO> subGoalResponseDTOs = goal.getSubGoals() != null ?
                 goal.getSubGoals().stream()
                         .map(this::toSubGoalResponseDTO)
@@ -58,7 +58,7 @@ public class GoalConverter {
 
         int completionPercentage = calculateCompletionPercentage(goal);
 
-        return CreateGoalResponseDTO.builder()
+        return GoalCreateResponseDTO.builder()
                 .goalId(goal.getGoalId())
                 .title(goal.getTitle())
                 .priority(goal.getPriority())
