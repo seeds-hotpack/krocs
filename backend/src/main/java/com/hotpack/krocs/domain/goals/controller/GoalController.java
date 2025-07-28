@@ -38,13 +38,6 @@ public class GoalController {
 
   private final GoalService goalService;
 
-  /**
-   * 대목표(goal) 생성 API
-   *
-   * @param requestDTO 대목표 생성 요청 데이터
-   * @param userId     사용자 ID (query param, 선택, 토큰 전 테스트용)
-   * @return ApiResponse<CreateGoalResponseDTO>
-   */
   @PostMapping
   public ApiResponse<CreateGoalResponseDTO> createGoal(
       @Valid @RequestBody GoalCreateRequestDTO requestDTO,
@@ -63,20 +56,12 @@ public class GoalController {
     }
   }
 
-
-  /**
-   * 소목표(sub_goal) 생성 API
-   *
-   * @param goalId                  대목표(Goal) ID
-   * @param subGoalCreateRequestDTO 소목표(SubGoal) 리스트
-   * @return ApiResponse<SubGoalCreateResponseDTO>
-   */
   @Operation(summary = "소목표 생성", description = "소목표를 생성합니다.")
   @PostMapping("/{goalId}/subgoals")
   public ApiResponse<SubGoalCreateResponseDTO> createSubGoals(
       @PathVariable @Parameter(description = "Goal ID", example = "1")
       Long goalId,
-      @RequestBody @Parameter(description = "SubGoals", example = "{\"title\": \"소목표1\", \"energy\": 50}")
+      @RequestBody @Parameter(description = "SubGoals", example = "{\"title\": \"소목표1\"}")
       SubGoalCreateRequestDTO subGoalCreateRequestDTO) {
     try {
       SubGoalCreateResponseDTO responseDTO = goalService.createSubGoals(goalId,
