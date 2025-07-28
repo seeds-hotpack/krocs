@@ -1,7 +1,7 @@
 ---
 name: BUG
 about: bug
-title: "[BUG]"
+title: "[bug]"
 labels: "\U0001F41B fix"
 assignees: ''
 

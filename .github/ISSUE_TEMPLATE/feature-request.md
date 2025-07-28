@@ -1,7 +1,7 @@
 ---
 name: feature request
 about: feat
-title: "[FEAT]"
+title: "[feat]"
 labels: "✨ feat"
 assignees: ''
 
