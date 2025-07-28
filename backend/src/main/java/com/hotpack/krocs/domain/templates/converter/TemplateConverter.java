@@ -2,8 +2,8 @@ package com.hotpack.krocs.domain.templates.converter;
 
 import com.hotpack.krocs.domain.templates.domain.SubTemplate;
 import com.hotpack.krocs.domain.templates.domain.Template;
-import com.hotpack.krocs.domain.templates.dto.request.CreateTemplateRequestDTO;
-import com.hotpack.krocs.domain.templates.dto.response.CreateTemplateResponseDTO;
+import com.hotpack.krocs.domain.templates.dto.request.TemplateCreateRequestDTO;
+import com.hotpack.krocs.domain.templates.dto.response.TemplateCreateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
 import com.hotpack.krocs.global.common.entity.Priority;
@@ -15,13 +15,7 @@ import java.util.stream.Collectors;
 @Component
 public class TemplateConverter {
 
-    /**
-     * CreateTemplateRequestDTO를 Template 엔티티로 변환합니다.
-     *
-     * @param requestDTO 템플릿 생성 요청 DTO
-     * @return Template 엔티티
-     */
-    public Template toEntity(CreateTemplateRequestDTO requestDTO) {
+    public Template toEntity(TemplateCreateRequestDTO requestDTO) {
         return Template.builder()
                 .title(requestDTO.getTitle())
                 .priority(requestDTO.getPriority() != null ? requestDTO.getPriority() : Priority.MEDIUM)
@@ -30,20 +24,14 @@ public class TemplateConverter {
                 .build();
     }
 
-    /**
-     * Template 엔티티를 CreateTemplateResponseDTO로 변환합니다.
-     *
-     * @param template Template 엔티티
-     * @return CreateTemplateResponseDTO
-     */
-    public CreateTemplateResponseDTO toCreateResponseDTO(Template template) {
+    public TemplateCreateResponseDTO toCreateResponseDTO(Template template) {
         List<SubTemplateResponseDTO> subTemplateDTOs = template.getSubTemplates() != null ?
                 template.getSubTemplates().stream()
                         .map(this::toSubTemplateResponseDTO)
                         .collect(Collectors.toList()) :
                 List.of();
 
-        return CreateTemplateResponseDTO.builder()
+        return TemplateCreateResponseDTO.builder()
                 .templateId(template.getTemplateId())
                 .title(template.getTitle())
                 .priority(template.getPriority())
@@ -54,12 +42,6 @@ public class TemplateConverter {
                 .build();
     }
 
-    /**
-     * SubTemplate 엔티티를 SubTemplateResponseDTO로 변환합니다.
-     *
-     * @param subTemplate SubTemplate 엔티티
-     * @return SubTemplateResponseDTO
-     */
     private SubTemplateResponseDTO toSubTemplateResponseDTO(SubTemplate subTemplate) {
         return SubTemplateResponseDTO.builder()
                 .subTemplateId(subTemplate.getSubTemplateId())
@@ -68,12 +50,6 @@ public class TemplateConverter {
     }
 
 
-    /**
-     * Template 엔티티를 TemplateResponseDTO로 변환합니다.
-     *
-     * @param template
-     * @return
-     */
     public TemplateResponseDTO toTemplateResponseDTO(Template template) {
         return TemplateResponseDTO.builder()
                 .templateId(template.getTemplateId())

@@ -1,52 +1,63 @@
 package com.hotpack.krocs.domain.templates.validator;
 
-import com.hotpack.krocs.domain.templates.dto.request.CreateTemplateRequestDTO;
+import com.hotpack.krocs.domain.templates.domain.Template;
+import com.hotpack.krocs.domain.templates.dto.request.TemplateCreateRequestDTO;
+import com.hotpack.krocs.domain.templates.dto.request.TemplateUpdateRequestDTO;
 import com.hotpack.krocs.domain.templates.exception.TemplateException;
 import com.hotpack.krocs.domain.templates.exception.TemplateExceptionType;
 import com.hotpack.krocs.global.common.entity.Priority;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-
+@Slf4j
 @Component
 public class TemplateValidator {
 
-    public boolean isTitleEmpty(String title) {
-        return !StringUtils.hasText(title); // null, "", "   "
-    }
-
-    public boolean isTitleTooLong(String title) {
-        return title != null && title.length() > 200;
-    }
-
-    public boolean isValidDuration(Integer duration) {
-        return duration != null && duration > 0;
-    }
-
-    public boolean isValidPriority(String priorityCheck){
-        try {
-            Priority priority = Priority.valueOf(priorityCheck.toUpperCase()); // 대소문자 처리도 고려
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
+    public void validateTitle(String title) {
+        if (!StringUtils.hasText(title)) {
+            throw new TemplateException(TemplateExceptionType.TEMPLATE_TITLE_EMPTY);
+        }
+        if (title.length() > 200) {
+            throw new TemplateException(TemplateExceptionType.TEMPLATE_TITLE_TOO_LONG);
         }
     }
 
-    public TemplateValidationResult validateTemplateCreation(CreateTemplateRequestDTO dto) {
-        return new TemplateValidationResult(
-                isTitleEmpty(dto.getTitle()),
-                isTitleTooLong(dto.getTitle()),
-                isValidDuration(dto.getDuration())
-        );
+    public void validateDuration(Integer duration) {
+        if (duration == null || duration <= 0) {
+            throw new TemplateException(TemplateExceptionType.TEMPLATE_DURATION_INVALID);
+        }
     }
 
-    public record TemplateValidationResult(
-            boolean validTitleEmpty,
-            boolean validTitleTooLong,
-            boolean validDuration
-    ) {
-        public boolean isAllValid() {
-            return validTitleEmpty && validTitleTooLong && validDuration;
+    public void validatePriority(String priorityCheck) {
+        try {
+            Priority.valueOf(priorityCheck.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new TemplateException(TemplateExceptionType.TEMPLATE_INVALID_PRIORITY);
+        }
+    }
+
+
+    // 이후 리팩토링 시 삭제
+    public void validateTemplateCreateDTO(TemplateCreateRequestDTO dto) {
+        validateTitle(dto.getTitle());
+        validateDuration(dto.getDuration());
+    }
+
+    public void validateTemplateBusiness(Template template) {
+        validateTitle(template.getTitle());
+        validateDuration(template.getDuration());
+    }
+
+    public void validateTemplateUpdateDTO(TemplateUpdateRequestDTO dto) {
+        if (dto.getTitle() != null) {
+            validateTitle(dto.getTitle());
+        }
+        if (dto.getDuration() != null) {
+            validateDuration(dto.getDuration());
+        }
+        if (dto.getPriority() != null) {
+            validatePriority(String.valueOf(dto.getPriority()));
         }
     }
 }

@@ -2,16 +2,14 @@ package com.hotpack.krocs.domain.templates.converter;
 
 import com.hotpack.krocs.domain.templates.domain.SubTemplate;
 import com.hotpack.krocs.domain.templates.domain.Template;
-import com.hotpack.krocs.domain.templates.dto.request.CreateTemplateRequestDTO;
-import com.hotpack.krocs.domain.templates.dto.request.UpdateTemplateRequestDTO;
-import com.hotpack.krocs.domain.templates.dto.response.CreateTemplateResponseDTO;
+import com.hotpack.krocs.domain.templates.dto.request.TemplateCreateRequestDTO;
+import com.hotpack.krocs.domain.templates.dto.response.TemplateCreateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
 import com.hotpack.krocs.global.common.entity.Priority;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,14 +19,14 @@ class TemplateConverterTest {
 
     private TemplateConverter templateConverter;
 
-    private CreateTemplateRequestDTO validRequestDTO;
+    private TemplateCreateRequestDTO validRequestDTO;
     private Template validTemplate;
 
     @BeforeEach
     void setUp() {
         templateConverter = new TemplateConverter();
 
-        validRequestDTO = CreateTemplateRequestDTO.builder()
+        validRequestDTO = TemplateCreateRequestDTO.builder()
                 .title("테스트 템플릿")
                 .priority(Priority.HIGH)
                 .duration(30)
@@ -65,7 +63,7 @@ class TemplateConverterTest {
     void toCreateResponseDTO_Success() {
         // given
         // when
-        CreateTemplateResponseDTO result = templateConverter.toCreateResponseDTO(validTemplate);
+        TemplateCreateResponseDTO result = templateConverter.toCreateResponseDTO(validTemplate);
 
         // then
         assertThat(result).isNotNull();
@@ -82,7 +80,7 @@ class TemplateConverterTest {
     @DisplayName("최소 데이터로 DTO를 Template 엔티티로 변환")
     void toEntity_MinimalData() {
         // given
-        CreateTemplateRequestDTO minimalRequest = CreateTemplateRequestDTO.builder()
+        TemplateCreateRequestDTO minimalRequest = TemplateCreateRequestDTO.builder()
                 .title("간단 템플릿")
                 .duration(7)
                 .build();
@@ -110,7 +108,7 @@ class TemplateConverterTest {
                 .build();
 
         // when
-        CreateTemplateResponseDTO result = templateConverter.toCreateResponseDTO(templateWithNulls);
+        TemplateCreateResponseDTO result = templateConverter.toCreateResponseDTO(templateWithNulls);
 
         // then
         assertThat(result).isNotNull();

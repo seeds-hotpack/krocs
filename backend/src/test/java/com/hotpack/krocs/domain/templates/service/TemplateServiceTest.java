@@ -3,9 +3,9 @@ package com.hotpack.krocs.domain.templates.service;
 
 import com.hotpack.krocs.domain.templates.converter.TemplateConverter;
 import com.hotpack.krocs.domain.templates.domain.Template;
-import com.hotpack.krocs.domain.templates.dto.request.CreateTemplateRequestDTO;
-import com.hotpack.krocs.domain.templates.dto.request.UpdateTemplateRequestDTO;
-import com.hotpack.krocs.domain.templates.dto.response.CreateTemplateResponseDTO;
+import com.hotpack.krocs.domain.templates.dto.request.TemplateCreateRequestDTO;
+import com.hotpack.krocs.domain.templates.dto.request.TemplateUpdateRequestDTO;
+import com.hotpack.krocs.domain.templates.dto.response.TemplateCreateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.exception.TemplateException;
@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
@@ -34,8 +35,8 @@ class TemplateServiceTest {
     @Mock
     private TemplateRepositoryFacade templateRepositoryFacade;
 
-    @Mock
-    private TemplateValidator templateValidator;
+    @Spy
+    private TemplateValidator templateValidator = new TemplateValidator(); // 수동 생성
 
     @Mock
     private TemplateConverter templateConverter;
@@ -43,24 +44,24 @@ class TemplateServiceTest {
     @InjectMocks
     private TemplateServiceImpl templateService;
 
-    private CreateTemplateRequestDTO validCreateRequestDTO;
-    private UpdateTemplateRequestDTO validUpdateRequestDTO;
+    private TemplateCreateRequestDTO validCreateRequestDTO;
+    private TemplateUpdateRequestDTO validUpdateRequestDTO;
     private Template validTemplate;
-    private CreateTemplateResponseDTO validCreateResponseDTO;
+    private TemplateCreateResponseDTO validCreateResponseDTO;
     private TemplateResponseDTO validResponseDTO;
     private SubTemplateResponseDTO subTemplateResponseDTO;
 
     @BeforeEach
     void setUp() {
-        validCreateRequestDTO = CreateTemplateRequestDTO.builder()
+        validCreateRequestDTO = TemplateCreateRequestDTO.builder()
                 .title("공부 루틴")
                 .priority(Priority.HIGH)
                 .duration(30)
                 .build();
 
-        validUpdateRequestDTO = UpdateTemplateRequestDTO.builder()
+        validUpdateRequestDTO = TemplateUpdateRequestDTO.builder()
                 .title("공부 루틴")
-                .priority("HIGH")
+                .priority(Priority.HIGH)
                 .duration(30)
                 .build();
 
@@ -72,7 +73,7 @@ class TemplateServiceTest {
                 .subTemplates(new ArrayList<>())
                 .build();
 
-        validCreateResponseDTO = CreateTemplateResponseDTO.builder()
+        validCreateResponseDTO = TemplateCreateResponseDTO.builder()
                 .templateId(1L)
                 .title("공부 루틴")
                 .priority(Priority.HIGH)
@@ -102,10 +103,7 @@ class TemplateServiceTest {
         when(templateConverter.toCreateResponseDTO(validTemplate)).thenReturn(validCreateResponseDTO);
 
         // when
-
-        when(templateValidator.validateTemplateCreation(validCreateRequestDTO))
-                .thenReturn(new TemplateValidator.TemplateValidationResult(true, true, true));
-        CreateTemplateResponseDTO result = templateService.createTemplate(validCreateRequestDTO, 2L);
+        TemplateCreateResponseDTO result = templateService.createTemplate(validCreateRequestDTO, 2L);
 
         // then
         assertThat(result).isNotNull();
@@ -118,7 +116,7 @@ class TemplateServiceTest {
     @DisplayName("DTO 기본값 테스트 - priority는 명시하지 않으면 MEDIUM으로 설정된다")
     void createTemplateRequestDTO_DefaultPriority_ShouldBeMedium() {
         // given
-        CreateTemplateRequestDTO result = CreateTemplateRequestDTO.builder()
+        TemplateCreateRequestDTO result = TemplateCreateRequestDTO.builder()
                 .title("공부 루틴")
                 .duration(30)
                 .build();
@@ -127,57 +125,53 @@ class TemplateServiceTest {
         assertThat(result.getPriority()).isEqualTo(Priority.MEDIUM);
     }
 
+
     @Test
-    @DisplayName("템플릿 생성 실패 - 제목이 비어있는 경우")
+    @DisplayName("템플릿 생성 실패 - title이 공백인 경우")
     void createTemplate_Fail_BlankTitle() {
         // given
-        CreateTemplateRequestDTO request = CreateTemplateRequestDTO.builder()
-                .title("")
-                .priority(Priority.MEDIUM)
+        TemplateCreateRequestDTO request = TemplateCreateRequestDTO.builder()
+                .title("")            // 빈 제목
+                .priority(Priority.HIGH)
                 .duration(10)
                 .build();
 
-        TemplateValidator.TemplateValidationResult invalidResult =
-                new TemplateValidator.TemplateValidationResult(false, true, true); // 제목 비어있음 (false)
-
-        when(templateValidator.validateTemplateCreation(request)).thenReturn(invalidResult);
-
         // when & then
-        TemplateException exception = assertThrows(TemplateException.class,
-                () -> templateService.createTemplate(request, 1L));
+        TemplateException ex = assertThrows(
+                TemplateException.class,
+                () -> templateService.createTemplate(request, 1L)
+        );
 
-        assertThat(exception.getTemplateExceptionType()).isEqualTo(TemplateExceptionType.TEMPLATE_TITLE_EMPTY);
+        assertThat(ex.getTemplateExceptionType())
+                .isEqualTo(TemplateExceptionType.TEMPLATE_TITLE_EMPTY);
+
+        // 그리고 validateTitle 메서드가 실제로 호출됐는지 확인해 줄 수도 있어요
+        verify(templateValidator).validateTitle("");
     }
 
     @Test
     @DisplayName("템플릿 생성 실패 - duration이 음수인 경우")
     void createTemplate_Fail_NegativeDuration() {
         // given
-        CreateTemplateRequestDTO request = CreateTemplateRequestDTO.builder()
+        TemplateCreateRequestDTO request = TemplateCreateRequestDTO.builder()
                 .title("공부")
                 .priority(Priority.HIGH)
                 .duration(-10)
                 .build();
 
-        TemplateValidator.TemplateValidationResult invalidResult =
-                new TemplateValidator.TemplateValidationResult(true, true, false); // 제목 비어있음 (false)
-
-        when(templateValidator.validateTemplateCreation(request)).thenReturn(invalidResult);
-
         // when & then
         TemplateException exception = assertThrows(TemplateException.class,
                 () -> templateService.createTemplate(request, 1L));
 
-        assertThat(exception.getTemplateExceptionType()).isEqualTo(TemplateExceptionType.TEMPLATE_DURATION_INVALID);
+        assertThat(exception.getTemplateExceptionType())
+                .isEqualTo(TemplateExceptionType.TEMPLATE_DURATION_INVALID);
     }
-
 
     // ======= READ =======
     @Test
     @DisplayName("템플릿 전체 조회 성공 - 제목 없이 조회")
     void getTemplates_Success_WithoutTitle() {
         // given
-        when(templateValidator.isTitleEmpty(null)).thenReturn(true);
 
         when(templateRepositoryFacade.findAll())
                 .thenReturn(List.of(validTemplate));
@@ -212,9 +206,6 @@ class TemplateServiceTest {
     @Test
     @DisplayName("템플릿 검색 조회 - 결과가 없는 경우")
     void getTemplates_EmptyResult() {
-        // when
-        when(templateRepositoryFacade.findByTitle("운동"))
-                .thenReturn(List.of());
 
         // then
         List<TemplateResponseDTO> result = templateService.getTemplatesByUserAndTitle(1L, "운동");
@@ -236,19 +227,14 @@ class TemplateServiceTest {
                 .subTemplates(new ArrayList<>()) // 기존 서브템플릿은 비워두고
                 .build();
 
-        UpdateTemplateRequestDTO requestDTO = UpdateTemplateRequestDTO.builder()
+        TemplateUpdateRequestDTO requestDTO = TemplateUpdateRequestDTO.builder()
                 .title("수정된 루틴")
-                .priority("HIGH")
+                .priority(Priority.HIGH)
                 .duration(40)
                 .build();
 
         // when
-        when(templateRepositoryFacade.findByTemplateId(1L)).thenReturn(Optional.of(existingTemplate));
-
-        when(templateValidator.isValidPriority("HIGH")).thenReturn(true);
-        when(templateValidator.isTitleEmpty("수정된 루틴")).thenReturn(false);
-        when(templateValidator.isTitleTooLong("수정된 루틴")).thenReturn(false);
-        when(templateValidator.isValidDuration(40)).thenReturn(true);
+        when(templateRepositoryFacade.findByTemplateId(1L)).thenReturn(existingTemplate);
 
         // then
         assertThatCode(() -> templateService.updateTemplate(1L, 1L, requestDTO))
@@ -260,8 +246,8 @@ class TemplateServiceTest {
     }
 
     @Test
-    @DisplayName("템플릿 수정 실패 - duration이 최대값(200) 초과")
-    void updateTemplate_Fail_DurationExceedsLimit() {
+    @DisplayName("템플릿 수정 실패 - title이 최대값(200자) 초과")
+    void updateTemplate_Fail_TitleExceedsLimit() {
         // given
         Template existingTemplate = Template.builder()
                 .templateId(1L)
@@ -271,15 +257,12 @@ class TemplateServiceTest {
                 .subTemplates(List.of())
                 .build();
 
-        UpdateTemplateRequestDTO requestDTO = UpdateTemplateRequestDTO.builder()
-                .duration(201) // 최대 허용값 초과
+        String overLengthTitle = "a".repeat(201); // 201자짜리 title
+        TemplateUpdateRequestDTO requestDTO = TemplateUpdateRequestDTO.builder()
+                .title(overLengthTitle)
                 .build();
 
         // when
-
-        when(templateValidator.isValidDuration(201)).thenReturn(false);
-        when(templateRepositoryFacade.findByTemplateId(1L)).thenReturn(Optional.of(existingTemplate));
-
         TemplateException exception = catchThrowableOfType(
                 () -> templateService.updateTemplate(1L, 1L, requestDTO),
                 TemplateException.class
@@ -287,7 +270,7 @@ class TemplateServiceTest {
 
         // then
         assertThat(exception).isNotNull();
-        assertThat(exception.getTemplateExceptionType()).isEqualTo(TemplateExceptionType.TEMPLATE_DURATION_INVALID);
+        assertThat(exception.getTemplateExceptionType()).isEqualTo(TemplateExceptionType.TEMPLATE_TITLE_TOO_LONG);
     }
 
     @Test
@@ -295,7 +278,8 @@ class TemplateServiceTest {
     void updateTemplate_Fail_TemplateNotFound() {
         // when
         when(templateRepositoryFacade.findByTemplateId(1L))
-                .thenReturn(Optional.empty());
+                .thenThrow(new TemplateException(TemplateExceptionType.TEMPLATE_NOT_FOUND));
+
 
         TemplateException exception = catchThrowableOfType(
                 () -> templateService.updateTemplate(1L, 1L, validUpdateRequestDTO),
@@ -314,7 +298,7 @@ class TemplateServiceTest {
     void deleteTemplate_Success() {
         // when
         when(templateRepositoryFacade.findByTemplateId(1L))
-                .thenReturn(Optional.of(validTemplate));
+                .thenReturn(validTemplate);
 
         // then
         assertThatCode(() -> templateService.deleteTemplate(1L, 1L))
@@ -323,14 +307,13 @@ class TemplateServiceTest {
         verify(templateRepositoryFacade).delete(validTemplate);
     }
 
-    // D - 템플릿 삭제 실패 (존재하지 않는 템플릿)
     @Test
     @DisplayName("템플릿 삭제 실패 - 존재하지 않는 템플릿")
     void deleteTemplate_Fail_TemplateNotFound() {
         // when
-        when(templateRepositoryFacade.findByTemplateId(1L))
-                .thenReturn(Optional.empty());
 
+        when(templateRepositoryFacade.findByTemplateId(1L))
+                .thenThrow(new TemplateException(TemplateExceptionType.TEMPLATE_NOT_FOUND));
 
         TemplateException exception = catchThrowableOfType(
                 () -> templateService.deleteTemplate(1L, 1L),

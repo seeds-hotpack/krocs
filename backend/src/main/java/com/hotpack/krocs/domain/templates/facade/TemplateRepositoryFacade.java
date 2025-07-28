@@ -1,6 +1,8 @@
 package com.hotpack.krocs.domain.templates.facade;
 
 import com.hotpack.krocs.domain.templates.domain.Template;
+import com.hotpack.krocs.domain.templates.exception.TemplateException;
+import com.hotpack.krocs.domain.templates.exception.TemplateExceptionType;
 import com.hotpack.krocs.domain.templates.repository.TemplateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Goal Repository Facade
@@ -22,51 +23,33 @@ public class TemplateRepositoryFacade {
 
     private final TemplateRepository templateRepository;
 
-    /**
-     * 탬플릿을 저장합니다.
-     *
-     * @param template 저장할 탬플릿
-     * @return 저장된 탬플릿
-     */
     @Transactional
     public Template save(Template template) {
         return templateRepository.save(template);
     }
 
-    /**
-     * 대소문자 구분 없이 키워드로 검색합니다.
-     *
-     * @param title
-     * @return List<Template>
-     */
     public List<Template> findByTitle(String title) {
         return templateRepository.findByTitleContainingIgnoreCase(title);
     }
 
-    /**
-     * 모든 template을 가져옵니다.
-     *
-     * @param
-     * @return List<Template>
-     */
     public List<Template> findAll() {
         return templateRepository.findAll();
     }
 
-    /**
-     *
-     * @param templateId
-     * @return
-     */
-    public Optional<Template> findByTemplateId(Long templateId){
-        return templateRepository.findByTemplateId(templateId);
+    public Template findByTemplateId(Long templateId) {
+        Template template = templateRepository.findByTemplateId(templateId);
+        if (template == null) {
+            throw new TemplateException(TemplateExceptionType.TEMPLATE_NOT_FOUND);
+        }
+        return template;
     }
 
-    /**
-     * 템플릿을 삭제합니다.
-     *
-     * @param template 삭제할 템플릿
-     */
+    public void existsByTemplateTitle(String title){
+        if (templateRepository.existsByTitle(title)) {
+            throw new TemplateException(TemplateExceptionType.TEMPLATE_DUPLICATE_TITLE);
+        }
+    }
+
     @Transactional
     public void delete(Template template) {
         templateRepository.delete(template);

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class CreateTemplateResponseDTO {
+public class TemplateCreateResponseDTO {
 
     private final Long templateId;
 
