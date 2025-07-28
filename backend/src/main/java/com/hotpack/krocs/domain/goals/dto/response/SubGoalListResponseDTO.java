@@ -1,9 +1,12 @@
 package com.hotpack.krocs.domain.goals.dto.response;
 
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
 
-public record SubGoalListResponseDTO(
-    List<SubGoalResponseDTO> subGoals
-) {
+@Builder
+@Getter
+public class SubGoalListResponseDTO {
 
+  private List<SubGoalResponseDTO> subGoals;
 }

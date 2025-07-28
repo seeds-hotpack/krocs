@@ -1,6 +1,6 @@
 package com.hotpack.krocs.domain.goals.controller;
 
-import com.hotpack.krocs.domain.goals.dto.request.CreateGoalRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.request.SubGoalCreateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalCreateResponseDTO;
@@ -47,7 +47,7 @@ public class GoalController {
    */
   @PostMapping
   public ApiResponse<CreateGoalResponseDTO> createGoal(
-      @Valid @RequestBody CreateGoalRequestDTO requestDTO,
+      @Valid @RequestBody GoalCreateRequestDTO requestDTO,
       @RequestParam(value = "user_id", required = false) Long userId
   ) {
     try {

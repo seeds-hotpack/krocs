@@ -72,8 +72,8 @@ class SubGoalServiceTest {
         validSubGoalUpdateRequestDTO);
 
     // then
-    assertThat(responseDTO.title()).isEqualTo("테스트 변경 소목표 제목");
-    assertThat(responseDTO.isCompleted()).isEqualTo(true);
+    assertThat(responseDTO.getTitle()).isEqualTo("테스트 변경 소목표 제목");
+    assertThat(responseDTO.getIsCompleted()).isEqualTo(true);
   }
 
   @Test
@@ -92,7 +92,7 @@ class SubGoalServiceTest {
     // given
     SubGoalUpdateRequestDTO invalidRequestDTO = SubGoalUpdateRequestDTO.builder()
         .title(
-            "더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더하면열글자가되어요더")
+            "더하면열글자가되어요".repeat(21))
         .isCompleted(false)
         .build();
 
@@ -115,7 +115,7 @@ class SubGoalServiceTest {
         .hasFieldOrPropertyWithValue("subGoalExceptionType",
             SubGoalExceptionType.SUB_GOAL_UPDATE_FAILED);
   }
-  
+
   @Test
   @DisplayName("소목표 삭제 성공")
   void deleteSubGoal_Success() {

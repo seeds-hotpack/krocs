@@ -3,20 +3,25 @@ package com.hotpack.krocs.domain.goals.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
-public record SubGoalUpdateResponseDTO(
-    @JsonProperty("sub_goal_id")
-    Long subGoalId,
-    @JsonProperty("goal_id")
-    Long goalId,
-    String title,
-    @JsonProperty("is_completed")
-    Boolean isCompleted,
-    @JsonProperty("created_at")
-    LocalDateTime createdAt,
-    @JsonProperty("updated_at")
-    LocalDateTime updatedAt
-) {
+@Getter
+public class SubGoalUpdateResponseDTO {
 
+  @JsonProperty("sub_goal_id")
+  private Long subGoalId;
+
+  @JsonProperty("goal_id")
+  private Long goalId;
+
+  private String title;
+  @JsonProperty("is_completed")
+  private Boolean isCompleted;
+
+  @JsonProperty("created_at")
+  private LocalDateTime createdAt;
+
+  @JsonProperty("updated_at")
+  private LocalDateTime updatedAt;
 }

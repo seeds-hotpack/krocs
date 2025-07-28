@@ -4,15 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
-public record SubGoalCreateResponseDTO(
-    @JsonProperty("goal_id")
-    @NotBlank
-    Long goalId,
-    @JsonProperty("created_sub_goals")
-    @NotBlank
-    List<SubGoalResponseDTO> createdSubGoals
-) {
+@Getter
+public class SubGoalCreateResponseDTO {
 
+  @JsonProperty("goal_id")
+  @NotBlank
+  private Long goalId;
+
+  @JsonProperty("created_sub_goals")
+  @NotBlank
+  private List<SubGoalResponseDTO> createdSubGoals;
 }
