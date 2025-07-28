@@ -47,11 +47,15 @@ public class SubGoalServiceImpl implements SubGoalService {
   }
 
   private void validateBusinessRules(SubGoalUpdateRequestDTO requestDTO) {
+    if (requestDTO.getTitle() == null) {
+      return;
+    }
+    
     if (requestDTO.getTitle().length() > 200) {
       throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_TITLE_TOO_LONG);
     }
   }
-  
+
   @Override
   @Transactional
   public void deleteSubGoal(Long subGoalId) {
