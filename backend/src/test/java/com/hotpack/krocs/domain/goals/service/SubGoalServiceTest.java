@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.hotpack.krocs.domain.goals.converter.SubGoalConverter;
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.dto.request.SubGoalUpdateRequestDTO;
@@ -29,6 +30,8 @@ class SubGoalServiceTest {
 
   @Mock
   private SubGoalRepositoryFacade subGoalRepositoryFacade;
+  @Mock
+  private SubGoalConverter subGoalConverter;
 
   @InjectMocks
   private SubGoalServiceImpl subGoalService;
@@ -64,8 +67,17 @@ class SubGoalServiceTest {
   @Test
   @DisplayName("소목표 수정 성공")
   void updateSubGoal_Success() {
+    SubGoal updatedSubGoal = SubGoal.builder()
+        .subGoalId(validSubGoal.getSubGoalId())
+        .goal(validSubGoal.getGoal())
+        .isCompleted(validSubGoalUpdateRequestDTO.getIsCompleted())
+        .title(validSubGoalUpdateRequestDTO.getTitle())
+        .build();
+
     // given
     when(subGoalRepositoryFacade.findSubGoalBySubGoalId(1L)).thenReturn(validSubGoal);
+    when(subGoalConverter.toSubGoalEntity(validSubGoal, validSubGoalUpdateRequestDTO)).thenReturn(
+        updatedSubGoal);
 
     // when
     SubGoalUpdateResponseDTO responseDTO = subGoalService.updateSubGoal(1L,

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubGoalServiceImpl implements SubGoalService {
 
   private final SubGoalRepositoryFacade subGoalRepositoryFacade;
+  private final SubGoalConverter subGoalConverter;
 
   @Override
   @Transactional
@@ -30,14 +31,9 @@ public class SubGoalServiceImpl implements SubGoalService {
       }
 
       SubGoal subGoal = subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId);
-      if (requestDTO.getTitle() != null) {
-        subGoal.setTitle(requestDTO.getTitle());
-      }
-      if (requestDTO.getIsCompleted() != null) {
-        subGoal.setIsCompleted(requestDTO.getIsCompleted());
-      }
+      SubGoal updatedSubGoal = subGoalConverter.toSubGoalEntity(subGoal, requestDTO);
 
-      return SubGoalConverter.toSubGoalUpdateResponseDTO(subGoal);
+      return SubGoalConverter.toSubGoalUpdateResponseDTO(updatedSubGoal);
     } catch (SubGoalException e) {
       throw e;
     } catch (Exception e) {
@@ -50,7 +46,7 @@ public class SubGoalServiceImpl implements SubGoalService {
     if (requestDTO.getTitle() == null) {
       return;
     }
-    
+
     if (requestDTO.getTitle().length() > 200) {
       throw new SubGoalException(SubGoalExceptionType.SUB_GOAL_TITLE_TOO_LONG);
     }

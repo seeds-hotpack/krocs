@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "sub_goals")
@@ -33,11 +32,9 @@ public class SubGoal extends BaseTimeEntity {
   @JoinColumn(name = "goal_id", nullable = false)
   private Goal goal;
 
-  @Setter
   @Column(name = "title", nullable = false, length = 200)
   private String title;
 
-  @Setter
   @Column(name = "is_completed", nullable = false)
   @Builder.Default
   private Boolean isCompleted = false;
