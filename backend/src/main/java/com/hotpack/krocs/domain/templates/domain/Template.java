@@ -1,0 +1,48 @@
+package com.hotpack.krocs.domain.templates.domain;
+
+import com.hotpack.krocs.common.entity.BaseTimeEntity;
+import com.hotpack.krocs.common.entity.Priority;
+import com.hotpack.krocs.common.entity.RepeatType;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Entity
+@Table(name = "templates")
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Template extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "template_id")
+    private Long templateId;
+
+    @Column(name = "title", nullable = false, length = 200)
+    private String title;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "priority", nullable = false, length = 10)
+    @Builder.Default
+    private Priority priority = Priority.MEDIUM;
+
+    @Column(name = "duration", nullable = false)
+    private Integer duration;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "repeat")
+    private RepeatType repeat;
+
+    @Column(name = "is_completed", nullable = false)
+    @Builder.Default
+    private Boolean isCompleted = false;
+
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SubTemplate> subTemplates;
+}
