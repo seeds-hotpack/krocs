@@ -89,7 +89,7 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     @Transactional
-    public GoalResponseDTO updateGoalById(Long goalId, GoalUpdateRequestDTO request, Long userId) {
+    public GoalResponseDTO updateGoalById(Long goalId, GoalUpdateRequestDTO requestDTO, Long userId) {
         try {
             goalValidator.validateGoalIdParameter(goalId);
 
@@ -98,29 +98,27 @@ public class GoalServiceImpl implements GoalService {
                 throw new GoalException(GoalExceptionType.GOAL_NOT_FOUND);
             }
 
-            if (request.getTitle() != null) {
-                goalValidator.validateTitle(request.getTitle());
-                if (goalRepositoryFacade.existsByTitleAndGoalIdNot(request.getTitle(), goalId)) {
+            if (requestDTO.getTitle() != null) {
+                goalValidator.validateTitle(requestDTO.getTitle());
+                if (goalRepositoryFacade.existsByTitleAndGoalIdNot(requestDTO.getTitle(), goalId)) {
                     throw new GoalException(GoalExceptionType.GOAL_DUPLICATE_TITLE);
                 }
             }
 
-            goalValidator.validateDuration(request.getDuration());
+            LocalDate startDate = existingGoal.getStartDate();
+            if (requestDTO.getStartDate() != null) startDate = requestDTO.getStartDate();
 
-            goalValidator.validateUpdateDates(request, existingGoal);
+            LocalDate endDate = existingGoal.getEndDate();
+            if (requestDTO.getEndDate() != null) endDate = requestDTO.getEndDate();
 
-            Goal updatedGoal = Goal.builder()
-                    .goalId(existingGoal.getGoalId())
-                    .title(request.getTitle() != null ? request.getTitle() : existingGoal.getTitle())
-                    .priority(request.getPriority() != null ? request.getPriority() : existingGoal.getPriority())
-                    .startDate(request.getStartDate() != null ? request.getStartDate() : existingGoal.getStartDate())
-                    .endDate(request.getEndDate() != null ? request.getEndDate() : existingGoal.getEndDate())
-                    .duration(request.getDuration() != null ? request.getDuration() : existingGoal.getDuration())
-                    .isCompleted(existingGoal.getIsCompleted())
-                    .subGoals(existingGoal.getSubGoals())
-                    .build();
+            goalValidator.validateDateRange(startDate, endDate);
 
-            Goal savedGoal = goalRepositoryFacade.updateGoal(updatedGoal);
+            if (requestDTO.getDuration() != null) {
+                goalValidator.validateDurationUpdate(requestDTO.getDuration());
+            }
+
+            Goal goal = goalConvertor.toEntity(existingGoal, requestDTO);
+            Goal savedGoal = goalRepositoryFacade.updateGoal(goal);
             return goalConvertor.toGoalResponseDTO(savedGoal);
         } catch (GoalException e) {
             throw e;

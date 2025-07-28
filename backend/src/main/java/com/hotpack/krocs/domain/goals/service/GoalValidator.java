@@ -1,8 +1,6 @@
 package com.hotpack.krocs.domain.goals.service;
 
-import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
 import com.hotpack.krocs.domain.goals.exception.GoalException;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,7 @@ public class GoalValidator {
 
     public void validateGoalCreation(GoalCreateRequestDTO requestDTO) {
         validateTitle(requestDTO.getTitle());
-        validateDuration(requestDTO.getDuration());
+        validateDurationCreate(requestDTO.getDuration());
         validateDateRange(requestDTO.getStartDate(), requestDTO.getEndDate());
     }
 
@@ -41,8 +39,14 @@ public class GoalValidator {
         }
     }
 
-    public void validateDuration(Integer duration) {
+    public void validateDurationCreate(Integer duration) {
         if (duration == null || duration <= 0) {
+            throw new GoalException(GoalExceptionType.GOAL_DURATION_INVALID);
+        }
+    }
+
+    public void validateDurationUpdate(Integer duration) {
+        if (duration <= 0) {
             throw new GoalException(GoalExceptionType.GOAL_DURATION_INVALID);
         }
     }
@@ -53,18 +57,6 @@ public class GoalValidator {
         }
         if (startDate.isAfter(endDate)) {
             throw new GoalException(GoalExceptionType.INVALID_GOAL_DATE_RANGE);
-        }
-    }
-
-    public void validateUpdateDates(GoalUpdateRequestDTO request, Goal existingGoal) {
-        LocalDate finalStartDate = request.getStartDate() != null ? request.getStartDate() : existingGoal.getStartDate();
-        LocalDate finalEndDate = request.getEndDate() != null ? request.getEndDate() : existingGoal.getEndDate();
-
-        // 최종 날짜 범위 검증
-        if (finalStartDate != null && finalEndDate != null) {
-            if (finalStartDate.isAfter(finalEndDate)) {
-                throw new GoalException(GoalExceptionType.INVALID_GOAL_DATE_RANGE);
-            }
         }
     }
 }

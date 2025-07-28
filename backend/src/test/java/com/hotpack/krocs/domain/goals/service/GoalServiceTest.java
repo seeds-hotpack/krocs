@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -23,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -40,15 +38,18 @@ class GoalServiceTest {
     @Mock
     private GoalConverter goalConvertor;
 
-    @InjectMocks
     private GoalServiceImpl goalService;
+    private GoalValidator goalValidator = new GoalValidator();
 
     private GoalCreateRequestDTO validRequestDTO;
     private Goal validGoal;
     private GoalCreateResponseDTO validResponseDTO;
+    private Goal existingGoal;
 
     @BeforeEach
     void setUp() {
+        goalService = new GoalServiceImpl(goalRepositoryFacade, goalConvertor, goalValidator);
+
         validRequestDTO = GoalCreateRequestDTO.builder()
                 .title("테스트 목표")
                 .priority(Priority.HIGH)
@@ -79,6 +80,14 @@ class GoalServiceTest {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
+
+        existingGoal = Goal.builder()
+                .goalId(1L)
+                .title("기존 제목")
+                .priority(Priority.HIGH)
+                .duration(30)
+                .isCompleted(false)
+                .build();
     }
 
     // ========== CREATE 테스트 ==========
@@ -87,6 +96,7 @@ class GoalServiceTest {
     @DisplayName("대목표 생성 성공 테스트")
     void createGoal_Success() {
         // given
+        when(goalRepositoryFacade.existsByTitle(validRequestDTO.getTitle())).thenReturn(false);
         when(goalConvertor.toEntity(validRequestDTO)).thenReturn(validGoal);
         when(goalRepositoryFacade.saveGoal(validGoal)).thenReturn(validGoal);
         when(goalConvertor.toCreateResponseDTO(validGoal)).thenReturn(validResponseDTO);
@@ -212,7 +222,7 @@ class GoalServiceTest {
     @DisplayName("대목표 생성 - Repository에서 예외 발생")
     void createGoal_RepositoryException() {
         // given
-        when(goalConvertor.toEntity((GoalCreateRequestDTO) any())).thenReturn(validGoal);
+        when(goalConvertor.toEntity(any())).thenReturn(validGoal);
         when(goalRepositoryFacade.saveGoal(any())).thenThrow(new RuntimeException("데이터베이스 오류"));
 
         // when & then
@@ -225,7 +235,7 @@ class GoalServiceTest {
     @DisplayName("대목표 생성 - Convertor에서 예외 발생")
     void createGoal_ConvertorException() {
         // given
-        when(goalConvertor.toEntity((GoalCreateRequestDTO) any())).thenThrow(new RuntimeException("변환 오류"));
+        when(goalConvertor.toEntity(any())).thenThrow(new RuntimeException("변환 오류"));
 
         // when & then
         assertThatThrownBy(() -> goalService.createGoal(validRequestDTO, 1L))
@@ -286,14 +296,6 @@ class GoalServiceTest {
                 .title("수정된 제목")
                 .build();
 
-        Goal existingGoal = Goal.builder()
-                .goalId(1L)
-                .title("기존 제목")
-                .priority(Priority.HIGH)
-                .duration(30)
-                .isCompleted(false)
-                .build();
-
         Goal updatedGoal = Goal.builder()
                 .goalId(1L)
                 .title("수정된 제목")
@@ -311,7 +313,9 @@ class GoalServiceTest {
                 .build();
 
         when(goalRepositoryFacade.findById(goalId)).thenReturn(existingGoal);
-        when(goalRepositoryFacade.updateGoal(any(Goal.class))).thenReturn(updatedGoal);
+        when(goalRepositoryFacade.existsByTitleAndGoalIdNot("수정된 제목", goalId)).thenReturn(false);
+        when(goalConvertor.toEntity(existingGoal, updateRequest)).thenReturn(updatedGoal);
+        when(goalRepositoryFacade.updateGoal(updatedGoal)).thenReturn(updatedGoal);
         when(goalConvertor.toGoalResponseDTO(updatedGoal)).thenReturn(expectedResponse);
 
         // when
@@ -337,16 +341,6 @@ class GoalServiceTest {
                 .duration(31)
                 .build();
 
-        Goal existingGoal = Goal.builder()
-                .goalId(1L)
-                .title("기존 제목")
-                .priority(Priority.HIGH)
-                .startDate(LocalDate.of(2025, 7, 1))
-                .endDate(LocalDate.of(2025, 7, 31))
-                .duration(30)
-                .isCompleted(false)
-                .build();
-
         Goal updatedGoal = Goal.builder()
                 .goalId(1L)
                 .title("수정된 제목")
@@ -368,7 +362,9 @@ class GoalServiceTest {
                 .build();
 
         when(goalRepositoryFacade.findById(goalId)).thenReturn(existingGoal);
-        when(goalRepositoryFacade.updateGoal(any(Goal.class))).thenReturn(updatedGoal);
+        when(goalRepositoryFacade.existsByTitleAndGoalIdNot("수정된 제목", goalId)).thenReturn(false);
+        when(goalConvertor.toEntity(existingGoal, updateRequest)).thenReturn(updatedGoal);
+        when(goalRepositoryFacade.updateGoal(updatedGoal)).thenReturn(updatedGoal);
         when(goalConvertor.toGoalResponseDTO(updatedGoal)).thenReturn(expectedResponse);
 
         // when
@@ -409,6 +405,8 @@ class GoalServiceTest {
                 .title("")
                 .build();
 
+        when(goalRepositoryFacade.findById(goalId)).thenReturn(existingGoal);
+
         // when & then
         assertThatThrownBy(() -> goalService.updateGoalById(goalId, updateRequest, 1L))
                 .isInstanceOf(GoalException.class)
@@ -423,6 +421,8 @@ class GoalServiceTest {
         GoalUpdateRequestDTO updateRequest = GoalUpdateRequestDTO.builder()
                 .duration(0)
                 .build();
+
+        when(goalRepositoryFacade.findById(goalId)).thenReturn(existingGoal);
 
         // when & then
         assertThatThrownBy(() -> goalService.updateGoalById(goalId, updateRequest, 1L))
@@ -439,6 +439,9 @@ class GoalServiceTest {
                 .startDate(LocalDate.of(2025, 12, 31))
                 .endDate(LocalDate.of(2025, 1, 1))
                 .build();
+
+        // when
+        when(goalRepositoryFacade.findById(goalId)).thenReturn(existingGoal);
 
         // when & then
         assertThatThrownBy(() -> goalService.updateGoalById(goalId, updateRequest, 1L))
@@ -466,7 +469,7 @@ class GoalServiceTest {
         // when & then
         assertThatThrownBy(() -> goalService.updateGoalById(goalId, updateRequest, 1L))
                 .isInstanceOf(GoalException.class)
-                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_CREATION_FAILED);
+                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_UPDATE_FAILED);
     }
 
     // ========== DELETE 테스트 ==========
@@ -520,7 +523,7 @@ class GoalServiceTest {
         // when & then
         assertThatThrownBy(() -> goalService.deleteGoal(userId, goalId))
                 .isInstanceOf(GoalException.class)
-                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_CREATION_FAILED);
+                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_DELETE_FAILED);
     }
 
     // ========== GET 테스트 ==========
@@ -547,7 +550,7 @@ class GoalServiceTest {
                 .isCompleted(false)
                 .build();
 
-        when(goalRepositoryFacade.findGoalByGoalId(goalId)).thenReturn(existingGoal);
+        when(goalRepositoryFacade.findById(goalId)).thenReturn(existingGoal);
         when(goalConvertor.toGoalResponseDTO(existingGoal)).thenReturn(expectedResponse);
 
         // when
@@ -571,7 +574,7 @@ class GoalServiceTest {
         // when & then
         assertThatThrownBy(() -> goalService.getGoalByGoalId(userId, goalId))
                 .isInstanceOf(GoalException.class)
-                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_NOT_FOUND);
+                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_INVALID_GOAL_ID);
     }
 
     @Test
@@ -581,7 +584,7 @@ class GoalServiceTest {
         Long goalId = 999L;
         Long userId = 1L;
 
-        when(goalRepositoryFacade.findGoalByGoalId(goalId)).thenReturn(null);
+        when(goalRepositoryFacade.findById(goalId)).thenReturn(null);
 
         // when & then
         assertThatThrownBy(() -> goalService.getGoalByGoalId(userId, goalId))
@@ -591,12 +594,12 @@ class GoalServiceTest {
 
     @Test
     @DisplayName("단일 목표 조회 - Repository에서 예외 발생")
-    void getGoalByGoalId_RepositoryException() {
+    void getFindById_RepositoryException() {
         // given
         Long goalId = 1L;
         Long userId = 1L;
 
-        when(goalRepositoryFacade.findGoalByGoalId(goalId)).thenThrow(new RuntimeException("데이터베이스 오류"));
+        when(goalRepositoryFacade.findById(goalId)).thenThrow(new RuntimeException("데이터베이스 오류"));
 
         // when & then
         assertThatThrownBy(() -> goalService.getGoalByGoalId(userId, goalId))

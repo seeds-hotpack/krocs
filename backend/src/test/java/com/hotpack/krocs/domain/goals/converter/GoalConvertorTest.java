@@ -23,6 +23,7 @@ class GoalConvertorTest {
 
     private GoalCreateRequestDTO validRequestDTO;
     private Goal validGoal;
+    private Goal existingGoal;
 
     @BeforeEach
     void setUp() {
@@ -43,6 +44,16 @@ class GoalConvertorTest {
                 .startDate(LocalDate.of(2024, 1, 1))
                 .endDate(LocalDate.of(2024, 12, 31))
                 .duration(365)
+                .isCompleted(false)
+                .build();
+
+        existingGoal = Goal.builder()
+                .goalId(1L)
+                .title("기존 제목")
+                .priority(Priority.MEDIUM)
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(7))
+                .duration(7)
                 .isCompleted(false)
                 .build();
     }
@@ -195,7 +206,7 @@ class GoalConvertorTest {
                 .build();
 
         // when
-        Goal result = goalConvertor.toEntity(updateRequest);
+        Goal result = goalConvertor.toEntity(existingGoal, updateRequest);
 
         // then
         assertThat(result).isNotNull();
@@ -220,15 +231,15 @@ class GoalConvertorTest {
                 .build();
 
         // when
-        Goal result = goalConvertor.toEntity(updateRequest);
+        Goal result = goalConvertor.toEntity(existingGoal, updateRequest);
 
         // then
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("부분 수정");
-        assertThat(result.getPriority()).isNull();
-        assertThat(result.getStartDate()).isNull();
-        assertThat(result.getEndDate()).isNull();
-        assertThat(result.getDuration()).isNull();
+        assertThat(result.getPriority()).isEqualTo(Priority.MEDIUM);
+        assertThat(result.getStartDate()).isEqualTo(LocalDate.now());
+        assertThat(result.getEndDate()).isEqualTo(LocalDate.now().plusDays(7));
+        assertThat(result.getDuration()).isEqualTo(7);
         assertThat(result.getIsCompleted()).isFalse();
     }
 
