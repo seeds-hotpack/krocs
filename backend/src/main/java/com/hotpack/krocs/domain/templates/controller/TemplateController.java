@@ -86,8 +86,6 @@ public class TemplateController {
             @PathVariable(value = "template_id") Long templateId,
             @RequestParam(value = "user_id") Long userId) {
         try {
-
-            log.info("Template 호출: templateId={}, userId={}", templateId, userId);
             templateService.deleteTemplate(templateId, userId);
             return ApiResponse.success(null);
 

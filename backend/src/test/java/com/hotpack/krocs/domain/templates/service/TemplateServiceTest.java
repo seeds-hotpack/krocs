@@ -60,9 +60,9 @@ class TemplateServiceTest {
                 .build();
 
         validUpdateRequestDTO = TemplateUpdateRequestDTO.builder()
-                .title("공부 루틴")
-                .priority(Priority.HIGH)
-                .duration(30)
+                .title("수정된 루틴")
+                .priority(Priority.LOW)
+                .duration(60)
                 .build();
 
         validTemplate = Template.builder()
@@ -219,31 +219,49 @@ class TemplateServiceTest {
     @DisplayName("템플릿 수정 성공")
     void updateTemplate_Success() {
         // given
-        Template existingTemplate = Template.builder()
+        Template existed = validTemplate;
+        TemplateUpdateRequestDTO dto = validUpdateRequestDTO;
+
+        when(templateRepositoryFacade.findByTemplateId(1L))
+                .thenReturn(existed);
+
+        Template updatedEntity = Template.builder()
                 .templateId(1L)
-                .title("기존 루틴")
-                .priority(Priority.LOW)
-                .duration(15)
-                .subTemplates(new ArrayList<>()) // 기존 서브템플릿은 비워두고
+                .title(dto.getTitle())
+                .priority(dto.getPriority())
+                .duration(dto.getDuration())
+                .subTemplates(new ArrayList<>())
                 .build();
 
-        TemplateUpdateRequestDTO requestDTO = TemplateUpdateRequestDTO.builder()
+        when(templateConverter.toEntityUpdate(existed, dto))
+                .thenReturn(updatedEntity);
+
+        when(templateRepositoryFacade.update(updatedEntity))
+                .thenReturn(updatedEntity);
+
+        TemplateResponseDTO validResponseDTO = TemplateResponseDTO.builder()
+                .templateId(1L)
                 .title("수정된 루틴")
-                .priority(Priority.HIGH)
-                .duration(40)
+                .priority(Priority.LOW)
+                .duration(60)
+                .subTemplates(Collections.emptyList())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
+
+        when(templateConverter.toTemplateResponseDTO(updatedEntity))
+                .thenReturn(validResponseDTO);
 
         // when
-        when(templateRepositoryFacade.findByTemplateId(1L)).thenReturn(existingTemplate);
+        TemplateResponseDTO response = templateService.updateTemplate(1L, 1L, dto);
 
         // then
-        assertThatCode(() -> templateService.updateTemplate(1L, 1L, requestDTO))
-                .doesNotThrowAnyException();
-
-        assertThat(existingTemplate.getTitle()).isEqualTo("수정된 루틴");
-        assertThat(existingTemplate.getPriority()).isEqualTo(Priority.HIGH);
-        assertThat(existingTemplate.getDuration()).isEqualTo(40);
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo(dto.getTitle());
+        assertThat(response.getPriority()).isEqualTo(dto.getPriority());
+        assertThat(response.getDuration()).isEqualTo(dto.getDuration());
     }
+
 
     @Test
     @DisplayName("템플릿 수정 실패 - title이 최대값(200자) 초과")

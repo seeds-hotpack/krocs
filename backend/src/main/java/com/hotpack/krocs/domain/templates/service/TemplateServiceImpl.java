@@ -11,7 +11,6 @@ import com.hotpack.krocs.domain.templates.exception.TemplateException;
 import com.hotpack.krocs.domain.templates.exception.TemplateExceptionType;
 import com.hotpack.krocs.domain.templates.facade.TemplateRepositoryFacade;
 import com.hotpack.krocs.domain.templates.validator.TemplateValidator;
-import com.hotpack.krocs.global.common.entity.Priority;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -80,25 +79,16 @@ public class TemplateServiceImpl implements TemplateService {
 
             Template template = templateRepositoryFacade.findByTemplateId(templateId);
 
-            applyUpdates(template, requestDTO);
-            return templateConverter.toTemplateResponseDTO(template);
+            if (requestDTO.getTitle() != null) {
+                templateRepositoryFacade.existsByTemplateTitle(requestDTO.getTitle());
+            }
+            Template tempTemplate = templateConverter.toEntityUpdate(template, requestDTO);
+            Template updatedTemplate = templateRepositoryFacade.update(tempTemplate);
+            return templateConverter.toTemplateResponseDTO(updatedTemplate);
         } catch (TemplateException e) {
             throw e;
         } catch (Exception e) {
             throw new TemplateException(TemplateExceptionType.TEMPLATE_UPDATE_FAILED);
-        }
-    }
-
-    private void applyUpdates(Template template, TemplateUpdateRequestDTO requestDTO) {
-        if (requestDTO.getTitle() != null) {
-            templateRepositoryFacade.existsByTemplateTitle(requestDTO.getTitle());
-            template.setTitle(requestDTO.getTitle());
-        }
-        if (requestDTO.getPriority() != null) {
-            template.setPriority(Priority.valueOf(String.valueOf(requestDTO.getPriority())));
-        }
-        if (requestDTO.getDuration() != null) {
-            template.setDuration(requestDTO.getDuration());
         }
     }
 

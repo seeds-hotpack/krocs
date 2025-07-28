@@ -11,10 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Goal Repository Facade
- * 데이터 접근 계층을 추상화합니다.
- */
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -25,6 +22,11 @@ public class TemplateRepositoryFacade {
 
     @Transactional
     public Template save(Template template) {
+        return templateRepository.save(template);
+    }
+
+    @Transactional
+    public Template update(Template template) {
         return templateRepository.save(template);
     }
 

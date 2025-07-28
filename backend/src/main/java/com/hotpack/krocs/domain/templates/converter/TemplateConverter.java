@@ -3,6 +3,7 @@ package com.hotpack.krocs.domain.templates.converter;
 import com.hotpack.krocs.domain.templates.domain.SubTemplate;
 import com.hotpack.krocs.domain.templates.domain.Template;
 import com.hotpack.krocs.domain.templates.dto.request.TemplateCreateRequestDTO;
+import com.hotpack.krocs.domain.templates.dto.request.TemplateUpdateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateCreateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
@@ -16,20 +17,49 @@ import java.util.stream.Collectors;
 public class TemplateConverter {
 
     public Template toEntity(TemplateCreateRequestDTO requestDTO) {
+
+        Priority priority = requestDTO.getPriority();
+        if(requestDTO.getPriority() == null){
+            priority = Priority.MEDIUM;
+        }
         return Template.builder()
                 .title(requestDTO.getTitle())
-                .priority(requestDTO.getPriority() != null ? requestDTO.getPriority() : Priority.MEDIUM)
+                .priority(priority)
                 .duration(requestDTO.getDuration())
                 .subTemplates(List.of()) // 초기 생성 시 빈 리스트 (추후 추가 가능)
                 .build();
     }
 
+    public Template toEntityUpdate(Template existedTemplate, TemplateUpdateRequestDTO requestDTO) {
+
+        String title = existedTemplate.getTitle();
+        if (requestDTO.getTitle() != null){ title = requestDTO.getTitle(); }
+
+        Integer duration = existedTemplate.getDuration();
+        if (requestDTO.getDuration() != null){ duration = requestDTO.getDuration(); }
+
+        Priority priority = existedTemplate.getPriority();
+        if (requestDTO.getPriority() != null){ priority = requestDTO.getPriority(); }
+
+        return Template.builder()
+                .templateId(existedTemplate.getTemplateId())
+                .title(title)
+                .duration(duration)
+                .priority(priority)
+                .subTemplates(existedTemplate.getSubTemplates())
+                .build();
+    }
+
     public TemplateCreateResponseDTO toCreateResponseDTO(Template template) {
-        List<SubTemplateResponseDTO> subTemplateDTOs = template.getSubTemplates() != null ?
-                template.getSubTemplates().stream()
-                        .map(this::toSubTemplateResponseDTO)
-                        .collect(Collectors.toList()) :
-                List.of();
+        List<SubTemplateResponseDTO> subTemplateDTOs;
+
+        if (template.getSubTemplates() != null) {
+            subTemplateDTOs = template.getSubTemplates().stream()
+                    .map(this::toSubTemplateResponseDTO)
+                    .collect(Collectors.toList());
+        } else {
+            subTemplateDTOs = List.of();
+        }
 
         return TemplateCreateResponseDTO.builder()
                 .templateId(template.getTemplateId())
