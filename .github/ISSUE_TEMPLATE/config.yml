@@ -1,3 +1,2 @@
-issue_templates:
-  - bug_issue.md
-  - feature_issue.md
+blank_issues_enabled: false
+default_template: bug_issue.md
