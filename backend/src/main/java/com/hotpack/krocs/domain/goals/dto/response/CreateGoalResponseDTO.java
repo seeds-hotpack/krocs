@@ -10,30 +10,29 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CreateGoalResponseDTO{
-    private final Long goalId;
+public class CreateGoalResponseDTO {
 
-    private final String title;
+  private final Long goalId;
 
-    private final Priority priority;
+  private final String title;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private final LocalDate startDate;
+  private final Priority priority;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private final LocalDate endDate;
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private final LocalDate startDate;
 
-    private final Integer duration;
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private final LocalDate endDate;
 
-    private final boolean completed;
+  private final Integer duration;
 
-    private final List<SubGoalResponseDTO> subGoals;
+  private final boolean completed;
 
-    private final Integer completionPercentage;
+  private final List<SubGoalResponseDTO> subGoals;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private final LocalDateTime createdAt;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private final LocalDateTime createdAt;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private final LocalDateTime updatedAt;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private final LocalDateTime updatedAt;
 }
