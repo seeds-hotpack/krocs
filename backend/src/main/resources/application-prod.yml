@@ -23,12 +23,6 @@ spring:
 
   jackson:
     time-zone: Asia/Seoul
-  
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-    contexts: prod
-    default-schema: public
 
 server:
   port: 8080
