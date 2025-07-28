@@ -1,0 +1,3 @@
+issue_templates:
+  - bug_issue.md
+  - feature_issue.md
