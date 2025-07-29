@@ -95,10 +95,8 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     @Transactional
     public void deleteTemplate(Long templateId, Long userId) {
-
-        Template template = templateRepositoryFacade.findByTemplateId(templateId);
-
         try {
+            Template template = templateRepositoryFacade.findByTemplateId(templateId);
             templateRepositoryFacade.delete(template);
         } catch (TemplateException e) {
             throw e;
