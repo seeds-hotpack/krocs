@@ -2,18 +2,30 @@ package com.hotpack.krocs.domain.goals.service;
 
 import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.request.SubGoalCreateRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.response.CreateGoalResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalCreateResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalListResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
+import com.hotpack.krocs.domain.goals.dto.response.GoalCreateResponseDTO;
+import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public interface GoalService {
-  
-  CreateGoalResponseDTO createGoal(GoalCreateRequestDTO requestDTO, Long userId);
+    GoalCreateResponseDTO createGoal(GoalCreateRequestDTO requestDTO, Long userId);
 
-  SubGoalCreateResponseDTO createSubGoals(Long goalId, SubGoalCreateRequestDTO requestDTO);
+    List<GoalResponseDTO> getGoalByUser(Long userId, LocalDate dateTime);
 
-  SubGoalListResponseDTO getAllSubGoals(Long goalId);
+    GoalResponseDTO getGoalByGoalId(Long userId, Long goalId);
 
-  SubGoalResponseDTO getSubGoal(Long goalId, Long subGoalId);
-} 
+    GoalResponseDTO updateGoalById(Long goalId, GoalUpdateRequestDTO request, Long userId);
+
+    void deleteGoal(Long userId, Long goalId);
+
+    SubGoalCreateResponseDTO createSubGoals(Long goalId, SubGoalCreateRequestDTO requestDTO);
+
+    SubGoalListResponseDTO getAllSubGoals(Long goalId);
+
+    SubGoalResponseDTO getSubGoal(Long goalId, Long subGoalId);
+}

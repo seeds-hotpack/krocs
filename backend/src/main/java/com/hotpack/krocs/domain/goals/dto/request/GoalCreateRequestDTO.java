@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class GoalCreateRequestDTO {
-
   @NotBlank(message = "목표 제목은 필수입니다")
   @Size(max = 200, message = "목표 제목은 200자를 초과할 수 없습니다")
   private String title;
@@ -36,22 +35,3 @@ public class GoalCreateRequestDTO {
   @Positive(message = "목표 기간은 1일 이상이어야 합니다")
   private Integer duration;
 }
-
-//private void validateGoalCreation(CreateGoalRequestDTO requestDTO) {
-//
-//  if (requestDTO.getTitle().length() > 200) {
-//    throw new GoalException(GoalExceptionType.GOAL_TITLE_TOO_LONG);
-//  }
-//
-//  // 기간 검증
-//  if (requestDTO.getDuration() == null || requestDTO.getDuration() <= 0) {
-//    throw new GoalException(GoalExceptionType.GOAL_DURATION_INVALID);
-//  }
-//
-//  // 날짜 범위 검증
-//  if (requestDTO.getStartDate() != null && requestDTO.getEndDate() != null) {
-//    if (requestDTO.getStartDate().isAfter(requestDTO.getEndDate())) {
-//      throw new GoalException(GoalExceptionType.INVALID_GOAL_DATE_RANGE);
-//    }
-//  }
-//}
