@@ -9,21 +9,61 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GoalRepositoryFacade {
+    private final GoalRepository goalRepository;
 
-  private final GoalRepository goalRepository;
+    @Transactional
+    public Goal saveGoal(Goal goal) {
+        return goalRepository.save(goal);
+    }
 
-  @Transactional
-  public Goal saveGoal(Goal goal) {
-    return goalRepository.save(goal);
-  }
+    public Goal findGoalById(Long id) {
+        return goalRepository.findById(id)
+            .orElseThrow(() -> new SubGoalException(SubGoalExceptionType.SUB_GOAL_GOAL_NOT_FOUND));
+    }
 
-  public Goal findGoalById(Long id) {
-    return goalRepository.findById(id)
-        .orElseThrow(() -> new SubGoalException(SubGoalExceptionType.SUB_GOAL_GOAL_NOT_FOUND));
-  }
-} 
+    public List<Goal> findGoalByDate(LocalDate date) {
+        return goalRepository.findByDate(date);
+    }
+
+    public List<Goal> findAllGoals() {
+        return goalRepository.findAll();
+    }
+
+    public Goal findGoalByGoalId(Long goalId) {
+        return goalRepository.findGoalByGoalId(goalId);
+    }
+
+    @Transactional
+    public Goal updateGoal(Goal goal) {
+        return goalRepository.save(goal);
+    }
+
+    public Goal findById(Long goalId) {
+        return goalRepository.findGoalByGoalId(goalId);
+    }
+
+    @Transactional
+    public void deleteGoal(Long goalId) {
+        goalRepository.deleteById(goalId);
+    }
+
+    public boolean existsById(Long goalId) {
+        return goalRepository.existsById(goalId);
+    }
+
+    public boolean existsByTitle(String title) {
+        return goalRepository.existsByTitle(title);
+    }
+
+    public boolean existsByTitleAndGoalIdNot(String title, Long goalId) {
+        return goalRepository.existsByTitleAndGoalIdNot(title, goalId);
+    }
+}
