@@ -11,18 +11,45 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
-export default function AddButton({   styles, 
+export default function AddButton({   
+  styles, 
   onAddGoal, 
   editingGoal, 
   onUpdateGoal, 
   onDeleteGoal,
   showGoalForm, 
   setShowGoalForm,
-  goals,
-  setGoals,
-  editingIndex,       // 👈 여기에 추가
-  setEditingIndex,}) {
+  editingIndex,       
+  setEditingIndex,
+  setEditingGoal,
+  saveTemplate,
+}) {
+
+  //템플릿 상태 선언 스테이트
+  const [isTemplate, setIsTemplate] = useState(false);
+  //템플릿 저장 함수
+  const saveAsTemplate = (goalData) => {
+  if (!goalData.title || !goalData.startDate || !goalData.endDate) {
+    alert('템플릿 저장을 위해 제목과 날짜가 필요합니다.');
+    return;
+  }
+
+  // subGoals는 문자열 배열일 수도 있으니 객체 배열로 변환
+  const template = {
+    title: goalData.title,
+    startDate: typeof goalData.startDate === 'string' ? goalData.startDate : formatDate(goalData.startDate),
+    endDate: typeof goalData.endDate === 'string' ? goalData.endDate : formatDate(goalData.endDate),
+    subGoals: Array.isArray(goalData.subGoals)
+      ? goalData.subGoals.map(sg => (typeof sg === 'string' ? { text: sg, done: false } : sg))
+      : [],
+      color: goalData.color || color,
+  };
+
+  saveTemplate(template);
+  alert('템플릿이 저장되었습니다.');
+};
 
   // 세부 목표 추가 
   const [title, setTitle] = useState('');
@@ -30,7 +57,12 @@ export default function AddButton({   styles,
   const [subGoalModalVisible, setSubGoalModalVisible] = useState(false);
   const [newSubGoalText, setNewSubGoalText] = useState('');
 
+  // 삭제시 팝업 창관련 state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+
+  //목표 선택시 중요도에 따른 색깔 STATE
+  const [color, setColor] = useState('red');
 
   // 3,7,30,+ 부분 기능 구현 
   const [isStartDateTouched, setIsStartDateTouched] = useState(false);
@@ -50,6 +82,9 @@ const resetGoalForm = () => {
   setSubGoals([]);
   setStartDate(new Date());
   setEndDate(addDays(new Date(), 1));
+  setNewSubGoalText('');
+  setCustomDaysInput('');
+  setSubGoalModalVisible(false);
 };
 const handleDurationSelect = (days) => {
   const baseDate = isStartDateTouched ? startDate : new Date();
@@ -109,15 +144,29 @@ const handleDurationSelect = (days) => {
 //목표 수정을  하기위한 코드들
 useEffect(() => {
   if (editingGoal) {
-    setTitle(editingGoal.title);
-    setStartDate(parseDate(editingGoal.startDate));
-    setEndDate(parseDate(editingGoal.endDate));
-    setSubGoals(editingGoal.subGoals.map(s => s.text));
+    // setTitle(editingGoal.title || '');
+    // setStartDate(editingGoal.startDate ? parseDate(editingGoal.startDate) : new Date());
+    // setEndDate(editingGoal.endDate ? parseDate(editingGoal.endDate) : addDays(new Date(), 1));
+    // setSubGoals(editingGoal.subGoals ? editingGoal.subGoals.map(s => s.text || s) : []);
+    // setColor(editingGoal.color || 'red');
+    // setShowGoalForm(true);
+    // setIsTemplate(editingGoal.isTemplate || false);
+     setTitle(editingGoal.title || '');
+    setStartDate(editingGoal.startDate ? parseDate(editingGoal.startDate) : new Date());
+    setEndDate(editingGoal.endDate ? parseDate(editingGoal.endDate) : addDays(new Date(), 1));
+    // subGoals가 객체 배열이라면 text만 추출해서 문자열 배열로 변환
+    setSubGoals(editingGoal.subGoals
+    ? editingGoal.subGoals.map(sg => typeof sg === 'string' ? { text: sg, done: false } : sg)
+    : []);
+    // editingGoal.subGoals ? editingGoal.subGoals.map(sg => (typeof sg === 'string' ? sg : sg.text)) : []
+    setColor(editingGoal.color || 'red');
     setShowGoalForm(true);
+    setIsTemplate(editingGoal.isTemplate || false);
   }
 }, [editingGoal]);
 
 const parseDate = (str) => {
+  if (typeof str !== 'string') return new Date();  // 기본값 오늘 날짜 반환
   const [y, m, d] = str.split('.').map(Number);
   return new Date(y, m - 1, d);
 };
@@ -131,39 +180,72 @@ useEffect(() => {
 }, [showGoalForm]);
 // 여기 까지
 
-const saveGoal = () => {
-    if (!title.trim()) {
-      alert('목표명을 입력하세요.');
-      return;
-    }
+// const saveGoal = () => {
+//     if (!title.trim()) {
+//       alert('목표명을 입력하세요.');
+//       return;
+//     }
 
-    const newGoal = {
-  title,
-  startDate: formatDate(startDate),
-  endDate: formatDate(endDate),
-  subGoals: subGoals.map(text => ({ text, done: false })),
-  completed: editingGoal ? editingGoal.completed : false,
-  progress: editingGoal ? editingGoal.progress : 0,
-  color: 'red',
-};
-    if (editingGoal) {
-    onUpdateGoal(newGoal); // 👉 기존 목표 수정
-  } else {
-    onAddGoal(newGoal);    // 👉 새 목표 추가
+//   const newGoal = {
+//   title,
+//   startDate: formatDate(startDate),
+//   endDate: formatDate(endDate),
+//   subGoals: subGoals.map(text => ({ text, done: false })),
+//   completed: editingGoal ? editingGoal.completed : false,
+//   progress: editingGoal ? editingGoal.progress : 0,
+//   color: color,
+// };
+//     if (editingGoal) {
+//     onUpdateGoal(newGoal); // 👉 기존 목표 수정
+//   } else {
+//     onAddGoal(newGoal);    // 👉 새 목표 추가
+//   }
+
+//     // 초기화 후 닫기
+//     resetGoalForm();
+
+//   };
+const saveGoal = () => {
+  if (!title.trim()) {
+    alert('목표명을 입력하세요.');
+    return;
   }
 
-    // 초기화 후 닫기
-    setTitle('');
-    setSubGoals([]);
-    setShowGoalForm(false);
+  const newData = {
+    title,
+    startDate: formatDate(startDate),
+    endDate: formatDate(endDate),
+    subGoals: subGoals.map(text => ({ text, done: false })),
+    completed: editingGoal ? editingGoal.completed : false,
+    progress: editingGoal ? editingGoal.progress : 0,
+    color,
   };
 
+  if (editingGoal) {
+    if (isTemplate) {
+      // 템플릿 수정
+      saveTemplate(newData);
+    } else {
+      // 목표 수정
+      onUpdateGoal(newData);
+    }
+  } else {
+    // 새 목표 추가
+    onAddGoal(newData);
+  }
+
+  resetGoalForm();
+};
+console.log(subGoals)
   return (
     <>
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => setShowGoalForm(true)}
-      >
+        onPress={() => {
+          resetGoalForm();   // 여기서 초기화 한 뒤
+          setShowGoalForm(true);  // 폼을 연다
+      }}
+       >
         <Text style={styles.addButtonText}>＋</Text>
       </TouchableOpacity>
 
@@ -205,18 +287,53 @@ const saveGoal = () => {
   </View>
 )}
           <View style={styles.goalFormHeader}>
-            <Text style={styles.goalFormTitle}>새로운 목표</Text>
-            <TouchableOpacity onPress={resetGoalForm}>
+            <Text style={styles.goalFormTitle}> {editingGoal ? '목표 수정' : '새로운 목표'}</Text>
+            {/* <TouchableOpacity onPress={resetGoalForm}>
               <Text style={{ fontSize: 18 }}>✕</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <TouchableOpacity
+  onPress={() => {
+    if (editingGoal) {
+      // 수정 중이면 폼만 닫기
+        setShowGoalForm(false);
+        setEditingGoal(null);
+        setEditingIndex(null);
+      
+    } else {
+      // 새 목표 생성 중이면 완전 초기화
+      resetGoalForm();
+    }
+  }}
+>
+  <Text style={{ fontSize: 18 }}>✕</Text>
+</TouchableOpacity>
           </View>
 
-          <TextInput
-  style={styles.input}
-  placeholder="목표명"
-  value={title}
-  onChangeText={setTitle}
-/>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+  <TextInput
+    style={[styles.input, { flex: 1 }]}
+    placeholder="목표명"
+    value={title}
+    onChangeText={setTitle}
+  />
+  <View style={{ flexDirection: 'row', marginLeft: 10 }}>
+    {['red', 'yellow', 'green'].map((c) => (
+      <TouchableOpacity
+        key={c}
+        onPress={() => setColor(c)}
+        style={{
+          width: 24,
+          height: 24,
+          borderRadius: 12,
+          backgroundColor: c === 'red' ? '#EF4444' : c === 'yellow' ? '#FACC15' : '#22C55E',
+          marginHorizontal: 4,
+          borderWidth: color === c ? 2 : 0,
+          borderColor: 'black',
+        }}
+      />
+    ))}
+  </View>
+</View>
 
           {/* 날짜 선택 컴포넌트 */}
           <View style={[styles.row, { alignItems: 'center', flexWrap: 'nowrap' }]}>
@@ -351,18 +468,23 @@ const saveGoal = () => {
 
           <Text style={{ marginTop: 12, fontWeight: 'bold' }}>세부 목표</Text>
 <View style={styles.subGoalList}>
-  {subGoals.map((text, idx) => (
+  {subGoals.map((sg, idx) => {
+  const text = typeof sg === 'string' ? sg : sg?.text ?? '';  // 객체일 때도 안전하게 처리
+  return (
     <View key={idx} style={styles.subGoalItem}>
       <Text>✅ {text}</Text>
-      <TouchableOpacity onPress={() => {
-        const updated = [...subGoals];
-        updated.splice(idx, 1);
-        setSubGoals(updated);
-      }}>
+      <TouchableOpacity
+        onPress={() => {
+          const updated = [...subGoals];
+          updated.splice(idx, 1);
+          setSubGoals(updated);
+        }}
+      >
         <Text>✕</Text>
       </TouchableOpacity>
     </View>
-  ))}
+  );
+})}
   
   <TouchableOpacity
     style={[styles.smallButton, { alignSelf: 'flex-start', marginTop: 10 }]}
@@ -410,7 +532,8 @@ const saveGoal = () => {
       <TouchableOpacity
         onPress={() => {
           if (newSubGoalText.trim()) {
-            setSubGoals([...subGoals, newSubGoalText.trim()]);
+            // setSubGoals([...subGoals, newSubGoalText.trim()]);
+            setSubGoals([...subGoals, { text: newSubGoalText.trim(), done: false }]);
             setNewSubGoalText('');
             setSubGoalModalVisible(false);
           } else {
@@ -425,73 +548,184 @@ const saveGoal = () => {
 )}
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 14 }}>
-            {/* <TouchableOpacity
-              style={{
-                backgroundColor: '#e11d48',
-                width: 48,
-                height: 48,
-                borderRadius: 6,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              onPress={() => {
-  setShowGoalForm(false);            // 폼 닫기
-  setStartDate(new Date());          // 시작일 초기화
-  setEndDate(new Date());            // 종료일 초기화
-  setIsStartDateTouched(false);      // 날짜 선택 여부 초기화
-  setCustomDaysInput('');            // 커스텀 일수 입력 초기화
-  setSubGoals([]);                   // 세부 목표 리스트 초기화
-  setNewSubGoalText('');             // 세부 목표 입력창 초기화
-  setTitle('');
-}}
-            >
-              <Feather name="trash-2" size={20} color="white" />
-            </TouchableOpacity> */}
             <TouchableOpacity
+             style={{
+              backgroundColor: '#e11d48',
+              width: 48,
+              height: 48,
+              borderRadius: 6,
+              justifyContent: 'center',
+              alignItems: 'center',
+             }}
+             onPress={() => {
+              if (editingGoal && editingIndex !== null) {
+                setShowDeleteModal(true);  // 삭제 모달 띄우기
+                } else {
+                  resetGoalForm();           // 아니면 그냥 폼 닫기 및 초기화
+                  setIsStartDateTouched(false);
+                }
+              // if (editingGoal) {
+              //   setShowDeleteModal(true);
+              // } else {
+              //   resetGoalForm();
+              //   setIsStartDateTouched(false);
+              //  }
+              
+               }}
+               >
+                <Feather name="trash-2" size={20} color="white" />
+                </TouchableOpacity> 
+                <DeleteConfirmModal
+                visible={showDeleteModal}
+                onDelete={() => {
+                  if (editingIndex !== null) {
+                    onDeleteGoal(editingIndex);  // 실제 삭제 실행
+                     } else {
+                      alert('삭제할 목표를 찾을 수 없습니다.');
+                    }
+                    resetGoalForm();
+                    setShowDeleteModal(false);     // 모달 닫기
+                  }}
+                  onSaveTemp={() => {
+    // 필요한 경우 템플릿 저장 로직
+    saveAsTemplate(editingGoal); 
+    resetGoalForm();
+    setShowDeleteModal(false);
+  }}
+  onCancel={() => setShowDeleteModal(false)}
+/>
+            <View style={{ flexDirection: 'row' }}>
+    {/* 템플릿으로 저장 버튼 */}
+    <TouchableOpacity
+      style={{
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: 'black',
+        width: 120,
+        height: 48,
+        borderRadius: 6, 
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 3,
+      }}
+      onPress={() => {
+        saveAsTemplate({
+          title,
+          subGoals,
+          startDate,
+          endDate,
+        });
+        resetGoalForm();
+      }}
+    >
+      <Text style={{ color: 'black', fontWeight: 'bold' }}>템플릿으로 저장</Text>
+    </TouchableOpacity>
+
+    {/* 저장 버튼 */}
+    {/* <TouchableOpacity
+      style={{
+        backgroundColor: 'black',
+        width: 64,
+        height: 48,
+        borderRadius: 6, 
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+      onPress={saveGoal}
+    >
+      <Feather name="check" size={20} color="white" />
+    </TouchableOpacity> */}
+    {/* <TouchableOpacity
+  style={{ backgroundColor: 'black',
+        width: 64,
+        height: 48,
+        borderRadius: 6, 
+        justifyContent: 'center',
+        alignItems: 'center', }}
+  onPress={() => {
+  const goal = {
+    title,
+    subGoals,
+    startDate: formatDate(startDate),
+    endDate: formatDate(endDate),
+    color,
+    isTemplate,
+    completed: false,
+    progress: 0,
+  };
+
+  if (editingGoal) {
+    if (editingGoal.isTemplate) {
+      // 템플릿을 편집 중이라면 → 목표로 저장 (새 목표 추가)
+      onAddGoal(goal);
+    } else {
+      // 목표 편집 중이면 수정
+      if (editingIndex !== null) {
+        onUpdateGoal(goal);
+      } else {
+        // editingIndex가 없으면 안전하게 추가로 처리
+        onAddGoal(goal);
+      }
+    }
+  } else {
+    if (isTemplate) {
+      // 새 템플릿 저장
+      saveTemplate(goal);
+    } else {
+      onAddGoal(goal);
+    }
+  }
+
+  resetGoalForm();
+}}
+>
+  <Feather name="check" size={24} color="white" />
+</TouchableOpacity> */}
+<TouchableOpacity
   style={{
-    backgroundColor: '#e11d48',
-    width: 48,
+    backgroundColor: 'black',
+    width: 64,
     height: 48,
     borderRadius: 6,
     justifyContent: 'center',
     alignItems: 'center',
   }}
   onPress={() => {
-    if (editingGoal) {
-      // 수정 중이면 삭제 기능
-      onDeleteGoal(editingIndex);
-      resetGoalForm();
+    const goal = {
+      title,
+      subGoals, // ✅ 포함되어 있음 OK!
+      startDate: formatDate(startDate),
+      endDate: formatDate(endDate),
+      color,
+      isTemplate,
+      completed: false,
+      progress: 0,
+    };
 
+    if (editingGoal) {
+      if (editingGoal.isTemplate) {
+        // 템플릿을 수정 중이라면 → 목표로 저장
+        onAddGoal(goal);
+      } else {
+        // ✅ 항상 onUpdateGoal 사용
+        onUpdateGoal(goal);
+      }
     } else {
-      // 새 목표 작성 중이면 창 닫기
-      setShowGoalForm(false);
-      setStartDate(new Date());
-      setEndDate(addDays(new Date(), 1));
-      setIsStartDateTouched(false);
-      setCustomDaysInput('');
-      setSubGoals([]);
-      setNewSubGoalText('');
-      setTitle('');
+      if (isTemplate) {
+        saveTemplate(goal);
+      } else {
+        onAddGoal(goal);
+      }
     }
+
+    resetGoalForm(); // 폼 초기화
   }}
 >
-  <Feather name="trash-2" size={20} color="white" />
-</TouchableOpacity> 
-
-            <TouchableOpacity
-              style={{
-                backgroundColor: 'black',
-                width: 48,
-                height: 48,
-                borderRadius: 6,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              onPress={saveGoal}
-            >
-              <Feather name="check" size={20} color="white" />
-            </TouchableOpacity>
+  <Feather name="check" size={24} color="white" />
+</TouchableOpacity>
+  </View>
           </View>
+          
         </View>
         </TouchableWithoutFeedback>
       )}

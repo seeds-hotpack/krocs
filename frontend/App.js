@@ -25,6 +25,38 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('goal');
   const [activeCategory, setActiveCategory] = useState('progress');
 
+  //템플릿 저장 스테이트
+  const [templates, setTemplates] = useState([]);
+  const saveTemplate = (template) => {
+    setTemplates(prev => [...prev, template]);
+  };
+  //템플릿 수정 state
+  const [editingGoal, setEditingGoal] = useState(null);
+  
+  const handleEditTemplate = (index) => {
+
+  const templateToEdit = templates[index];
+  // 1. 템플릿에서 삭제
+  setTemplates(prev => prev.filter((_, i) => i !== index));
+  // 2. 편집 상태에 넣기 (isTemplate: false로 변경)
+  setEditingGoal({ ...templateToEdit, isTemplate: false });
+  // 3. 폼 열기
+  setEditingIndex(null); // 템플릿이라 index 의미 없음
+  setShowGoalForm(true);
+};
+
+const updateTemplate = (updatedTemplate) => {
+    if (editingIndex !== null) {
+      setTemplates(prev => {
+        const newTemplates = [...prev];
+        newTemplates[editingIndex] = updatedTemplate;
+        return newTemplates;
+      });
+    } else {
+      setTemplates(prev => [...prev, updatedTemplate]);
+    }
+  };
+
   const deleteGoal = (indexToDelete) => {
   setGoals((prev) => prev.filter((_, i) => i !== indexToDelete));
   setEditingIndex(null);
@@ -51,6 +83,7 @@ export default function App() {
 
   const handleEditGoal = (index) => {
   setEditingIndex(index);
+  setEditingGoal(goals[index]);
   setShowGoalForm(true); // ✅ 올바르게 연결
 };
 
@@ -140,9 +173,30 @@ export default function App() {
     </>
   )}
 
-  {activeCategory === 'template' && (
-    <Text style={{ padding: 20, fontSize: 16 }}>템플릿 목록이 여기에 표시됩니다.</Text>
-  )}
+   {activeCategory === 'template' && (
+  <ScrollView style={{ padding: 20 }}>
+    {templates.length === 0 ? (
+      <Text style={{ fontSize: 16, color: '#888' }}>
+        저장된 템플릿이 없습니다.
+      </Text>
+    ) : (
+      templates.map((tpl, idx) => (
+  <GoalCard
+    key={idx}
+    color={tpl.color}
+    progress={tpl.progress}
+    title={tpl.title}
+    subGoals={tpl.subGoals}
+    completed={tpl.completed}
+    startDate={tpl.startDate}
+    endDate={tpl.endDate}
+    onEdit={() => handleEditTemplate(idx)}
+    isTemplate={true}
+  />
+))
+    )}
+  </ScrollView>
+)}
 </ScrollView>
   </>
 ) : (
@@ -151,19 +205,39 @@ export default function App() {
     <Text style={{ fontSize: 18 }}>타임라인 화면입니다.</Text>
   </View>
 )}
-
-      {/* Add Button */}
-      {/* <AddButton styles={styles} onAddGoal={addGoal} editingGoal={editingIndex !== null ? goals[editingIndex] : null}
-  onUpdateGoal={(updatedGoal) => {
-    const newGoals = [...goals];
-    newGoals[editingIndex] = updatedGoal;
-    setGoals(newGoals);
-    setEditingIndex(null); // 수정 상태 초기화
-  }}
-  showGoalForm={showGoalForm}
-  setShowGoalForm={setShowGoalForm}
-  /> */}
   <AddButton
+    styles={styles}
+    onAddGoal={addGoal}
+    // ✅ 템플릿/목표 모두 editingGoal에 들어오므로 이렇게 수정!
+    editingGoal={editingGoal}
+
+    // ✅ 목표 수정 시 사용하는 콜백
+    onUpdateGoal={(updatedGoal) => {
+    if (editingIndex === null) {
+      // 안전장치: editingIndex가 없으면 무시하거나 새로 추가
+      setGoals(prev => [...prev, updatedGoal]);
+    } else {
+      const newGoals = [...goals];
+      newGoals[editingIndex] = updatedGoal;
+      setGoals(newGoals);
+    }
+    setEditingIndex(null);
+    setEditingGoal(null);
+  }}
+    onDeleteGoal={deleteGoal}
+    showGoalForm={showGoalForm}
+    setShowGoalForm={setShowGoalForm}
+    goals={goals}
+    setGoals={setGoals}
+    editingIndex={editingIndex}
+    setEditingIndex={setEditingIndex}
+    templates={templates}
+
+    // ✅ 이 부분이 핵심: updateTemplate 함수를 넘겨야 합니다!
+    saveTemplate={updateTemplate}
+    setEditingGoal={setEditingGoal}
+  />
+  {/* <AddButton
   styles={styles}
   onAddGoal={addGoal}
   editingGoal={editingIndex !== null ? goals[editingIndex] : null}
@@ -180,7 +254,9 @@ export default function App() {
   setGoals={setGoals}
   editingIndex={editingIndex}
   setEditingIndex={setEditingIndex}
-/>
+  templates={templates}          
+  saveTemplate={saveTemplate}
+/> */}
       {/* Bottom Navigation */}
       <BottomNav styles={styles}/>
     </SafeAreaView>
@@ -217,12 +293,38 @@ const GoalCard = ({ color, progress, title, subGoals = [], completed, startDate,
         </View>
         {!completed &&
           subGoals.map((goal, idx) => (
-            <View key={idx} style={styles.subGoal}>
-              <Feather name={goal.done ? 'check-square' : 'square'} size={20} />
-              <Text style={styles.subGoalText}>{goal.text}</Text>
-              <Feather name="plus" size={16} style={{ marginLeft: 'auto' }} />
-            </View>
-          ))}
+            <View
+  key={idx}
+  style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 4,
+  }}
+>
+  {/* 왼쪽: 체크박스 + 텍스트 */}
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <TouchableOpacity onPress={() => {
+      const updated = [...subGoals];
+      updated[idx] = { ...updated[idx], done: !updated[idx].done };
+      setSubGoals(updated);
+    }}>
+      <Feather name={goal.done ? 'check-square' : 'square'} size={20} />
+    </TouchableOpacity>
+
+    <Text style={{ marginLeft: 8 }}>{goal.text}</Text>
+  </View>
+
+  {/* 오른쪽: ✕ 버튼 */}
+  <TouchableOpacity onPress={() => {
+    const updated = [...subGoals];
+    updated.splice(idx, 1);
+    setSubGoals(updated);
+  }}>
+    <Text style={{ fontSize: 16, color: '#999' }}>✕</Text>
+  </TouchableOpacity>
+</View>
+))}
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 }}>
   {!completed && (
     <TouchableOpacity
