@@ -1,6 +1,7 @@
 package com.hotpack.krocs.domain.goals.converter;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
+import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.response.GoalCreateResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
@@ -48,12 +49,11 @@ public class GoalConverter {
   }
 
   private SubGoalResponseDTO toSubGoalResponseDTO(
-      com.hotpack.krocs.domain.goals.domain.SubGoal subGoal) {
+      SubGoal subGoal) {
     return SubGoalResponseDTO.builder()
         .subGoalId(subGoal.getSubGoalId())
         .title(subGoal.getTitle())
         .completed(subGoal.getIsCompleted())
-        .completionPercentage(subGoal.getIsCompleted() ? 100 : 0)
         .build();
   }
 

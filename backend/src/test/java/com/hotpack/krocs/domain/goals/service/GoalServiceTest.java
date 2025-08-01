@@ -128,7 +128,6 @@ class GoalServiceTest {
         .subGoalId(validSubGoal.getSubGoalId())
         .title(validSubGoal.getTitle())
         .completed(validSubGoal.getIsCompleted())
-        .completionPercentage(0)
         .build();
 
     existingGoal = Goal.builder()
@@ -776,7 +775,6 @@ class GoalServiceTest {
       assertThat(subGoalRequestDTO.getSubGoalId()).isEqualTo(1L);
       assertThat(subGoalRequestDTO.getTitle()).isEqualTo("테스트 소목표1");
       assertThat(subGoalRequestDTO.getCompleted()).isEqualTo(false);
-      assertThat(subGoalRequestDTO.getCompletionPercentage()).isEqualTo(0);
     }
   }
 
@@ -906,8 +904,6 @@ class GoalServiceTest {
     assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getSubGoalId()).isEqualTo(1L);
     assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getCompleted()).isEqualTo(false);
     assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getTitle()).isEqualTo("테스트 소목표1");
-    assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getCompletionPercentage()).isEqualTo(
-        0);
   }
 
   @Test

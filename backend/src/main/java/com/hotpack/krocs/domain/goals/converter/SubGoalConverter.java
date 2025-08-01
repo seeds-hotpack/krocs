@@ -36,7 +36,6 @@ public class SubGoalConverter {
         .subGoalId(subGoal.getSubGoalId())
         .title(subGoal.getTitle())
         .completed(subGoal.getIsCompleted())
-        .completionPercentage(subGoal.getIsCompleted() ? 100 : 0)
         .build();
   }
 
