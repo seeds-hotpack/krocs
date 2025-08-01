@@ -1,5 +1,6 @@
 package com.hotpack.krocs.domain.goals.domain;
 
+import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
 import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import com.hotpack.krocs.global.common.entity.Priority;
 import jakarta.persistence.CascadeType;
@@ -60,4 +61,22 @@ public class Goal extends BaseTimeEntity {
 
   @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<SubGoal> subGoals;
+
+  public void updateFrom(GoalUpdateRequestDTO requestDTO) {
+    if (requestDTO.getTitle() != null) {
+      this.title = requestDTO.getTitle();
+    }
+
+    if (requestDTO.getStartDate() != null) {
+      this.startDate = requestDTO.getStartDate();
+    }
+
+    if (requestDTO.getEndDate() != null) {
+      this.endDate = requestDTO.getEndDate();
+    }
+
+    if (requestDTO.getDuration() != null) {
+      this.duration = requestDTO.getDuration();
+    }
+  }
 }
