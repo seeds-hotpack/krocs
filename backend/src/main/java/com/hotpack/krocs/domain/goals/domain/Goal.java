@@ -67,6 +67,10 @@ public class Goal extends BaseTimeEntity {
       this.title = requestDTO.getTitle();
     }
 
+    if (requestDTO.getPriority() != null) {
+      this.priority = requestDTO.getPriority();
+    }
+
     if (requestDTO.getStartDate() != null) {
       this.startDate = requestDTO.getStartDate();
     }
