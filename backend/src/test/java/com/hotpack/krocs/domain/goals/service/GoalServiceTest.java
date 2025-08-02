@@ -102,7 +102,7 @@ class GoalServiceTest {
         .priority(Priority.HIGH)
         .startDate(LocalDate.now().plusDays(1))
         .endDate(LocalDate.now().plusDays(365))
-        .completed(false)
+        .isCompleted(false)
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .build();
@@ -125,7 +125,7 @@ class GoalServiceTest {
     validSubGoalResponseDTO = SubGoalResponseDTO.builder()
         .subGoalId(validSubGoal.getSubGoalId())
         .title(validSubGoal.getTitle())
-        .completed(validSubGoal.getIsCompleted())
+        .isCompleted(validSubGoal.getIsCompleted())
         .build();
 
     existingGoal = Goal.builder()
@@ -314,7 +314,7 @@ class GoalServiceTest {
         .goalId(1L)
         .title("최소 목표")
         .priority(Priority.MEDIUM)
-        .completed(false)
+        .isCompleted(false)
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .build();
@@ -741,7 +741,7 @@ class GoalServiceTest {
     for (SubGoalResponseDTO subGoalRequestDTO : result.getCreatedSubGoals()) {
       assertThat(subGoalRequestDTO.getSubGoalId()).isEqualTo(1L);
       assertThat(subGoalRequestDTO.getTitle()).isEqualTo("테스트 소목표1");
-      assertThat(subGoalRequestDTO.getCompleted()).isEqualTo(false);
+      assertThat(subGoalRequestDTO.getIsCompleted()).isEqualTo(false);
     }
   }
 
@@ -869,7 +869,7 @@ class GoalServiceTest {
     // then
     assertThat(subGoalListResponseDTO.getSubGoals().size()).isEqualTo(4);
     assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getSubGoalId()).isEqualTo(1L);
-    assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getCompleted()).isEqualTo(false);
+    assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getIsCompleted()).isEqualTo(false);
     assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getTitle()).isEqualTo("테스트 소목표1");
   }
 

@@ -24,7 +24,7 @@ public class GoalCreateResponseDTO {
   @JsonFormat(pattern = "yyyy-MM-dd")
   private final LocalDate endDate;
 
-  private final boolean completed;
+  private final boolean isCompleted;
 
   private final List<SubGoalResponseDTO> subGoals;
 

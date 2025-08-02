@@ -39,7 +39,7 @@ public class GoalConverter {
         .priority(goal.getPriority())
         .startDate(goal.getStartDate())
         .endDate(goal.getEndDate())
-        .completed(goal.getIsCompleted())
+        .isCompleted(goal.getIsCompleted())
         .subGoals(subGoalResponseDTOs)
         .createdAt(goal.getCreatedAt())
         .updatedAt(goal.getUpdatedAt())
@@ -51,7 +51,7 @@ public class GoalConverter {
     return SubGoalResponseDTO.builder()
         .subGoalId(subGoal.getSubGoalId())
         .title(subGoal.getTitle())
-        .completed(subGoal.getIsCompleted())
+        .isCompleted(subGoal.getIsCompleted())
         .build();
   }
 
