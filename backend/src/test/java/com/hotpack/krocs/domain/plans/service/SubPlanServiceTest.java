@@ -1,0 +1,168 @@
+package com.hotpack.krocs.domain.plans.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import com.hotpack.krocs.domain.plans.converter.SubPlanConverter;
+import com.hotpack.krocs.domain.plans.domain.Plan;
+import com.hotpack.krocs.domain.plans.domain.SubPlan;
+import com.hotpack.krocs.domain.plans.dto.request.SubPlanCreateRequestDTO;
+import com.hotpack.krocs.domain.plans.dto.request.SubPlanRequestDTO;
+import com.hotpack.krocs.domain.plans.dto.response.SubPlanCreateResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
+import com.hotpack.krocs.domain.plans.exception.SubPlanException;
+import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
+import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
+import com.hotpack.krocs.domain.plans.facade.SubPlanRepositoryFacade;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+
+@ExtendWith(MockitoExtension.class)
+class SubPlanServiceTest {
+
+    @Mock
+    private PlanRepositoryFacade planRepositoryFacade;
+    @Mock
+    private SubPlanRepositoryFacade subPlanRepositoryFacade;
+    @Mock
+    private SubPlanConverter subPlanConverter;
+    @InjectMocks
+    private SubPlanServiceImpl subPlanService;
+
+
+    Plan validPlan = Plan.builder().planId(1L).build();
+    SubPlan validSubPlan = SubPlan.builder().subPlanId(1L).title("테스트 소계획1").isCompleted(false)
+        .build();
+    SubPlanResponseDTO validSubPlanResponseDTO = SubPlanResponseDTO.builder().subPlanId(1L)
+        .title("테스트 소계획1").isCompleted(false).build();
+    SubPlanRequestDTO validSubPlanRequestDTO = SubPlanRequestDTO.builder().title("테스트 소계획1")
+        .build();
+    SubPlanCreateRequestDTO validSubPlanCreateRequestDTO = SubPlanCreateRequestDTO.builder()
+        .subPlans(List.of(validSubPlanRequestDTO)).build();
+
+    @Test
+    @DisplayName("소계획 생성 성공 테스트")
+    void createSubPlans_Success() {
+        // given
+        List<SubPlanResponseDTO> subPlanListResponseDTO = List.of(validSubPlanResponseDTO);
+        when(planRepositoryFacade.findPlanById(1L)).thenReturn(validPlan);
+        when(subPlanRepositoryFacade.saveSubPlans(List.of(validSubPlan))).thenReturn(
+            List.of(validSubPlan));
+        when(subPlanConverter.toSubPlanResponseListDTO(any())).thenReturn(subPlanListResponseDTO);
+        when(subPlanConverter.toSubPlanEntityList(any(), any())).thenReturn(List.of(validSubPlan));
+
+        // when
+        SubPlanCreateResponseDTO result = subPlanService.createSubPlans(1L,
+            validSubPlanCreateRequestDTO);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getPlanId()).isEqualTo(1L);
+        assertThat(result.getCreatedSubPlans()).isNotEmpty();
+        for (SubPlanResponseDTO subPlanResponseDTO : result.getCreatedSubPlans()) {
+            assertThat(subPlanResponseDTO.getSubPlanId()).isEqualTo(1L);
+            assertThat(subPlanResponseDTO.getTitle()).isEqualTo("테스트 소계획1");
+            assertThat(subPlanResponseDTO.getIsCompleted()).isEqualTo(false);
+        }
+    }
+
+    @Test
+    @DisplayName("소계획 생성 - PlanRepository에서 예외 발생")
+    void createSubPlan_PlanRepositoryException() {
+        // given
+        when(planRepositoryFacade.findPlanById(any())).thenThrow(new RuntimeException("데이터베이스 오류"));
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.createSubPlans(1L, validSubPlanCreateRequestDTO))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_CREATE_FAILED);
+    }
+
+    @Test
+    @DisplayName("소계획 생성 - Plan 조회 실패")
+    void createSubPlan_PlanRepositoryNotFound() {
+        // given
+        when(planRepositoryFacade.findPlanById(any())).thenThrow(
+            new SubPlanException(SubPlanExceptionType.SUB_PLAN_PLAN_NOT_FOUND));
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.createSubPlans(1L, validSubPlanCreateRequestDTO))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_PLAN_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("소계획 생성 - SubPlanCreateRequest.subPlans()가 비어있는 리스트인 경우")
+    void createSubPlans_subPlansIsEmpty() {
+        // given
+        SubPlanCreateRequestDTO invalidSubPlanCreateRequestDTO = SubPlanCreateRequestDTO.builder()
+            .subPlans(new ArrayList<>()).build();
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.createSubPlans(1L, invalidSubPlanCreateRequestDTO))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_CREATE_EMPTY);
+    }
+
+    @Test
+    @DisplayName("소계획 생성 - SubPlanRequestDTO.title()이 Blank인 경우")
+    void createSubPlans_titleIsBlank() {
+        // given
+        SubPlanRequestDTO invalidSubPlanRequestDTO = SubPlanRequestDTO.builder().title("").build();
+        SubPlanCreateRequestDTO invalidSubPlanCreateRequestDTO = SubPlanCreateRequestDTO.builder()
+            .subPlans(List.of(invalidSubPlanRequestDTO)).build();
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.createSubPlans(1L, invalidSubPlanCreateRequestDTO))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_TITLE_EMPTY);
+    }
+
+    @Test
+    @DisplayName("소계획 생성 - SubPlanRequestDTO.title()이 200자를 초과하는 경우")
+    void createSubPlans_titleExceedsMaxLength() {
+        // given
+        SubPlanRequestDTO invalidSubPlanRequestDTO = SubPlanRequestDTO.builder()
+            .title("1".repeat(210)) // 210자
+            .build();
+        SubPlanCreateRequestDTO invalidSubPlanCreateRequestDTO = SubPlanCreateRequestDTO.builder()
+            .subPlans(List.of(invalidSubPlanRequestDTO)).build();
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.createSubPlans(1L, invalidSubPlanCreateRequestDTO))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_TITLE_TOO_LONG);
+    }
+
+    @Test
+    @DisplayName("소계획 생성 - SubPlanRepository 저장 실패")
+    void createSubPlan_SubPlansRepositoryException() {
+        // given
+        when(subPlanRepositoryFacade.saveSubPlans(any())).thenThrow(
+            new RuntimeException("데이터베이스 오류"));
+        when(planRepositoryFacade.findPlanById(1L)).thenReturn(validPlan);
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.createSubPlans(1L, validSubPlanCreateRequestDTO))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_CREATE_FAILED);
+    }
+}
+
