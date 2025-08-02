@@ -122,10 +122,6 @@ public class GoalServiceImpl implements GoalService {
         goalValidator.validateDateRange(existingGoal.getStartDate(), requestDTO.getEndDate());
       }
 
-      if (requestDTO.getDuration() != null) {
-        goalValidator.validateDurationUpdate(requestDTO.getDuration());
-      }
-
       existingGoal.updateFrom(requestDTO);
       Goal updatedGoal = goalRepositoryFacade.findById(goalId);
 

@@ -22,7 +22,6 @@ public class GoalConverter {
         .priority(requestDTO.getPriority() != null ? requestDTO.getPriority() : Priority.MEDIUM)
         .startDate(requestDTO.getStartDate())
         .endDate(requestDTO.getEndDate())
-        .duration(requestDTO.getDuration())
         .isCompleted(false)
         .build();
   }
@@ -40,7 +39,6 @@ public class GoalConverter {
         .priority(goal.getPriority())
         .startDate(goal.getStartDate())
         .endDate(goal.getEndDate())
-        .duration(goal.getDuration())
         .completed(goal.getIsCompleted())
         .subGoals(subGoalResponseDTOs)
         .createdAt(goal.getCreatedAt())
@@ -78,7 +76,6 @@ public class GoalConverter {
         .priority(goal.getPriority())
         .startDate(goal.getStartDate())
         .endDate(goal.getEndDate())
-        .duration(goal.getDuration())
         .isCompleted(goal.getIsCompleted())
         .subGoals(subGoalResponseDTOs)
         .completionPercentage(completionPercentage)

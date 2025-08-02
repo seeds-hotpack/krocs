@@ -11,6 +11,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GoalCreateResponseDTO {
+
   private final Long goalId;
 
   private final String title;
@@ -22,8 +23,6 @@ public class GoalCreateResponseDTO {
 
   @JsonFormat(pattern = "yyyy-MM-dd")
   private final LocalDate endDate;
-
-  private final Integer duration;
 
   private final boolean completed;
 
