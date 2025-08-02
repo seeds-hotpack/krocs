@@ -4,7 +4,6 @@ import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.dto.request.SubGoalCreateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.request.SubGoalRequestDTO;
-import com.hotpack.krocs.domain.goals.dto.request.SubGoalUpdateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalUpdateResponseDTO;
 import java.util.ArrayList;
@@ -22,25 +21,6 @@ public class SubGoalConverter {
         .title(requestDTO.getTitle())
         .build();
   }
-  
-  public SubGoal toSubGoalEntity(SubGoal subGoal, SubGoalUpdateRequestDTO requestDTO) {
-    String title = subGoal.getTitle();
-    if (requestDTO.getTitle() != null) {
-      title = requestDTO.getTitle();
-    }
-
-    boolean isCompleted = subGoal.getIsCompleted();
-    if (requestDTO.getIsCompleted() != null) {
-      isCompleted = requestDTO.getIsCompleted();
-    }
-
-    return SubGoal.builder()
-        .subGoalId(subGoal.getSubGoalId())
-        .goal(subGoal.getGoal())
-        .title(title)
-        .isCompleted(isCompleted)
-        .build();
-  }
 
   public List<SubGoal> toSubGoalEntityList(Goal goal,
       SubGoalCreateRequestDTO subGoalCreateRequestDTO) {
@@ -56,7 +36,6 @@ public class SubGoalConverter {
         .subGoalId(subGoal.getSubGoalId())
         .title(subGoal.getTitle())
         .completed(subGoal.getIsCompleted())
-        .completionPercentage(subGoal.getIsCompleted() ? 100 : 0)
         .build();
   }
 
