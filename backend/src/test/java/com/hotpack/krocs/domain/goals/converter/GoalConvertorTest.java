@@ -41,7 +41,6 @@ class GoalConvertorTest {
         .priority(Priority.HIGH)
         .startDate(LocalDate.of(2024, 1, 1))
         .endDate(LocalDate.of(2024, 12, 31))
-        .duration(365)
         .isCompleted(false)
         .build();
 
@@ -51,7 +50,6 @@ class GoalConvertorTest {
         .priority(Priority.MEDIUM)
         .startDate(LocalDate.now())
         .endDate(LocalDate.now().plusDays(7))
-        .duration(7)
         .isCompleted(false)
         .build();
   }
@@ -70,7 +68,6 @@ class GoalConvertorTest {
     assertThat(result.getPriority()).isEqualTo(Priority.HIGH);
     assertThat(result.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 1));
     assertThat(result.getEndDate()).isEqualTo(LocalDate.of(2024, 12, 31));
-    assertThat(result.getDuration()).isEqualTo(365);
     assertThat(result.getIsCompleted()).isFalse();
   }
 
@@ -87,7 +84,6 @@ class GoalConvertorTest {
     assertThat(result.getPriority()).isEqualTo(Priority.HIGH);
     assertThat(result.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 1));
     assertThat(result.getEndDate()).isEqualTo(LocalDate.of(2024, 12, 31));
-    assertThat(result.getDuration()).isEqualTo(365);
     assertThat(result.isCompleted()).isFalse();
   }
 
@@ -109,7 +105,6 @@ class GoalConvertorTest {
     assertThat(result.getPriority()).isEqualTo(Priority.MEDIUM); // 기본값
     assertThat(result.getStartDate()).isNull();
     assertThat(result.getEndDate()).isNull();
-    assertThat(result.getDuration()).isEqualTo(1);
     assertThat(result.getIsCompleted()).isFalse();
   }
 
@@ -134,7 +129,6 @@ class GoalConvertorTest {
     assertThat(result.getPriority()).isEqualTo(Priority.MEDIUM); // 기본값
     assertThat(result.getStartDate()).isNull();
     assertThat(result.getEndDate()).isNull();
-    assertThat(result.getDuration()).isEqualTo(30);
   }
 
   @Test
@@ -145,7 +139,6 @@ class GoalConvertorTest {
         .goalId(1L)
         .title("완료된 목표")
         .priority(Priority.HIGH)
-        .duration(30)
         .isCompleted(true)
         .build();
 
@@ -169,7 +162,6 @@ class GoalConvertorTest {
         .priority(null)
         .startDate(null)
         .endDate(null)
-        .duration(30)
         .isCompleted(false)
         .build();
 
@@ -183,7 +175,6 @@ class GoalConvertorTest {
     assertThat(result.getPriority()).isNull();
     assertThat(result.getStartDate()).isNull();
     assertThat(result.getEndDate()).isNull();
-    assertThat(result.getDuration()).isEqualTo(30);
     assertThat(result.isCompleted()).isFalse();
   }
 
@@ -199,7 +190,6 @@ class GoalConvertorTest {
         .priority(Priority.CRITICAL)
         .startDate(LocalDate.of(2025, 8, 1))
         .endDate(LocalDate.of(2025, 8, 31))
-        .duration(31)
         .isCompleted(true)
         .build();
 
@@ -213,7 +203,6 @@ class GoalConvertorTest {
     assertThat(result.getPriority()).isEqualTo(Priority.CRITICAL);
     assertThat(result.getStartDate()).isEqualTo(LocalDate.of(2025, 8, 1));
     assertThat(result.getEndDate()).isEqualTo(LocalDate.of(2025, 8, 31));
-    assertThat(result.getDuration()).isEqualTo(31);
     assertThat(result.getIsCompleted()).isTrue();
     assertThat(result.getCompletionPercentage()).isEqualTo(100);
   }
@@ -226,7 +215,6 @@ class GoalConvertorTest {
         .goalId(1L)
         .title("목표 1")
         .priority(Priority.HIGH)
-        .duration(30)
         .isCompleted(false)
         .build();
 
@@ -234,7 +222,6 @@ class GoalConvertorTest {
         .goalId(2L)
         .title("목표 2")
         .priority(Priority.LOW)
-        .duration(60)
         .isCompleted(true)
         .build();
 
@@ -287,7 +274,6 @@ class GoalConvertorTest {
         .goalId(1L)
         .title("null 날짜 테스트")
         .priority(Priority.LOW)
-        .duration(30)
         .isCompleted(false)
         .build();
     // createdAt, updatedAt는 null로 남겨둠

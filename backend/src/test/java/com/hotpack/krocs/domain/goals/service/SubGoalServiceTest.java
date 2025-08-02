@@ -52,7 +52,6 @@ class SubGoalServiceTest {
         .priority(Priority.HIGH)
         .startDate(LocalDate.now().plusDays(1))
         .endDate(LocalDate.now().plusDays(365))
-        .duration(365)
         .isCompleted(false)
         .build();
 
