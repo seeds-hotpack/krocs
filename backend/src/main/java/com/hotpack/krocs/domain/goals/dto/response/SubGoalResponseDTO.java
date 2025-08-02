@@ -14,6 +14,4 @@ public class SubGoalResponseDTO {
   private final String title;
 
   private final Boolean completed;
-
-  private final Integer completionPercentage;
 }

@@ -1,5 +1,6 @@
 package com.hotpack.krocs.domain.goals.domain;
 
+import com.hotpack.krocs.domain.goals.dto.request.SubGoalUpdateRequestDTO;
 import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SubGoal extends BaseTimeEntity {
-
+  
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "sub_goal_id")
@@ -38,4 +39,14 @@ public class SubGoal extends BaseTimeEntity {
   @Column(name = "is_completed", nullable = false)
   @Builder.Default
   private Boolean isCompleted = false;
+
+  public void updateFrom(SubGoalUpdateRequestDTO requestDTO) {
+    if (requestDTO.getTitle() != null) {
+      this.title = requestDTO.getTitle();
+    }
+
+    if (requestDTO.getIsCompleted() != null) {
+      this.isCompleted = requestDTO.getIsCompleted();
+    }
+  }
 }

@@ -76,8 +76,6 @@ class SubGoalServiceTest {
 
     // given
     when(subGoalRepositoryFacade.findSubGoalBySubGoalId(1L)).thenReturn(validSubGoal);
-    when(subGoalConverter.toSubGoalEntity(validSubGoal, validSubGoalUpdateRequestDTO)).thenReturn(
-        updatedSubGoal);
 
     // when
     SubGoalUpdateResponseDTO responseDTO = subGoalService.updateSubGoal(1L,

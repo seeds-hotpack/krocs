@@ -31,9 +31,10 @@ public class SubGoalServiceImpl implements SubGoalService {
       }
 
       SubGoal subGoal = subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId);
-      SubGoal updatedSubGoal = subGoalConverter.toSubGoalEntity(subGoal, requestDTO);
+      subGoal.updateFrom(requestDTO);
 
-      return SubGoalConverter.toSubGoalUpdateResponseDTO(updatedSubGoal);
+      return SubGoalConverter.toSubGoalUpdateResponseDTO(
+          subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId));
     } catch (SubGoalException e) {
       throw e;
     } catch (Exception e) {
