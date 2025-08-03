@@ -35,6 +35,9 @@ public class SubPlanConverter {
             .subPlanId(subPlan.getSubPlanId())
             .title(subPlan.getTitle())
             .isCompleted(subPlan.getIsCompleted())
+            .completedAt(subPlan.getCompletedAt())
+            .createdAt(subPlan.getCreatedAt())
+            .updatedAt(subPlan.getUpdatedAt())
             .build();
     }
 

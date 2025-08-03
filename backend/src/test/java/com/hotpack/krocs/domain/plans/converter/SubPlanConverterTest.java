@@ -46,6 +46,7 @@ class SubPlanConverterTest {
         assertThat(subPlan.getTitle()).isEqualTo("서브플랜 제목");
         assertThat(subPlan.getPlan()).isEqualTo(testPlan);
         assertThat(subPlan.getIsCompleted()).isFalse(); // 기본값
+        assertThat(subPlan.getCompletedAt()).isNull(); // 초기값
     }
 
     @Test
