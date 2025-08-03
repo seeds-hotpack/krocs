@@ -5,6 +5,7 @@ import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,18 +16,16 @@ import org.springframework.util.StringUtils;
 @Transactional(readOnly = true)
 public class PlanValidator {
 
-    public void validatePlanCreation(PlanCreateRequestDTO requestDTO, Long goalId) {
+    public void validatePlanCreation(PlanCreateRequestDTO requestDTO, Long subGoalId) {
         validateTitle(requestDTO.getTitle());
-        validateGoalIdParameter(goalId);
+        validateSubGoalIdParameter(subGoalId);
         validateDateTime(requestDTO);
     }
 
-    public void validateGoalIdParameter(Long goalId) {
-        if (goalId == null) {
-            throw new GoalException(GoalExceptionType.GOAL_INVALID_GOAL_ID);
-        }
-        if (goalId <= 0) {
-            throw new GoalException(GoalExceptionType.GOAL_INVALID_GOAL_ID);
+    public void validateSubGoalIdParameter(Long subGoalId) {
+        if (subGoalId == null) return;
+        if (subGoalId <= 0) {
+            throw new PlanException(PlanExceptionType.GOAL_INVALID_GOAL_ID);
         }
     }
 
@@ -46,16 +45,23 @@ public class PlanValidator {
             allDay = false;
         }
 
-        if (!allDay) {
-            if (requestDTO.getStartDateTime() == null) {
-                throw new PlanException(PlanExceptionType.PLAN_START_TIME_REQUIRED);
-            }
-            if (requestDTO.getEndDateTime() == null) {
-                throw new PlanException(PlanExceptionType.PLAN_END_TIME_REQUIRED);
-            }
+        if (requestDTO.getStartDateTime() == null) {
+            throw new PlanException(PlanExceptionType.PLAN_START_TIME_REQUIRED);
+        }
 
-            if (requestDTO.getStartDateTime().isAfter(requestDTO.getEndDateTime()) ||
-                    requestDTO.getStartDateTime().equals(requestDTO.getEndDateTime())) {
+        if (requestDTO.getEndDateTime() == null) {
+            throw new PlanException(PlanExceptionType.PLAN_END_TIME_REQUIRED);
+        }
+
+        if (allDay) {
+            LocalDate startDate = requestDTO.getStartDateTime().toLocalDate();
+            LocalDate endDate = requestDTO.getEndDateTime().toLocalDate();
+
+            if (startDate.isAfter(endDate)) {
+                throw new PlanException(PlanExceptionType.INVALID_PLAN_DATE_RANGE);
+            }
+        } else {
+            if (requestDTO.getStartDateTime().isAfter(requestDTO.getEndDateTime())) {
                 throw new PlanException(PlanExceptionType.INVALID_PLAN_DATE_RANGE);
             }
         }

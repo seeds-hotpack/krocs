@@ -30,8 +30,4 @@ public class GoalCreateRequestDTO {
 
   @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate endDate;
-
-  @NotNull(message = "목표 기간은 필수입니다")
-  @Positive(message = "목표 기간은 1일 이상이어야 합니다")
-  private Integer duration;
 }

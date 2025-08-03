@@ -1,6 +1,8 @@
 package com.hotpack.krocs.domain.plans.facade;
 
 import com.hotpack.krocs.domain.plans.domain.Plan;
+import com.hotpack.krocs.domain.plans.exception.SubPlanException;
+import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.repository.PlanRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,5 +19,10 @@ public class PlanRepositoryFacade {
     @Transactional
     public Plan savePlan(Plan plan) {
         return planRepository.save(plan);
+    }
+
+    public Plan findPlanById(Long id) {
+        return planRepository.findById(id)
+            .orElseThrow(() -> new SubPlanException(SubPlanExceptionType.SUB_PLAN_PLAN_NOT_FOUND));
     }
 }

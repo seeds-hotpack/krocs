@@ -32,7 +32,6 @@ class GoalConvertorTest {
         .priority(Priority.HIGH)
         .startDate(LocalDate.of(2024, 1, 1))
         .endDate(LocalDate.of(2024, 12, 31))
-        .duration(365)
         .build();
 
     validGoal = Goal.builder()
@@ -93,7 +92,6 @@ class GoalConvertorTest {
     // given
     GoalCreateRequestDTO minimalRequest = GoalCreateRequestDTO.builder()
         .title("최소 목표")
-        .duration(1)
         .build();
 
     // when
@@ -117,7 +115,6 @@ class GoalConvertorTest {
         .priority(null)
         .startDate(null)
         .endDate(null)
-        .duration(30)
         .build();
 
     // when

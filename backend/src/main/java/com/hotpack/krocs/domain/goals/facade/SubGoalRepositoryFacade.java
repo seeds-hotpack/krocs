@@ -52,4 +52,9 @@ public class SubGoalRepositoryFacade {
     findSubGoalBySubGoalId(subGoalId);
     subGoalRepository.deleteSubGoalBySubGoalId(subGoalId);
   }
+
+  public Goal findGoalBySubGoalId(Long subGoalId) {
+    SubGoal subGoal = subGoalRepository.findSubGoalsBySubGoalId(subGoalId);
+    return subGoal.getGoal();
+  }
 }
