@@ -22,6 +22,7 @@ public class Plan extends BaseTimeEntity {
     private Long planId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "goal_id")
     private Goal goal;
 
     @ManyToOne(fetch = FetchType.LAZY)
