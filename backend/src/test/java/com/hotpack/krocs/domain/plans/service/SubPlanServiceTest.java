@@ -3,6 +3,7 @@ package com.hotpack.krocs.domain.plans.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 import com.hotpack.krocs.domain.plans.converter.SubPlanConverter;
@@ -11,6 +12,7 @@ import com.hotpack.krocs.domain.plans.domain.SubPlan;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanCreateResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.SubPlanListResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
@@ -163,6 +165,46 @@ class SubPlanServiceTest {
             .isInstanceOf(SubPlanException.class)
             .hasFieldOrPropertyWithValue("subPlanExceptionType",
                 SubPlanExceptionType.SUB_PLAN_CREATE_FAILED);
+    }
+
+    @Test
+    @DisplayName("소계획 전체 조회 - planId가 null인 경우")
+    void getAllSubPlans_planIdIsNull() {
+        // when & then
+        assertThatThrownBy(() -> subPlanService.getAllSubPlans(null))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_PLAN_ID_IS_NULL);
+    }
+
+    @Test
+    @DisplayName("소계획 전체 조회 - SubPlanRepository에서 조회 중 예상치 못한 오류가 발생하는 경우")
+    void getAllSubPlans_SubPlanRepositoryException() {
+        // given
+        when(planRepositoryFacade.findPlanById(1L)).thenReturn(validPlan);
+        when(subPlanRepositoryFacade.findSubPlansByPlan(any())).thenThrow(new RuntimeException());
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.getAllSubPlans(1L))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_READ_FAILED);
+    }
+
+    @Test
+    @DisplayName("소계획 전체 조회 - 조회된 SubPlan이 한 건도 없는 경우")
+    void getAllSubPlans_EmptySubPlanList() {
+        // given
+        when(planRepositoryFacade.findPlanById(1L)).thenReturn(validPlan);
+        when(subPlanRepositoryFacade.findSubPlansByPlan(any())).thenReturn(new ArrayList<>());
+        when(subPlanConverter.toSubPlanResponseListDTO(anyList())).thenReturn(new ArrayList<>());
+
+        // when
+        SubPlanListResponseDTO response = subPlanService.getAllSubPlans(1L);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getSubPlans()).isEmpty();
     }
 }
 

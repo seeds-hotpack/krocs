@@ -7,6 +7,7 @@ import com.hotpack.krocs.domain.plans.domain.SubPlan;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanCreateResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.SubPlanListResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
@@ -71,6 +72,32 @@ public class SubPlanServiceImpl implements SubPlanService {
             if (subPlanRequestDTO.getTitle().length() > 200) {
                 throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_TITLE_TOO_LONG);
             }
+        }
+    }
+
+    @Override
+    public SubPlanListResponseDTO getAllSubPlans(Long planId) {
+        try {
+            if (planId == null) {
+                throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_PLAN_ID_IS_NULL);
+            }
+
+            Plan plan = planRepositoryFacade.findPlanById(planId);
+
+            List<SubPlan> subPlans = subPlanRepositoryFacade.findSubPlansByPlan(plan);
+
+            // 빈 리스트는 정상 응답으로 간주하고 그대로 반환
+            List<SubPlanResponseDTO> subPlanResponseDTOs = subPlanConverter.toSubPlanResponseListDTO(
+                subPlans);
+
+            return SubPlanListResponseDTO.builder()
+                .subPlans(subPlanResponseDTOs)
+                .build();
+        } catch (SubPlanException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("소계획 전체 조회 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_READ_FAILED);
         }
     }
 
