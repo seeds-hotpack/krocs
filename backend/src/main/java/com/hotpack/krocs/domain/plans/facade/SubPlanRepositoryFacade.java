@@ -46,7 +46,6 @@ public class SubPlanRepositoryFacade {
         if (subPlan == null) {
             throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_NOT_FOUND);
         }
-
         return subPlan;
     }
 }

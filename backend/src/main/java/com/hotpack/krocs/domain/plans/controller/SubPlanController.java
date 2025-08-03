@@ -1,11 +1,10 @@
 package com.hotpack.krocs.domain.plans.controller;
 
 
-import com.hotpack.krocs.domain.goals.dto.response.SubGoalListResponseDTO;
-import com.hotpack.krocs.domain.goals.dto.response.SubGoalResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanCreateResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanListResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.service.SubPlanService;
@@ -52,6 +51,24 @@ public class SubPlanController {
             throw e;
         } catch (Exception e) {
             throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_CREATE_FAILED);
+        }
+    }
+
+    @Operation(summary = "특정 소계획 조회", description = "특정 소계획을 조회합니다")
+    @GetMapping("/{planId}/subplans/{subPlanId}")
+    public ApiResponse<SubPlanResponseDTO> getSubPlan(
+        @PathVariable @Parameter(description = "Plan ID", example = "1")
+        Long planId,
+        @PathVariable @Parameter(description = "SubPlan ID", example = "23")
+        Long subPlanId
+    ) {
+        try {
+            SubPlanResponseDTO response = subPlanService.getSubPlan(planId, subPlanId);
+            return ApiResponse.success(response);
+        } catch (SubPlanException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_READ_FAILED);
         }
     }
 

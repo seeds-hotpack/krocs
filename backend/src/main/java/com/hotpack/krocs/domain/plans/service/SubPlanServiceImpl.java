@@ -101,5 +101,33 @@ public class SubPlanServiceImpl implements SubPlanService {
         }
     }
 
+    @Override
+    public SubPlanResponseDTO getSubPlan(Long planId, Long subPlanId) {
+        try {
+            if (planId == null) {
+                throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_PLAN_ID_IS_NULL);
+            }
+            if (subPlanId == null) {
+                throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_ID_IS_NULL);
+            }
+
+            Plan plan = planRepositoryFacade.findPlanById(planId);
+            List<SubPlan> subPlans = subPlanRepositoryFacade.findSubPlansByPlan(plan);
+            SubPlan subPlan = subPlanRepositoryFacade.findSubPlanBySubPlanId(subPlanId);
+
+            if (!subPlans.contains(subPlan)) {
+                throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_NOT_BELONG_TO_PLAN);
+            }
+
+            return subPlanConverter.toSubPlanResponseDTO(subPlan);
+
+        } catch (SubPlanException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("소계획 단건 조회 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_READ_FAILED);
+        }
+    }
+
 
 }

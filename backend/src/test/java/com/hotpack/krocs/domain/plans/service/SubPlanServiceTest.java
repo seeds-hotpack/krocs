@@ -206,5 +206,51 @@ class SubPlanServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getSubPlans()).isEmpty();
     }
+
+    @Test
+    @DisplayName("소계획 단건 조회 - planId가 null인 경우")
+    void getSubPlan_planIdIsNull() {
+        // when & then
+        assertThatThrownBy(() -> subPlanService.getSubPlan(null, 1L))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType", SubPlanExceptionType.SUB_PLAN_PLAN_ID_IS_NULL);
+    }
+
+    @Test
+    @DisplayName("소계획 단건 조회 - subPlanId가 null인 경우")
+    void getSubPlan_subPlanIdIsNull() {
+        // when & then
+        assertThatThrownBy(() -> subPlanService.getSubPlan(1L, null))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType", SubPlanExceptionType.SUB_PLAN_ID_IS_NULL);
+    }
+
+    @Test
+    @DisplayName("소계획 단건 조회 - 해당 소계획이 주계획에 포함되지 않은 경우")
+    void getSubPlan_subPlanNotBelongToPlan() {
+        // given
+        SubPlan otherSubPlan = SubPlan.builder().subPlanId(2L).title("다른 소계획").build();
+
+        when(planRepositoryFacade.findPlanById(1L)).thenReturn(validPlan);
+        when(subPlanRepositoryFacade.findSubPlansByPlan(validPlan)).thenReturn(List.of(validSubPlan));
+        when(subPlanRepositoryFacade.findSubPlanBySubPlanId(2L)).thenReturn(otherSubPlan);
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.getSubPlan(1L, 2L))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType", SubPlanExceptionType.SUB_PLAN_NOT_BELONG_TO_PLAN);
+    }
+
+    @Test
+    @DisplayName("소계획 단건 조회 - 예기치 못한 예외 발생 시")
+    void getSubPlan_UnexpectedException() {
+        // given
+        when(planRepositoryFacade.findPlanById(1L)).thenThrow(new RuntimeException("DB error"));
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.getSubPlan(1L, 1L))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType", SubPlanExceptionType.SUB_PLAN_READ_FAILED);
+    }
 }
 
