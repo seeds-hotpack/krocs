@@ -93,7 +93,6 @@ class GoalServiceTest {
         .priority(Priority.HIGH)
         .startDate(LocalDate.now().plusDays(1))
         .endDate(LocalDate.now().plusDays(365))
-        .duration(365)
         .isCompleted(false)
         .build();
 
@@ -103,8 +102,7 @@ class GoalServiceTest {
         .priority(Priority.HIGH)
         .startDate(LocalDate.now().plusDays(1))
         .endDate(LocalDate.now().plusDays(365))
-        .duration(365)
-        .completed(false)
+        .isCompleted(false)
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .build();
@@ -127,14 +125,13 @@ class GoalServiceTest {
     validSubGoalResponseDTO = SubGoalResponseDTO.builder()
         .subGoalId(validSubGoal.getSubGoalId())
         .title(validSubGoal.getTitle())
-        .completed(validSubGoal.getIsCompleted())
+        .isCompleted(validSubGoal.getIsCompleted())
         .build();
 
     existingGoal = Goal.builder()
         .goalId(1L)
         .title("기존 제목")  // 원래 제목
         .priority(Priority.HIGH)
-        .duration(30)
         .isCompleted(false)
         .build();
   }
@@ -310,7 +307,6 @@ class GoalServiceTest {
         .goalId(1L)
         .title("최소 목표")
         .priority(Priority.MEDIUM)
-        .duration(1)
         .isCompleted(false)
         .build();
 
@@ -318,8 +314,7 @@ class GoalServiceTest {
         .goalId(1L)
         .title("최소 목표")
         .priority(Priority.MEDIUM)
-        .duration(1)
-        .completed(false)
+        .isCompleted(false)
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .build();
@@ -335,7 +330,6 @@ class GoalServiceTest {
     assertThat(result).isNotNull();
     assertThat(result.getTitle()).isEqualTo("최소 목표");
     assertThat(result.getPriority()).isEqualTo(Priority.MEDIUM);
-    assertThat(result.getDuration()).isEqualTo(1);
   }
 
   // ========== UPDATE 테스트 ==========
@@ -353,7 +347,6 @@ class GoalServiceTest {
         .goalId(1L)
         .title("수정된 제목")
         .priority(Priority.HIGH)
-        .duration(30)
         .isCompleted(false)
         .build();
 
@@ -361,7 +354,6 @@ class GoalServiceTest {
         .goalId(1L)
         .title("수정된 제목")
         .priority(Priority.HIGH)
-        .duration(30)
         .isCompleted(false)
         .build();
 
@@ -376,7 +368,6 @@ class GoalServiceTest {
     assertThat(result).isNotNull();
     assertThat(result.getTitle()).isEqualTo("수정된 제목");
     assertThat(result.getPriority()).isEqualTo(Priority.HIGH);
-    assertThat(result.getDuration()).isEqualTo(30);
   }
 
   @Test
@@ -389,7 +380,6 @@ class GoalServiceTest {
         .priority(Priority.LOW)
         .startDate(LocalDate.of(2025, 8, 1))
         .endDate(LocalDate.of(2025, 8, 31))
-        .duration(31)
         .build();
 
     Goal updatedGoal = Goal.builder()
@@ -398,7 +388,6 @@ class GoalServiceTest {
         .priority(Priority.LOW)
         .startDate(LocalDate.of(2025, 8, 1))
         .endDate(LocalDate.of(2025, 8, 31))
-        .duration(31)
         .isCompleted(false)
         .build();
 
@@ -408,7 +397,6 @@ class GoalServiceTest {
         .priority(Priority.LOW)
         .startDate(LocalDate.of(2025, 8, 1))
         .endDate(LocalDate.of(2025, 8, 31))
-        .duration(31)
         .isCompleted(false)
         .build();
 
@@ -425,7 +413,6 @@ class GoalServiceTest {
     assertThat(result.getPriority()).isEqualTo(Priority.LOW);
     assertThat(result.getStartDate()).isEqualTo(LocalDate.of(2025, 8, 1));
     assertThat(result.getEndDate()).isEqualTo(LocalDate.of(2025, 8, 31));
-    assertThat(result.getDuration()).isEqualTo(31);
   }
 
   @Test
@@ -461,23 +448,6 @@ class GoalServiceTest {
     assertThatThrownBy(() -> goalService.updateGoalById(goalId, updateRequest, 1L))
         .isInstanceOf(GoalException.class)
         .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_TITLE_EMPTY);
-  }
-
-  @Test
-  @DisplayName("목표 수정 실패 - 유효하지 않은 기간 (0)")
-  void updateGoalById_Fail_InvalidDuration() {
-    // given
-    Long goalId = 1L;
-    GoalUpdateRequestDTO updateRequest = GoalUpdateRequestDTO.builder()
-        .duration(0)
-        .build();
-
-    when(goalRepositoryFacade.findById(goalId)).thenReturn(existingGoal);
-
-    // when & then
-    assertThatThrownBy(() -> goalService.updateGoalById(goalId, updateRequest, 1L))
-        .isInstanceOf(GoalException.class)
-        .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_DURATION_INVALID);
   }
 
   @Test
@@ -590,7 +560,6 @@ class GoalServiceTest {
         .goalId(1L)
         .title("조회할 목표")
         .priority(Priority.HIGH)
-        .duration(30)
         .isCompleted(false)
         .build();
 
@@ -598,7 +567,6 @@ class GoalServiceTest {
         .goalId(1L)
         .title("조회할 목표")
         .priority(Priority.HIGH)
-        .duration(30)
         .isCompleted(false)
         .build();
 
@@ -613,7 +581,6 @@ class GoalServiceTest {
     assertThat(result.getGoalId()).isEqualTo(1L);
     assertThat(result.getTitle()).isEqualTo("조회할 목표");
     assertThat(result.getPriority()).isEqualTo(Priority.HIGH);
-    assertThat(result.getDuration()).isEqualTo(30);
   }
 
   @Test
@@ -774,7 +741,7 @@ class GoalServiceTest {
     for (SubGoalResponseDTO subGoalRequestDTO : result.getCreatedSubGoals()) {
       assertThat(subGoalRequestDTO.getSubGoalId()).isEqualTo(1L);
       assertThat(subGoalRequestDTO.getTitle()).isEqualTo("테스트 소목표1");
-      assertThat(subGoalRequestDTO.getCompleted()).isEqualTo(false);
+      assertThat(subGoalRequestDTO.getIsCompleted()).isEqualTo(false);
     }
   }
 
@@ -902,7 +869,7 @@ class GoalServiceTest {
     // then
     assertThat(subGoalListResponseDTO.getSubGoals().size()).isEqualTo(4);
     assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getSubGoalId()).isEqualTo(1L);
-    assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getCompleted()).isEqualTo(false);
+    assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getIsCompleted()).isEqualTo(false);
     assertThat(subGoalListResponseDTO.getSubGoals().getFirst().getTitle()).isEqualTo("테스트 소목표1");
   }
 

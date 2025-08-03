@@ -51,10 +51,7 @@ public class Goal extends BaseTimeEntity {
 
   @Column(name = "end_date")
   private LocalDate endDate;
-
-  @Column(name = "duration", nullable = false)
-  private Integer duration;
-
+  
   @Column(name = "is_completed", nullable = false)
   @Builder.Default
   private Boolean isCompleted = false;
@@ -77,10 +74,6 @@ public class Goal extends BaseTimeEntity {
 
     if (requestDTO.getEndDate() != null) {
       this.endDate = requestDTO.getEndDate();
-    }
-
-    if (requestDTO.getDuration() != null) {
-      this.duration = requestDTO.getDuration();
     }
   }
 }
