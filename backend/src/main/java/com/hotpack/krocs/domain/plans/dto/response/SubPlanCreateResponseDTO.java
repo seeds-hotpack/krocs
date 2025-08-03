@@ -1,12 +1,11 @@
 package com.hotpack.krocs.domain.plans.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.hotpack.krocs.domain.goals.dto.response.SubGoalResponseDTO;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
 
 @Builder
 @Getter
@@ -17,6 +16,6 @@ public class SubPlanCreateResponseDTO {
     private Long planId;
 
     @JsonProperty("created_sub_plans")
-    @NotBlank
+    @NotEmpty
     private List<SubPlanResponseDTO> createdSubPlans;
 }
