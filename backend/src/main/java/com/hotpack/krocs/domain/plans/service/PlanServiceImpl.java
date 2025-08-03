@@ -8,6 +8,7 @@ import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanCreateResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.PlanListResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
@@ -48,5 +49,15 @@ public class PlanServiceImpl implements PlanService{
             log.error("대목표 생성 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
             throw new PlanException(PlanExceptionType.PLAN_CREATION_FAILED);
         }
+    }
+
+    @Override
+    public PlanListResponseDTO getAllPlans(Long userId) {
+        return null;
+    }
+
+    @Override
+    public PlanListResponseDTO getPlanById(Long planId, Long userId) {
+        return null;g
     }
 }
