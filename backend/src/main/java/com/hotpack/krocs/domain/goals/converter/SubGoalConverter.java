@@ -35,7 +35,7 @@ public class SubGoalConverter {
     return SubGoalResponseDTO.builder()
         .subGoalId(subGoal.getSubGoalId())
         .title(subGoal.getTitle())
-        .completed(subGoal.getIsCompleted())
+        .isCompleted(subGoal.getIsCompleted())
         .build();
   }
 
