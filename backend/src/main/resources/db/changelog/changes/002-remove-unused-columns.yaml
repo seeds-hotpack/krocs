@@ -1,0 +1,71 @@
+databaseChangeLog:
+
+  # ─────────── sub_goals.energy ───────────
+  - changeSet:
+      id: 002-01-drop-sub_goals-energy
+      author: system
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: sub_goals
+            columnName: energy
+      changes:
+        - dropColumn:
+            tableName: sub_goals
+            columnName: energy
+
+  # ───────── sub_templates.energy ─────────
+  - changeSet:
+      id: 002-02-drop-sub_templates-energy
+      author: system
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: sub_templates
+            columnName: energy
+      changes:
+        - dropColumn:
+            tableName: sub_templates
+            columnName: energy
+
+  # ─────── sub_templates.is_completed ───────
+  - changeSet:
+      id: 002-03-drop-sub_templates-is_completed
+      author: system
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: sub_templates
+            columnName: is_completed
+      changes:
+        - dropColumn:
+            tableName: sub_templates
+            columnName: is_completed
+
+  # ─────────── templates.repeat ───────────
+  - changeSet:
+      id: 002-04-drop-templates-repeat
+      author: system
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: templates
+            columnName: repeat
+      changes:
+        - dropColumn:
+            tableName: templates
+            columnName: repeat
+
+  # ──────── templates.is_completed ────────
+  - changeSet:
+      id: 002-05-drop-templates-is_completed
+      author: system
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: templates
+            columnName: is_completed
+      changes:
+        - dropColumn:
+            tableName: templates
+            columnName: is_completed

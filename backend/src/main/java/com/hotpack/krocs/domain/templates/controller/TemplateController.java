@@ -1,12 +1,17 @@
 package com.hotpack.krocs.domain.templates.controller;
 
 
+import com.hotpack.krocs.domain.templates.dto.request.SubTemplateCreateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.request.TemplateCreateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.request.TemplateUpdateRequestDTO;
+import com.hotpack.krocs.domain.templates.dto.response.SubTemplateCreateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateCreateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
+import com.hotpack.krocs.domain.templates.exception.SubTemplateException;
+import com.hotpack.krocs.domain.templates.exception.SubTemplateExceptionType;
 import com.hotpack.krocs.domain.templates.exception.TemplateException;
 import com.hotpack.krocs.domain.templates.exception.TemplateExceptionType;
+import com.hotpack.krocs.domain.templates.service.SubTemplateService;
 import com.hotpack.krocs.domain.templates.service.TemplateService;
 import com.hotpack.krocs.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,8 +37,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class TemplateController {
 
   private final TemplateService templateService;
+  private final SubTemplateService subTemplateService;
 
-  @Operation(summary = "템플릿 생성", description = "title, priority, duration을 설정해 템플릿을 생성합니다.")
+  @Operation(summary = "템플릿 생성", description = "title, priority을 설정해 템플릿을 생성합니다.")
   @PostMapping
   public ApiResponse<TemplateCreateResponseDTO> createTemplate(
       @Valid @RequestBody TemplateCreateRequestDTO requestDTO,
@@ -105,4 +111,25 @@ public class TemplateController {
       throw new TemplateException(TemplateExceptionType.TEMPLATE_DELETE_FAILED);
     }
   }
+
+  //============== SubTemplate ==============
+
+  @Operation(summary = "서브 템플릿 생성", description = "템플릿에 종속된 서브 템플릿을 생성합니다.")
+  @PostMapping("/{templateId}/subTemplates")
+  public ApiResponse<SubTemplateCreateResponseDTO> saveSubTemplates(
+      @Valid @RequestBody SubTemplateCreateRequestDTO requestDTO,
+      @PathVariable(value = "templateId") Long templateId,
+      @RequestParam(value = "userId") Long userId
+  ) {
+    try {
+      SubTemplateCreateResponseDTO responseDTO = subTemplateService.createSubTemplates(templateId,
+          requestDTO, userId);
+      return ApiResponse.success(responseDTO);
+    } catch (SubTemplateException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_CREATION_FAILED);
+    }
+  }
+
 }
