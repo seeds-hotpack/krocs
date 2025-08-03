@@ -1,8 +1,5 @@
 package com.hotpack.krocs.domain.plans.facade;
 
-import com.hotpack.krocs.domain.goals.domain.Goal;
-import com.hotpack.krocs.domain.goals.exception.SubGoalException;
-import com.hotpack.krocs.domain.goals.exception.SubGoalExceptionType;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
@@ -17,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PlanRepositoryFacade {
-
     private final PlanRepository planRepository;
 
     @Transactional
