@@ -17,98 +17,98 @@ import org.mockito.Mock;
 
 class SubTemplateConverterTest {
 
-  @Mock
-  private SubTemplateConverter subTemplateConverter;
+    @Mock
+    private SubTemplateConverter subTemplateConverter;
 
-  private SubTemplateCreateRequestDTO validCreateRequestDTO;
-  private SubTemplateRequestDTO validSubTemplateRequestDTO;
-  private SubTemplate validSubTemplate;
-  private Template validTemplate;
-
-
-  @BeforeEach
-  void setup() {
-    // given
-    subTemplateConverter = new SubTemplateConverter();
-
-    validTemplate = Template.builder()
-        .templateId(1L)
-        .priority(Priority.HIGH)
-        .duration(10)
-        .build();
-
-    validSubTemplateRequestDTO = SubTemplateRequestDTO.builder()
-        .title("테스트입니다")
-        .build();
-
-    validCreateRequestDTO = SubTemplateCreateRequestDTO.builder()
-        .subTemplates(List.of(validSubTemplateRequestDTO))
-        .build();
-
-    validSubTemplate = SubTemplate.builder()
-        .subTemplateId(1L)
-        .template(validTemplate)
-        .title("테스트입니다")
-        .build();
-  }
+    private SubTemplateCreateRequestDTO validCreateRequestDTO;
+    private SubTemplateRequestDTO validSubTemplateRequestDTO;
+    private SubTemplate validSubTemplate;
+    private Template validTemplate;
 
 
-  @Test
-  @DisplayName("SubTemplateCreateRequestDTO를 List<SubTemplate>로 변환")
-  void toSubTemplateEntityList_Success() {
-    // when
-    List<SubTemplate> subTemplates = subTemplateConverter.toSubTemplateEntityList(validTemplate,
-        validCreateRequestDTO);
+    @BeforeEach
+    void setup() {
+        // given
+        subTemplateConverter = new SubTemplateConverter();
 
-    // then
-    assertThat(subTemplates.size()).isEqualTo(1);
-    SubTemplate createdSubTemplate = subTemplates.getFirst();
-    assertThat(createdSubTemplate.getTemplate()).isEqualTo(validSubTemplate.getTemplate());
-    assertThat(createdSubTemplate.getTitle()).isEqualTo(validSubTemplate.getTitle());
-  }
+        validTemplate = Template.builder()
+            .templateId(1L)
+            .priority(Priority.HIGH)
+            .duration(10)
+            .build();
 
-  @Test
-  @DisplayName("SubTemplateRequestDTO를 SubTemplate로 변환")
-  void toSubTemplateEntity_Success() {
-    // when
-    SubTemplate createdSubTemplate = subTemplateConverter.toSubTemplateEntity(validTemplate,
-        validSubTemplateRequestDTO);
+        validSubTemplateRequestDTO = SubTemplateRequestDTO.builder()
+            .title("테스트입니다")
+            .build();
 
-    // then
-    assertThat(createdSubTemplate.getTemplate()).isEqualTo(validSubTemplate.getTemplate());
-    assertThat(createdSubTemplate.getTitle()).isEqualTo(validSubTemplate.getTitle());
-  }
+        validCreateRequestDTO = SubTemplateCreateRequestDTO.builder()
+            .subTemplates(List.of(validSubTemplateRequestDTO))
+            .build();
 
-  @Test
-  @DisplayName("List<SubTemplate>를 SubTemplateCreateResponseDTO로 변환")
-  void toSubTemplateCreateResponseDTO_Success() {
-    // when
-    SubTemplateCreateResponseDTO responseDTO = subTemplateConverter.toSubTemplateCreateResponseDTO(
-        List.of(validSubTemplate));
+        validSubTemplate = SubTemplate.builder()
+            .subTemplateId(1L)
+            .template(validTemplate)
+            .title("테스트입니다")
+            .build();
+    }
 
-    // then
-    assertThat(responseDTO.getSubTemplates().size()).isEqualTo(1);
-    SubTemplateResponseDTO subTemplateResponseDTO = responseDTO.getSubTemplates().getFirst();
-    assertThat(subTemplateResponseDTO.getSubTemplateId()).isEqualTo(
-        validSubTemplate.getSubTemplateId());
-    assertThat(subTemplateResponseDTO.getTemplateId()).isEqualTo(
-        validSubTemplate.getTemplate().getTemplateId());
-    assertThat(subTemplateResponseDTO.getTitle()).isEqualTo(validSubTemplate.getTitle());
-  }
 
-  @Test
-  @DisplayName("SubTemplate을 SubTemplateResponseDTO로 변환")
-  void toSubTemplateResponseDTO_Success() {
-    // when
-    SubTemplateResponseDTO responseDTO = subTemplateConverter.toSubTemplateResponseDTO(
-        validSubTemplate);
+    @Test
+    @DisplayName("SubTemplateCreateRequestDTO를 List<SubTemplate>로 변환")
+    void toEntityList_Success() {
+        // when
+        List<SubTemplate> subTemplates = subTemplateConverter.toEntityList(validTemplate,
+            validCreateRequestDTO);
 
-    // then
-    assertThat(responseDTO.getSubTemplateId()).isEqualTo(
-        validSubTemplate.getSubTemplateId());
-    assertThat(responseDTO.getTemplateId()).isEqualTo(
-        validSubTemplate.getTemplate().getTemplateId());
-    assertThat(responseDTO.getTitle()).isEqualTo(validSubTemplate.getTitle());
-  }
-  
+        // then
+        assertThat(subTemplates.size()).isEqualTo(1);
+        SubTemplate createdSubTemplate = subTemplates.getFirst();
+        assertThat(createdSubTemplate.getTemplate()).isEqualTo(validSubTemplate.getTemplate());
+        assertThat(createdSubTemplate.getTitle()).isEqualTo(validSubTemplate.getTitle());
+    }
+
+    @Test
+    @DisplayName("SubTemplateRequestDTO를 SubTemplate로 변환")
+    void toEntity_Success() {
+        // when
+        SubTemplate createdSubTemplate = subTemplateConverter.toEntity(validTemplate,
+            validSubTemplateRequestDTO);
+
+        // then
+        assertThat(createdSubTemplate.getTemplate()).isEqualTo(validSubTemplate.getTemplate());
+        assertThat(createdSubTemplate.getTitle()).isEqualTo(validSubTemplate.getTitle());
+    }
+
+    @Test
+    @DisplayName("List<SubTemplate>를 SubTemplateCreateResponseDTO로 변환")
+    void toCreateResponseDTO_Success() {
+        // when
+        SubTemplateCreateResponseDTO responseDTO = subTemplateConverter.toCreateResponseDTO(
+            List.of(validSubTemplate));
+
+        // then
+        assertThat(responseDTO.getSubTemplates().size()).isEqualTo(1);
+        SubTemplateResponseDTO subTemplateResponseDTO = responseDTO.getSubTemplates().getFirst();
+        assertThat(subTemplateResponseDTO.getSubTemplateId()).isEqualTo(
+            validSubTemplate.getSubTemplateId());
+        assertThat(subTemplateResponseDTO.getTemplateId()).isEqualTo(
+            validSubTemplate.getTemplate().getTemplateId());
+        assertThat(subTemplateResponseDTO.getTitle()).isEqualTo(validSubTemplate.getTitle());
+    }
+
+    @Test
+    @DisplayName("SubTemplate을 SubTemplateResponseDTO로 변환")
+    void toResponseDTO_Success() {
+        // when
+        SubTemplateResponseDTO responseDTO = subTemplateConverter.toResponseDTO(
+            validSubTemplate);
+
+        // then
+        assertThat(responseDTO.getSubTemplateId()).isEqualTo(
+            validSubTemplate.getSubTemplateId());
+        assertThat(responseDTO.getTemplateId()).isEqualTo(
+            validSubTemplate.getTemplate().getTemplateId());
+        assertThat(responseDTO.getTitle()).isEqualTo(validSubTemplate.getTitle());
+    }
+
 }

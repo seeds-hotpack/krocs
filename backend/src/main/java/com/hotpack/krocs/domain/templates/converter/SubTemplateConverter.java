@@ -13,27 +13,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class SubTemplateConverter {
 
-    public List<SubTemplate> toSubTemplateEntityList(Template template,
+    public List<SubTemplate> toEntityList(Template template,
         SubTemplateCreateRequestDTO requestDTO) {
         List<SubTemplate> subTemplates = new ArrayList<>();
         for (SubTemplateRequestDTO subTemplateRequestDTO : requestDTO.getSubTemplates()) {
-            subTemplates.add(toSubTemplateEntity(template, subTemplateRequestDTO));
+            subTemplates.add(toEntity(template, subTemplateRequestDTO));
         }
         return subTemplates;
     }
 
-    public SubTemplate toSubTemplateEntity(Template template, SubTemplateRequestDTO requestDTO) {
+    public SubTemplate toEntity(Template template, SubTemplateRequestDTO requestDTO) {
         return SubTemplate.builder()
             .title(requestDTO.getTitle())
             .template(template)
             .build();
     }
 
-    public SubTemplateCreateResponseDTO toSubTemplateCreateResponseDTO(
+    public SubTemplateCreateResponseDTO toCreateResponseDTO(
         List<SubTemplate> subTemplates) {
         List<SubTemplateResponseDTO> subTemplateResponseDTOs = new ArrayList<>();
         for (SubTemplate subTemplate : subTemplates) {
-            subTemplateResponseDTOs.add(toSubTemplateResponseDTO(subTemplate));
+            subTemplateResponseDTOs.add(toResponseDTO(subTemplate));
         }
 
         return SubTemplateCreateResponseDTO.builder()
@@ -41,7 +41,7 @@ public class SubTemplateConverter {
             .build();
     }
 
-    public SubTemplateResponseDTO toSubTemplateResponseDTO(SubTemplate subTemplate) {
+    public SubTemplateResponseDTO toResponseDTO(SubTemplate subTemplate) {
         return SubTemplateResponseDTO.builder()
             .subTemplateId(subTemplate.getSubTemplateId())
             .templateId(subTemplate.getTemplate().getTemplateId())

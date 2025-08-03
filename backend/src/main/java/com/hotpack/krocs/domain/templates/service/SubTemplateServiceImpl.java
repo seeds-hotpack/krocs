@@ -19,33 +19,36 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SubTemplateServiceImpl implements SubTemplateService {
 
-  private final TemplateRepositoryFacade templateRepositoryFacade;
-  private final SubTemplateRepositoryFacade subTemplateRepositoryFacade;
+    private final TemplateRepositoryFacade templateRepositoryFacade;
+    private final SubTemplateRepositoryFacade subTemplateRepositoryFacade;
 
-  private final SubTemplateConverter subTemplateConverter;
+    private final SubTemplateConverter subTemplateConverter;
 
-  @Override
-  public SubTemplateCreateResponseDTO createSubTemplates(Long templateId,
-      SubTemplateCreateRequestDTO requestDTO,
-      Long userId) {
-    try {
-      if (templateId == null) {
-        throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_TEMPLATE_ID_IS_NULL);
-      }
-      Template template = templateRepositoryFacade.findByTemplateId(templateId);
-      if (template == null) {
-        throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_TEMPLATE_NOTFOUND);
-      }
-      List<SubTemplate> subTemplates = subTemplateConverter.toSubTemplateEntityList(template,
-          requestDTO);
-      List<SubTemplate> createdSubTemplates = subTemplateRepositoryFacade.saveAll(subTemplates);
-      return subTemplateConverter.toSubTemplateCreateResponseDTO(createdSubTemplates);
+    @Override
+    public SubTemplateCreateResponseDTO createSubTemplates(Long templateId,
+        SubTemplateCreateRequestDTO requestDTO,
+        Long userId) {
+        try {
+            if (templateId == null) {
+                throw new SubTemplateException(
+                    SubTemplateExceptionType.SUB_TEMPLATE_TEMPLATE_ID_IS_NULL);
+            }
+            Template template = templateRepositoryFacade.findByTemplateId(templateId);
+            if (template == null) {
+                throw new SubTemplateException(
+                    SubTemplateExceptionType.SUB_TEMPLATE_TEMPLATE_NOTFOUND);
+            }
+            List<SubTemplate> subTemplates = subTemplateConverter.toEntityList(template,
+                requestDTO);
+            List<SubTemplate> createdSubTemplates = subTemplateRepositoryFacade.saveAll(
+                subTemplates);
+            return subTemplateConverter.toCreateResponseDTO(createdSubTemplates);
 
-    } catch (SubTemplateException e) {
-      throw e;
-    } catch (Exception e) {
-      log.error("서브 템플릿 생성 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
-      throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_CREATION_FAILED);
+        } catch (SubTemplateException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("서브 템플릿 생성 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_CREATION_FAILED);
+        }
     }
-  }
 }
