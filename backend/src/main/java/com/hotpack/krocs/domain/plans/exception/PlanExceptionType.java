@@ -25,7 +25,8 @@ public enum PlanExceptionType implements BaseCode {
     PLAN_INVALID_PLAN_ID(HttpStatus.BAD_REQUEST, "PLAN400", "유효하지 않은 일정 ID입니다."),
     PLAN_START_TIME_REQUIRED(HttpStatus.BAD_REQUEST, "PLAN400", "일정 시작시간을 입력해주세요."),
     PLAN_END_TIME_REQUIRED(HttpStatus.BAD_REQUEST, "PLAN400", "일정 종료시간을 입력해주세요."),
-    PLAN_INVALID_ENERGY(HttpStatus.BAD_REQUEST, "PLAN400", "유효하지 않은 에너지 값입니다.");
+    PLAN_INVALID_ENERGY(HttpStatus.BAD_REQUEST, "PLAN400", "유효하지 않은 에너지 값입니다."),
+    PLAN_GOAL_NOT_FOUND(HttpStatus.NOT_FOUND, "PLAN404", "목표를 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

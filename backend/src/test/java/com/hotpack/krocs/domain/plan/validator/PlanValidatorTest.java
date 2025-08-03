@@ -30,7 +30,6 @@ public class PlanValidatorTest {
                 .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
                 .allDay(false)
-                .energy(5)
                 .build();
 
         // when & then
@@ -45,7 +44,6 @@ public class PlanValidatorTest {
         PlanCreateRequestDTO allDayRequest = PlanCreateRequestDTO.builder()
                 .title("하루 종일 일정")
                 .allDay(true)
-                .energy(3)
                 .build();
 
         // when & then
@@ -61,7 +59,6 @@ public class PlanValidatorTest {
                 .title("시간 지정 일정")
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
                 .allDay(false)
-                .energy(5)
                 .build();
 
         // when & then
@@ -79,7 +76,6 @@ public class PlanValidatorTest {
                 .startDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
                 .allDay(false)
-                .energy(5)
                 .build();
 
         // when & then

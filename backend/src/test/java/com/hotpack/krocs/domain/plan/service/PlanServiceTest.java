@@ -60,7 +60,6 @@ public class PlanServiceTest {
                 .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
                 .allDay(false)
-                .energy(5)
                 .build();
 
         validPlan = Plan.builder()
@@ -70,7 +69,6 @@ public class PlanServiceTest {
                 .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
                 .allDay(false)
-                .energy(5)
                 .isCompleted(false)
                 .build();
 
@@ -81,7 +79,6 @@ public class PlanServiceTest {
                 .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
                 .allDay(false)
-                .energy(5)
                 .isCompleted(false)
                 .build();
     }
@@ -109,7 +106,6 @@ public class PlanServiceTest {
         assertThat(result.getPlanId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("테스트 일정");
         assertThat(result.getGoalId()).isEqualTo(1L);
-        assertThat(result.getEnergy()).isEqualTo(5);
     }
 
     @Test
@@ -155,7 +151,6 @@ public class PlanServiceTest {
         PlanCreateRequestDTO allDayRequest = PlanCreateRequestDTO.builder()
                 .title("하루 종일 일정")
                 .allDay(true)
-                .energy(3)
                 .build();
 
         Plan allDayPlan = Plan.builder()
@@ -163,7 +158,6 @@ public class PlanServiceTest {
                 .goal(validGoal)
                 .title("하루 종일 일정")
                 .allDay(true)
-                .energy(3)
                 .isCompleted(false)
                 .build();
 
@@ -172,7 +166,6 @@ public class PlanServiceTest {
                 .goalId(1L)
                 .title("하루 종일 일정")
                 .allDay(true)
-                .energy(3)
                 .isCompleted(false)
                 .build();
 
@@ -190,7 +183,6 @@ public class PlanServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("하루 종일 일정");
         assertThat(result.getAllDay()).isTrue();
-        assertThat(result.getEnergy()).isEqualTo(3);
         assertThat(result.getStartDateTime()).isNull();  // allDay = true면 시간은 null
         assertThat(result.getEndDateTime()).isNull();
     }
@@ -205,7 +197,6 @@ public class PlanServiceTest {
         PlanCreateRequestDTO invalidRequest = PlanCreateRequestDTO.builder()
                 .title("시간 지정 일정")
                 .allDay(false)
-                .energy(5)
                 // startDateTime, endDateTime 누락
                 .build();
 
@@ -236,7 +227,6 @@ public class PlanServiceTest {
                 .startDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))  // 종료시간보다 늦음
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
                 .allDay(false)
-                .energy(5)
                 .build();
 
         // PlanValidator에서 시간 순서 오류 예외를 던지도록 설정
@@ -261,7 +251,6 @@ public class PlanServiceTest {
                 .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
                 .allDay(false)
-                .energy(15)  // 1-10 범위 초과
                 .build();
 
         // PlanValidator에서 에너지 범위 오류 예외를 던지도록 설정

@@ -33,7 +33,6 @@ public class PlanConventerTest {
                 .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
                 .allDay(false)
-                .energy(5)
                 .build();
 
         validPlan = Plan.builder()
@@ -43,7 +42,6 @@ public class PlanConventerTest {
                 .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
                 .allDay(false)
-                .energy(5)
                 .isCompleted(false)
                 .build();
     }
@@ -60,7 +58,6 @@ public class PlanConventerTest {
         assertThat(result.getStartDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 9, 0));
         assertThat(result.getEndDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 10, 0));
         assertThat(result.getAllDay()).isFalse();
-        assertThat(result.getEnergy()).isEqualTo(5);
         assertThat(result.getIsCompleted()).isFalse();
     }
 
@@ -77,7 +74,6 @@ public class PlanConventerTest {
         assertThat(result.getStartDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 9, 0));
         assertThat(result.getEndDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 10, 0));
         assertThat(result.getAllDay()).isFalse();
-        assertThat(result.getEnergy()).isEqualTo(5);
         assertThat(result.getIsCompleted()).isFalse();
     }
 
@@ -88,7 +84,6 @@ public class PlanConventerTest {
         PlanCreateRequestDTO allDayRequest = PlanCreateRequestDTO.builder()
                 .title("하루 종일 일정")
                 .allDay(true)
-                .energy(3)
                 .build();
 
         // when

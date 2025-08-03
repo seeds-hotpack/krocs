@@ -41,10 +41,6 @@ public class Plan extends BaseTimeEntity {
     @Builder.Default
     private Boolean isCompleted = false;
 
-    @Column(name = "energy", nullable = false)
-    @Builder.Default
-    private Integer energy = 1;
-
     // 미루기 기능
     // @Column(name = "is_snoozed", nullable = false)
     // @Builder.Default

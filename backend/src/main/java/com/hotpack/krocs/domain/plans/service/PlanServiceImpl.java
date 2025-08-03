@@ -36,7 +36,7 @@ public class PlanServiceImpl implements PlanService{
 
             Goal goal = goalRepositoryFacade.findGoalByGoalId(goalId);
             if(goal == null) {
-                throw new GoalException(GoalExceptionType.GOAL_NOT_FOUND);
+                throw new PlanException(PlanExceptionType.GOAL_NOT_FOUND);
             }
             Plan plan = planConverter.toEntity(requestDTO, goal);
             Plan savedPlan = planRepositoryFacade.savePlan(plan);

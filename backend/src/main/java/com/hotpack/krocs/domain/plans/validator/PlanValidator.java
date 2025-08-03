@@ -19,7 +19,6 @@ public class PlanValidator {
         validateTitle(requestDTO.getTitle());
         validateGoalIdParameter(goalId);
         validateDateTime(requestDTO);
-        validateEnergy(requestDTO.getEnergy());
     }
 
     public void validateGoalIdParameter(Long goalId) {
@@ -59,12 +58,6 @@ public class PlanValidator {
                     requestDTO.getStartDateTime().equals(requestDTO.getEndDateTime())) {
                 throw new PlanException(PlanExceptionType.INVALID_PLAN_DATE_RANGE);
             }
-        }
-    }
-
-    public void validateEnergy(Integer energy) {
-        if (energy != null && (energy < 1 || energy > 10)) {
-            throw new PlanException(PlanExceptionType.PLAN_INVALID_ENERGY);
         }
     }
 }

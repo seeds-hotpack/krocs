@@ -26,8 +26,6 @@ public class PlanCreateResponseDTO {
 
     private Boolean isCompleted;
 
-    private Integer energy;
-
     private LocalDateTime completedAt;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

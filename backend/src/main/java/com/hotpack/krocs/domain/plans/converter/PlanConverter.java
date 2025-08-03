@@ -19,7 +19,6 @@ public class PlanConverter {
                 .endDateTime(requestDTO.getEndDateTime())
                 .allDay(requestDTO.getAllDay())
                 .isCompleted(false)
-                .energy(requestDTO.getEnergy())
                 .build();
     }
 
@@ -32,7 +31,6 @@ public class PlanConverter {
                 .endDateTime(plan.getEndDateTime())
                 .allDay(plan.getAllDay())
                 .isCompleted(plan.getIsCompleted())
-                .energy(plan.getEnergy())
                 .completedAt(plan.getCompletedAt())
                 .createdAt(plan.getCreatedAt())
                 .updatedAt(plan.getUpdatedAt())

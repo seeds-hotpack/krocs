@@ -24,9 +24,4 @@ public class PlanCreateRequestDTO {
 
     @Builder.Default
     private Boolean allDay = false;
-
-    @Min(value = 1, message = "에너지는 최소 1이어야 합니다")
-    @Max(value = 10, message = "에너지는 최대 10이어야 합니다")
-    @Builder.Default
-    private Integer energy = 1;
 }
