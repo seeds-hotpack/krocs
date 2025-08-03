@@ -17,7 +17,6 @@ public class GoalValidator {
 
     public void validateGoalCreation(GoalCreateRequestDTO requestDTO) {
         validateTitle(requestDTO.getTitle());
-        validateDurationCreate(requestDTO.getDuration());
         validateDateRange(requestDTO.getStartDate(), requestDTO.getEndDate());
     }
 
@@ -36,18 +35,6 @@ public class GoalValidator {
         }
         if (title.length() > 200) {
             throw new GoalException(GoalExceptionType.GOAL_TITLE_TOO_LONG);
-        }
-    }
-
-    public void validateDurationCreate(Integer duration) {
-        if (duration == null || duration <= 0) {
-            throw new GoalException(GoalExceptionType.GOAL_DURATION_INVALID);
-        }
-    }
-
-    public void validateDurationUpdate(Integer duration) {
-        if (duration <= 0) {
-            throw new GoalException(GoalExceptionType.GOAL_DURATION_INVALID);
         }
     }
 

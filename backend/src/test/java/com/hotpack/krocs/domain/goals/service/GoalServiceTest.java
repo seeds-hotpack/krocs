@@ -84,7 +84,6 @@ class GoalServiceTest {
         .priority(Priority.HIGH)
         .startDate(LocalDate.now().plusDays(1))
         .endDate(LocalDate.now().plusDays(365))
-        .duration(365)
         .build();
 
     validGoal = Goal.builder()
@@ -182,7 +181,6 @@ class GoalServiceTest {
     // given
     GoalCreateRequestDTO invalidRequest = GoalCreateRequestDTO.builder()
         .title("")
-        .duration(30)
         .build();
 
     // when & then
@@ -197,58 +195,12 @@ class GoalServiceTest {
     // given
     GoalCreateRequestDTO invalidRequest = GoalCreateRequestDTO.builder()
         .title("   ")
-        .duration(30)
         .build();
 
     // when & then
     assertThatThrownBy(() -> goalService.createGoal(invalidRequest, 1L))
         .isInstanceOf(GoalException.class)
         .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_TITLE_EMPTY);
-  }
-
-  @Test
-  @DisplayName("대목표 생성 - 기간이 null인 경우")
-  void createGoal_NullDuration() {
-    // given
-    GoalCreateRequestDTO invalidRequest = GoalCreateRequestDTO.builder()
-        .title("테스트 목표")
-        .duration(null)
-        .build();
-
-    // when & then
-    assertThatThrownBy(() -> goalService.createGoal(invalidRequest, 1L))
-        .isInstanceOf(GoalException.class)
-        .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_DURATION_INVALID);
-  }
-
-  @Test
-  @DisplayName("대목표 생성 - 기간이 0인 경우")
-  void createGoal_ZeroDuration() {
-    // given
-    GoalCreateRequestDTO invalidRequest = GoalCreateRequestDTO.builder()
-        .title("테스트 목표")
-        .duration(0)
-        .build();
-
-    // when & then
-    assertThatThrownBy(() -> goalService.createGoal(invalidRequest, 1L))
-        .isInstanceOf(GoalException.class)
-        .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_DURATION_INVALID);
-  }
-
-  @Test
-  @DisplayName("대목표 생성 - 기간이 음수인 경우")
-  void createGoal_NegativeDuration() {
-    // given
-    GoalCreateRequestDTO invalidRequest = GoalCreateRequestDTO.builder()
-        .title("테스트 목표")
-        .duration(-1)
-        .build();
-
-    // when & then
-    assertThatThrownBy(() -> goalService.createGoal(invalidRequest, 1L))
-        .isInstanceOf(GoalException.class)
-        .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_DURATION_INVALID);
   }
 
   @Test
@@ -259,7 +211,6 @@ class GoalServiceTest {
         .title("테스트 목표")
         .startDate(LocalDate.of(2024, 12, 31))
         .endDate(LocalDate.of(2024, 1, 1))
-        .duration(30)
         .build();
 
     // when & then
@@ -300,7 +251,6 @@ class GoalServiceTest {
     // given
     GoalCreateRequestDTO minimalRequest = GoalCreateRequestDTO.builder()
         .title("최소 목표")
-        .duration(1)
         .build();
 
     Goal minimalGoal = Goal.builder()
