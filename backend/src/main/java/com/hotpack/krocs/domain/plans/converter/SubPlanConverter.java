@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SubPlanConverter {
 
-    public SubPlan toSubPlanEntity(Plan plan, SubPlanRequestDTO requestDTO) {
+    public SubPlan toEntity(Plan plan, SubPlanRequestDTO requestDTO) {
         return SubPlan.builder()
             .plan(plan)
             .title(requestDTO.getTitle())
@@ -25,7 +25,7 @@ public class SubPlanConverter {
         SubPlanCreateRequestDTO subPlanCreateRequestDTO) {
         List<SubPlan> subPlans = new ArrayList<>();
         for (SubPlanRequestDTO subPlanRequestDTO : subPlanCreateRequestDTO.getSubPlans()) {
-            subPlans.add(toSubPlanEntity(plan, subPlanRequestDTO));
+            subPlans.add(toEntity(plan, subPlanRequestDTO));
         }
         return subPlans;
     }

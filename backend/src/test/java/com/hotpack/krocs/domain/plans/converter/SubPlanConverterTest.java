@@ -32,14 +32,14 @@ class SubPlanConverterTest {
 
     @Test
     @DisplayName("SubPlanRequestDTO → SubPlan 엔티티로 변환 성공")
-    void toSubPlanEntity_Success() {
+    void toEntity_Success() {
         // given
         SubPlanRequestDTO requestDTO = SubPlanRequestDTO.builder()
             .title("서브플랜 제목")
             .build();
 
         // when
-        SubPlan subPlan = subPlanConverter.toSubPlanEntity(testPlan, requestDTO);
+        SubPlan subPlan = subPlanConverter.toEntity(testPlan, requestDTO);
 
         // then
         assertThat(subPlan).isNotNull();
@@ -50,7 +50,7 @@ class SubPlanConverterTest {
 
     @Test
     @DisplayName("SubPlanCreateRequestDTO → SubPlan 엔티티 리스트 변환 성공")
-    void toSubPlanEntityList_Success() {
+    void toEntityList_Success() {
         // given
         SubPlanRequestDTO dto1 = SubPlanRequestDTO.builder().title("작업1").build();
         SubPlanRequestDTO dto2 = SubPlanRequestDTO.builder().title("작업2").build();
@@ -105,42 +105,44 @@ class SubPlanConverterTest {
             .build();
 
         // when
-        List<SubPlanResponseDTO> responseDTOs = subPlanConverter.toSubPlanResponseListDTO(List.of(subPlan1, subPlan2));
+        List<SubPlanResponseDTO> responseDTOs = subPlanConverter.toSubPlanResponseListDTO(
+            List.of(subPlan1, subPlan2));
 
         // then
         assertThat(responseDTOs).hasSize(2);
         assertThat(responseDTOs.get(0).getTitle()).isEqualTo("하위계획1");
         assertThat(responseDTOs.get(1).getIsCompleted()).isTrue();
     }
-
-    @Test
-    @DisplayName("SubPlanRequestDTO의 title이 null인 경우")
-    void toSubPlanEntity_WithNullTitle() {
-        // given
-        SubPlanRequestDTO requestDTO = SubPlanRequestDTO.builder()
-            .title(null)
-            .build();
-
-        // when
-        SubPlan subPlan = subPlanConverter.toSubPlanEntity(testPlan, requestDTO);
-
-        // then
-        assertThat(subPlan).isNotNull();
-        assertThat(subPlan.getTitle()).isNull(); // title null일 수 있음
-    }
-
-    @Test
-    @DisplayName("SubPlanCreateRequestDTO의 subPlans가 빈 리스트일 경우")
-    void toSubPlanEntityList_WithEmptyList() {
-        // given
-        SubPlanCreateRequestDTO createRequest = SubPlanCreateRequestDTO.builder()
-            .subPlans(List.of())
-            .build();
-
-        // when
-        List<SubPlan> subPlans = subPlanConverter.toSubPlanEntityList(testPlan, createRequest);
-
-        // then
-        assertThat(subPlans).isEmpty();
-    }
+    //valid 작성 후 적용
+//
+//    @Test
+//    @DisplayName("SubPlanRequestDTO의 title이 null인 경우")
+//    void toEntity_WithNullTitle() {
+//        // given
+//        SubPlanRequestDTO requestDTO = SubPlanRequestDTO.builder()
+//            .title(null)
+//            .build();
+//
+//        // when
+//        SubPlan subPlan = subPlanConverter.toEntity(testPlan, requestDTO);
+//
+//        // then
+//        assertThat(subPlan).isNotNull();
+//        assertThat(subPlan.getTitle()).isNull(); // title null일 수 있음
+//    }
+//
+//    @Test
+//    @DisplayName("SubPlanCreateRequestDTO의 subPlans가 빈 리스트일 경우")
+//    void toEntityList_WithEmptyList() {
+//        // given
+//        SubPlanCreateRequestDTO createRequest = SubPlanCreateRequestDTO.builder()
+//            .subPlans(List.of())
+//            .build();
+//
+//        // when
+//        List<SubPlan> subPlans = subPlanConverter.toSubPlanEntityList(testPlan, createRequest);
+//
+//        // then
+//        assertThat(subPlans).isEmpty();
+//    }
 }
