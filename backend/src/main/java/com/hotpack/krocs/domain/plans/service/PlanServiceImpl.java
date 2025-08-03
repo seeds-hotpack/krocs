@@ -36,13 +36,13 @@ public class PlanServiceImpl implements PlanService{
 
             Goal goal = goalRepositoryFacade.findGoalByGoalId(goalId);
             if(goal == null) {
-                throw new PlanException(PlanExceptionType.GOAL_NOT_FOUND);
+                throw new PlanException(PlanExceptionType.PLAN_GOAL_NOT_FOUND);
             }
             Plan plan = planConverter.toEntity(requestDTO, goal);
             Plan savedPlan = planRepositoryFacade.savePlan(plan);
 
             return planConverter.toCreateResponseDTO(savedPlan, goalId);
-        } catch (PlanException | GoalException e) {
+        } catch (PlanException e) {
             throw e;
         } catch (Exception e) {
             log.error("대목표 생성 중 예상치 못한 오류 발생: {}", e.getMessage(), e);

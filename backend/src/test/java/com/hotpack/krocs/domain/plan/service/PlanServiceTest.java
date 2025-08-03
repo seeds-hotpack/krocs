@@ -120,8 +120,8 @@ public class PlanServiceTest {
 
         // when & then
         assertThatThrownBy(() -> planService.createPlan(validRequestDTO, userId, goalId))
-                .isInstanceOf(GoalException.class)
-                .hasFieldOrPropertyWithValue("goalExceptionType", GoalExceptionType.GOAL_NOT_FOUND);
+                .isInstanceOf(PlanException.class)
+                .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_GOAL_NOT_FOUND);
     }
 
     @Test
