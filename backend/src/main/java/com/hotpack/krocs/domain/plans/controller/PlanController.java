@@ -27,7 +27,7 @@ public class PlanController {
     public ApiResponse<PlanCreateResponseDTO> createPlan(
             @Valid @RequestBody PlanCreateRequestDTO requestDTO,
             @RequestParam(value = "user_id", required = false) Long userId,
-            @RequestParam(value = "sub_goal_id") Long subGoalId
+            @RequestParam(value = "sub_goal_id", required = false) Long subGoalId
     ) {
         try {
             PlanCreateResponseDTO responseDTO = planService.createPlan(requestDTO, userId, subGoalId);

@@ -36,14 +36,19 @@ public class PlanServiceImpl implements PlanService{
         try {
             planValidator.validatePlanCreation(requestDTO, subGoalId);
 
-            SubGoal subGoal = subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId);
-            if(subGoal == null) {
-                throw new PlanException(PlanExceptionType.PLAN_SUB_GOAL_NOT_FOUND);
-            }
+            SubGoal subGoal = null;
+            Goal goal = null;
 
-            Goal goal = subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId);
-            if(goal == null) {
-                throw new PlanException(PlanExceptionType.PLAN_GOAL_NOT_FOUND);
+            if (subGoalId != null) {
+                subGoal = subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId);
+                if (subGoal == null) {
+                    throw new PlanException(PlanExceptionType.PLAN_SUB_GOAL_NOT_FOUND);
+                }
+
+                goal = subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId);
+                if (goal == null) {
+                    throw new PlanException(PlanExceptionType.PLAN_GOAL_NOT_FOUND);
+                }
             }
 
             Plan plan = planConverter.toEntity(requestDTO, goal, subGoal);

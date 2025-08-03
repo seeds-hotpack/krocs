@@ -13,8 +13,9 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-public class PlanConventerTest {
+public class PlanConverterTest {
     private PlanConverter planConverter;
     private Goal validGoal;
     private SubGoal validSubGoal;
@@ -32,7 +33,9 @@ public class PlanConventerTest {
 
         validSubGoal = SubGoal.builder()
             .subGoalId(1L)
+            .goal(validGoal)
             .title("테스트 서브목표")
+            .isCompleted(false)
             .build();
 
         validRequestDTO = PlanCreateRequestDTO.builder()
@@ -45,6 +48,7 @@ public class PlanConventerTest {
         validPlan = Plan.builder()
                 .planId(1L)
                 .goal(validGoal)
+                .subGoal(validSubGoal)
                 .title("테스트 일정")
                 .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
                 .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
@@ -62,6 +66,7 @@ public class PlanConventerTest {
         // then
         assertThat(result.getTitle()).isEqualTo("테스트 일정");
         assertThat(result.getGoal()).isEqualTo(validGoal);
+        assertThat(result.getSubGoal()).isEqualTo(validSubGoal);
         assertThat(result.getStartDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 9, 0));
         assertThat(result.getEndDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 10, 0));
         assertThat(result.getAllDay()).isFalse();
@@ -78,6 +83,7 @@ public class PlanConventerTest {
         assertThat(result.getPlanId()).isEqualTo(1L);
         assertThat(result.getGoalId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("테스트 일정");
+        assertThat(result.getSubGoalId()).isEqualTo(1L);
         assertThat(result.getStartDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 9, 0));
         assertThat(result.getEndDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 10, 0));
         assertThat(result.getAllDay()).isFalse();
@@ -100,5 +106,13 @@ public class PlanConventerTest {
         assertThat(result.getAllDay()).isTrue();
         assertThat(result.getStartDateTime()).isNull();
         assertThat(result.getEndDateTime()).isNull();
+    }
+
+    @Test
+    @DisplayName("Plan 객체가 null인 경우")
+    void toCreateResponseDTO_PlanNull() {
+        // when & then
+        assertThatThrownBy(() -> planConverter.toCreateResponseDTO(null))
+            .isInstanceOf(NullPointerException.class);
     }
 }

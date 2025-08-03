@@ -5,6 +5,7 @@ import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +23,9 @@ public class PlanValidator {
     }
 
     public void validateSubGoalIdParameter(Long subGoalId) {
-        if (subGoalId == null) {
-            throw new GoalException(GoalExceptionType.GOAL_INVALID_GOAL_ID);
-        }
+        if (subGoalId == null) return;
         if (subGoalId <= 0) {
-            throw new GoalException(GoalExceptionType.GOAL_INVALID_GOAL_ID);
+            throw new PlanException(PlanExceptionType.GOAL_INVALID_GOAL_ID);
         }
     }
 
@@ -46,8 +45,6 @@ public class PlanValidator {
             allDay = false;
         }
 
-        if(allDay) return;
-
         if (requestDTO.getStartDateTime() == null) {
             throw new PlanException(PlanExceptionType.PLAN_START_TIME_REQUIRED);
         }
@@ -56,8 +53,17 @@ public class PlanValidator {
             throw new PlanException(PlanExceptionType.PLAN_END_TIME_REQUIRED);
         }
 
-        if (requestDTO.getStartDateTime().isAfter(requestDTO.getEndDateTime())) {
-            throw new PlanException(PlanExceptionType.INVALID_PLAN_DATE_RANGE);
+        if (allDay) {
+            LocalDate startDate = requestDTO.getStartDateTime().toLocalDate();
+            LocalDate endDate = requestDTO.getEndDateTime().toLocalDate();
+
+            if (startDate.isAfter(endDate)) {
+                throw new PlanException(PlanExceptionType.INVALID_PLAN_DATE_RANGE);
+            }
+        } else {
+            if (requestDTO.getStartDateTime().isAfter(requestDTO.getEndDateTime())) {
+                throw new PlanException(PlanExceptionType.INVALID_PLAN_DATE_RANGE);
+            }
         }
     }
 }
