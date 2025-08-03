@@ -27,10 +27,10 @@ public class PlanController {
     public ApiResponse<PlanCreateResponseDTO> createPlan(
             @Valid @RequestBody PlanCreateRequestDTO requestDTO,
             @RequestParam(value = "user_id", required = false) Long userId,
-            @RequestParam(value = "goal_id") Long goalId
+            @RequestParam(value = "sub_goal_id") Long subGoalId
     ) {
         try {
-            PlanCreateResponseDTO responseDTO = planService.createPlan(requestDTO, userId, goalId);
+            PlanCreateResponseDTO responseDTO = planService.createPlan(requestDTO, userId, subGoalId);
             return ApiResponse.success(responseDTO);
         } catch (PlanException e) {
             throw e;

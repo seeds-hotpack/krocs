@@ -16,10 +16,13 @@ public class PlanCreateResponseDTO {
 
     private Long planId;
     private Long goalId;
+    private Long subGoalId;
     private String title;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startDateTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endDateTime;
 
     private Boolean allDay;

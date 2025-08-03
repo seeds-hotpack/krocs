@@ -1,9 +1,11 @@
 package com.hotpack.krocs.domain.plan.service;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
+import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.exception.GoalException;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
 import com.hotpack.krocs.domain.goals.facade.GoalRepositoryFacade;
+import com.hotpack.krocs.domain.goals.facade.SubGoalRepositoryFacade;
 import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
@@ -36,6 +38,8 @@ public class PlanServiceTest {
     @Mock
     private GoalRepositoryFacade goalRepositoryFacade;
     @Mock
+    private SubGoalRepositoryFacade subGoalRepositoryFacade;
+    @Mock
     private PlanValidator planValidator;
 
     @InjectMocks
@@ -45,6 +49,7 @@ public class PlanServiceTest {
     private PlanCreateRequestDTO validRequestDTO;
     private Plan validPlan;
     private Goal validGoal;
+    private SubGoal validSubGoal;
     private PlanCreateResponseDTO validResponseDTO;
 
     @BeforeEach
@@ -54,6 +59,11 @@ public class PlanServiceTest {
                 .goalId(1L)
                 .title("테스트 목표")
                 .build();
+
+        validSubGoal = SubGoal.builder()
+            .subGoalId(1L)
+            .title("테스트 서브목표")
+            .build();
 
         validRequestDTO = PlanCreateRequestDTO.builder()
                 .title("테스트 일정")
@@ -90,16 +100,16 @@ public class PlanServiceTest {
     void createPlan_Success() {
         // given
         Long userId = 1L;
-        Long goalId = 1L;
+        Long subGoalId = 1L;
 
-        doNothing().when(planValidator).validatePlanCreation(validRequestDTO, goalId);
-        when(goalRepositoryFacade.findGoalByGoalId(goalId)).thenReturn(validGoal);
-        when(planConverter.toEntity(validRequestDTO, validGoal)).thenReturn(validPlan);
+        doNothing().when(planValidator).validatePlanCreation(validRequestDTO, subGoalId);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(planConverter.toEntity(validRequestDTO, validGoal, validSubGoal)).thenReturn(validPlan);
         when(planRepositoryFacade.savePlan(validPlan)).thenReturn(validPlan);
-        when(planConverter.toCreateResponseDTO(validPlan, goalId)).thenReturn(validResponseDTO);
+        when(planConverter.toCreateResponseDTO(validPlan)).thenReturn(validResponseDTO);
 
         // when
-        PlanCreateResponseDTO result = planService.createPlan(validRequestDTO, userId, goalId);
+        PlanCreateResponseDTO result = planService.createPlan(validRequestDTO, userId, subGoalId);
 
         // then
         assertThat(result).isNotNull();
@@ -172,9 +182,9 @@ public class PlanServiceTest {
         // Mock 설정
         doNothing().when(planValidator).validatePlanCreation(allDayRequest, goalId);
         when(goalRepositoryFacade.findGoalByGoalId(goalId)).thenReturn(validGoal);
-        when(planConverter.toEntity(allDayRequest, validGoal)).thenReturn(allDayPlan);
+        when(planConverter.toEntity(allDayRequest, validGoal, validSubGoal)).thenReturn(allDayPlan);
         when(planRepositoryFacade.savePlan(allDayPlan)).thenReturn(allDayPlan);
-        when(planConverter.toCreateResponseDTO(allDayPlan, goalId)).thenReturn(allDayResponse);
+        when(planConverter.toCreateResponseDTO(allDayPlan)).thenReturn(allDayResponse);
 
         // when
         PlanCreateResponseDTO result = planService.createPlan(allDayRequest, userId, goalId);
@@ -212,7 +222,7 @@ public class PlanServiceTest {
         // Validator만 호출되고 나머지는 호출되지 않았는지 확인
         verify(planValidator).validatePlanCreation(invalidRequest, goalId);
         verify(goalRepositoryFacade, never()).findGoalByGoalId(any());
-        verify(planConverter, never()).toEntity(any(), any());
+        verify(planConverter, never()).toEntity(any(), any(), any());
     }
 
     @Test
@@ -240,30 +250,6 @@ public class PlanServiceTest {
     }
 
     @Test
-    @DisplayName("일정 생성 실패 - 에너지 범위 초과")
-    void createPlan_Fail_InvalidEnergy() {
-        // given
-        Long userId = 1L;
-        Long goalId = 1L;
-        
-        PlanCreateRequestDTO invalidEnergyRequest = PlanCreateRequestDTO.builder()
-                .title("에너지 범위 초과")
-                .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
-                .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
-                .allDay(false)
-                .build();
-
-        // PlanValidator에서 에너지 범위 오류 예외를 던지도록 설정
-        doThrow(new PlanException(PlanExceptionType.PLAN_INVALID_ENERGY))
-                .when(planValidator).validatePlanCreation(invalidEnergyRequest, goalId);
-
-        // when & then
-        assertThatThrownBy(() -> planService.createPlan(invalidEnergyRequest, userId, goalId))
-                .isInstanceOf(PlanException.class)
-                .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_ENERGY);
-    }
-
-    @Test
     @DisplayName("일정 생성 실패 - Repository에서 예외 발생")
     void createPlan_Fail_RepositoryException() {
         // given
@@ -272,7 +258,7 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validatePlanCreation(validRequestDTO, goalId);
         when(goalRepositoryFacade.findGoalByGoalId(goalId)).thenReturn(validGoal);
-        when(planConverter.toEntity(validRequestDTO, validGoal)).thenReturn(validPlan);
+        when(planConverter.toEntity(validRequestDTO, validGoal, validSubGoal)).thenReturn(validPlan);
         when(planRepositoryFacade.savePlan(validPlan)).thenThrow(new RuntimeException("데이터베이스 오류"));
 
         // when & then

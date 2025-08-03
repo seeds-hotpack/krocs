@@ -1,9 +1,11 @@
 package com.hotpack.krocs.domain.plans.service;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
+import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.exception.GoalException;
 import com.hotpack.krocs.domain.goals.exception.GoalExceptionType;
 import com.hotpack.krocs.domain.goals.facade.GoalRepositoryFacade;
+import com.hotpack.krocs.domain.goals.facade.SubGoalRepositoryFacade;
 import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
@@ -25,27 +27,33 @@ public class PlanServiceImpl implements PlanService{
 
     private final PlanRepositoryFacade planRepositoryFacade;
     private final PlanConverter planConverter;
-    private final GoalRepositoryFacade goalRepositoryFacade;
+    private final SubGoalRepositoryFacade subGoalRepositoryFacade;
     private final PlanValidator planValidator;
 
     @Override
     @Transactional
-    public PlanCreateResponseDTO createPlan(PlanCreateRequestDTO requestDTO, Long userId, Long goalId) {
+    public PlanCreateResponseDTO createPlan(PlanCreateRequestDTO requestDTO, Long userId, Long subGoalId) {
         try {
-            planValidator.validatePlanCreation(requestDTO, goalId);
+            planValidator.validatePlanCreation(requestDTO, subGoalId);
 
-            Goal goal = goalRepositoryFacade.findGoalByGoalId(goalId);
+            SubGoal subGoal = subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId);
+            if(subGoal == null) {
+                throw new PlanException(PlanExceptionType.PLAN_SUB_GOAL_NOT_FOUND);
+            }
+
+            Goal goal = subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId);
             if(goal == null) {
                 throw new PlanException(PlanExceptionType.PLAN_GOAL_NOT_FOUND);
             }
-            Plan plan = planConverter.toEntity(requestDTO, goal);
+
+            Plan plan = planConverter.toEntity(requestDTO, goal, subGoal);
             Plan savedPlan = planRepositoryFacade.savePlan(plan);
 
-            return planConverter.toCreateResponseDTO(savedPlan, goalId);
+            return planConverter.toCreateResponseDTO(savedPlan);
         } catch (PlanException e) {
             throw e;
         } catch (Exception e) {
-            log.error("대목표 생성 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            log.error("일정 생성 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
             throw new PlanException(PlanExceptionType.PLAN_CREATION_FAILED);
         }
     }

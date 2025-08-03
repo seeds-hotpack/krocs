@@ -1,6 +1,7 @@
 package com.hotpack.krocs.domain.plan.converter;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
+import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
@@ -16,6 +17,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class PlanConventerTest {
     private PlanConverter planConverter;
     private Goal validGoal;
+    private SubGoal validSubGoal;
     private PlanCreateRequestDTO validRequestDTO;
     private Plan validPlan;
 
@@ -27,6 +29,11 @@ public class PlanConventerTest {
                 .goalId(1L)
                 .title("테스트 목표")
                 .build();
+
+        validSubGoal = SubGoal.builder()
+            .subGoalId(1L)
+            .title("테스트 서브목표")
+            .build();
 
         validRequestDTO = PlanCreateRequestDTO.builder()
                 .title("테스트 일정")
@@ -50,7 +57,7 @@ public class PlanConventerTest {
     @DisplayName("RequestDTO를 Plan 엔티티로 변환")
     void toEntity_Success() {
         // when
-        Plan result = planConverter.toEntity(validRequestDTO, validGoal);
+        Plan result = planConverter.toEntity(validRequestDTO, validGoal, validSubGoal);
 
         // then
         assertThat(result.getTitle()).isEqualTo("테스트 일정");
@@ -65,7 +72,7 @@ public class PlanConventerTest {
     @DisplayName("Plan 엔티티를 ResponseDTO로 변환")
     void toCreateResponseDTO_Success() {
         // when
-        PlanCreateResponseDTO result = planConverter.toCreateResponseDTO(validPlan, 1L);
+        PlanCreateResponseDTO result = planConverter.toCreateResponseDTO(validPlan);
 
         // then
         assertThat(result.getPlanId()).isEqualTo(1L);
@@ -87,7 +94,7 @@ public class PlanConventerTest {
                 .build();
 
         // when
-        Plan result = planConverter.toEntity(allDayRequest, validGoal);
+        Plan result = planConverter.toEntity(allDayRequest, validGoal, validSubGoal);
 
         // then
         assertThat(result.getAllDay()).isTrue();
