@@ -28,12 +28,12 @@ backend/gradlew.bat
 backend/HELP.md
 
 # ===== 프론트엔드 (React 등 추정) =====
-/frontend/node_modules/
-/frontend/.next/
-/frontend/.parcel-cache/
-frontend/.env.local
-frontend/build/
-/frontend/dist/
+/frontend-legacy/node_modules/
+/frontend-legacy/.next/
+/frontend-legacy/.parcel-cache/
+frontend-legacy/.env.local
+frontend-legacy/build/
+/frontend-legacy/dist/
 
 # ===== 테스트 커버리지 =====
 **/coverage/
