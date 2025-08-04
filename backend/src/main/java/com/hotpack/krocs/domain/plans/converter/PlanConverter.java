@@ -1,10 +1,12 @@
 package com.hotpack.krocs.domain.plans.converter;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanCreateResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +41,8 @@ public class PlanConverter {
                 .build();
     }
 
-    public PlanCreateResponseDTO toCreateResponseDTO(Plan plan) {
-        PlanCreateResponseDTO.PlanCreateResponseDTOBuilder builder = PlanCreateResponseDTO.builder()
+    public PlanResponseDTO toEntity(Plan plan) {
+        PlanResponseDTO.PlanResponseDTOBuilder builder = PlanResponseDTO.builder()
             .planId(plan.getPlanId())
             .title(plan.getTitle())
             .startDateTime(plan.getStartDateTime())

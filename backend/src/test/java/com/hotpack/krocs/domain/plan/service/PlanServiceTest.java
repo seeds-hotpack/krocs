@@ -10,6 +10,7 @@ import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanCreateResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
@@ -48,7 +49,7 @@ public class PlanServiceTest {
     private Plan validPlan;
     private Goal validGoal;
     private SubGoal validSubGoal;
-    private PlanCreateResponseDTO validResponseDTO;
+    private PlanResponseDTO validResponseDTO;
 
     @BeforeEach
     void setUp() {
@@ -83,7 +84,7 @@ public class PlanServiceTest {
                 .isCompleted(false)
                 .build();
 
-        validResponseDTO = PlanCreateResponseDTO.builder()
+        validResponseDTO = PlanResponseDTO.builder()
                 .planId(1L)
                 .goalId(1L)
                 .subGoalId(1L)
@@ -109,10 +110,10 @@ public class PlanServiceTest {
         when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         when(planConverter.toEntity(validRequestDTO, validGoal, validSubGoal)).thenReturn(validPlan);
         when(planRepositoryFacade.savePlan(validPlan)).thenReturn(validPlan);
-        when(planConverter.toCreateResponseDTO(validPlan)).thenReturn(validResponseDTO);
+        when(planConverter.toEntity(validPlan)).thenReturn(validResponseDTO);
 
         // when
-        PlanCreateResponseDTO result = planService.createPlan(validRequestDTO, userId, subGoalId);
+        PlanResponseDTO result = planService.createPlan(validRequestDTO, userId, subGoalId);
 
         // then
         assertThat(result).isNotNull();
@@ -175,7 +176,7 @@ public class PlanServiceTest {
             .isCompleted(false)
             .build();
 
-        PlanCreateResponseDTO allDayResponse = PlanCreateResponseDTO.builder()
+        PlanResponseDTO allDayResponse = PlanResponseDTO.builder()
             .planId(1L)
             .goalId(1L)
             .subGoalId(1L)
@@ -189,10 +190,10 @@ public class PlanServiceTest {
         when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         when(planConverter.toEntity(allDayRequest, validGoal, validSubGoal)).thenReturn(allDayPlan);
         when(planRepositoryFacade.savePlan(allDayPlan)).thenReturn(allDayPlan);
-        when(planConverter.toCreateResponseDTO(allDayPlan)).thenReturn(allDayResponse);
+        when(planConverter.toEntity(allDayPlan)).thenReturn(allDayResponse);
 
         // when
-        PlanCreateResponseDTO result = planService.createPlan(allDayRequest, userId, subGoalId);
+        PlanResponseDTO result = planService.createPlan(allDayRequest, userId, subGoalId);
 
         // then
         assertThat(result).isNotNull();

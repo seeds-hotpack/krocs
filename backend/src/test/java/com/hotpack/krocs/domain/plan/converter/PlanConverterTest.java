@@ -6,6 +6,7 @@ import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanCreateResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,7 +78,7 @@ public class PlanConverterTest {
     @DisplayName("Plan 엔티티를 ResponseDTO로 변환")
     void toCreateResponseDTO_Success() {
         // when
-        PlanCreateResponseDTO result = planConverter.toCreateResponseDTO(validPlan);
+        PlanResponseDTO result = planConverter.toEntity(validPlan);
 
         // then
         assertThat(result.getPlanId()).isEqualTo(1L);
@@ -112,7 +113,7 @@ public class PlanConverterTest {
     @DisplayName("Plan 객체가 null인 경우")
     void toCreateResponseDTO_PlanNull() {
         // when & then
-        assertThatThrownBy(() -> planConverter.toCreateResponseDTO(null))
+        assertThatThrownBy(() -> planConverter.toEntity(null))
             .isInstanceOf(NullPointerException.class);
     }
 }
