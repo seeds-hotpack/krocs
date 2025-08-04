@@ -82,6 +82,7 @@ public class PlanServiceImpl implements PlanService{
     @Override
     public PlanResponseDTO getPlanById(Long planId, Long userId) {
         try {
+            planValidator.validateGetPlan(planId);
             Plan plan = planRepositoryFacade.findPlanById(planId);
             if (plan == null) {
                 throw new PlanException(PlanExceptionType.PLAN_NOT_FOUND);

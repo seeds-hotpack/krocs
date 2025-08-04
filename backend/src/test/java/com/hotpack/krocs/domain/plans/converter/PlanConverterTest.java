@@ -5,27 +5,40 @@ import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 public class PlanConverterTest {
+
+    @Mock
+    private SubPlanConverter subPlanConverter;
+
+    @InjectMocks
     private PlanConverter planConverter;
+
     private Goal validGoal;
     private SubGoal validSubGoal;
     private PlanCreateRequestDTO validRequestDTO;
     private Plan validPlan;
-    private SubPlanConverter subPlanConverter;
 
     @BeforeEach
     void setUp() {
-        planConverter = new PlanConverter(subPlanConverter);
-
         validGoal = Goal.builder()
                 .goalId(1L)
                 .title("테스트 목표")
@@ -57,6 +70,8 @@ public class PlanConverterTest {
                 .build();
     }
 
+    // 1. toEntity from Request DTO
+
     @Test
     @DisplayName("RequestDTO를 Plan 엔티티로 변환")
     void toEntity_Success() {
@@ -72,6 +87,131 @@ public class PlanConverterTest {
         assertThat(result.getAllDay()).isFalse();
         assertThat(result.getIsCompleted()).isFalse();
     }
+
+    @Test
+    @DisplayName("allDay = true인 경우 변환")
+    void toEntity_AllDay_True() {
+        // given
+        PlanCreateRequestDTO allDayRequest = PlanCreateRequestDTO.builder()
+            .title("하루 종일 일정")
+            .allDay(true)
+            .build();
+
+        // when
+        Plan result = planConverter.toEntity(allDayRequest, validGoal, validSubGoal);
+
+        // then
+        assertThat(result.getAllDay()).isTrue();
+        assertThat(result.getStartDateTime()).isNull();
+        assertThat(result.getEndDateTime()).isNull();
+    }
+
+    @Test
+    @DisplayName("allDay = false 명시적 테스트")
+    void toEntity_AllDay_False() {
+        // given
+        PlanCreateRequestDTO request = PlanCreateRequestDTO.builder()
+            .title("시간 지정 일정")
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 17, 0))
+            .allDay(false)
+            .build();
+
+        // when
+        Plan result = planConverter.toEntity(request, validGoal, validSubGoal);
+
+        // then
+        assertThat(result.getAllDay()).isFalse();
+        assertThat(result.getStartDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 9, 0));
+        assertThat(result.getEndDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 17, 0));
+    }
+
+    @Test
+    @DisplayName("allDay = null인 경우 기본값 false")
+    void toEntity_AllDay_Null() {
+        // given
+        PlanCreateRequestDTO request = PlanCreateRequestDTO.builder()
+            .title("allDay null 일정")
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 17, 0))
+            .allDay(null)
+            .build();
+
+        // when
+        Plan result = planConverter.toEntity(request, validGoal, validSubGoal);
+
+        // then
+        assertThat(result.getAllDay()).isNull();
+        assertThat(result.getStartDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 9, 0));
+        assertThat(result.getEndDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 17, 0));
+    }
+
+    @Test
+    @DisplayName("allDay = true이면서 시간이 설정된 경우 시간 변환")
+    void toEntity_AllDay_True_With_DateTime() {
+        // given
+        PlanCreateRequestDTO request = PlanCreateRequestDTO.builder()
+            .title("하루 종일 일정")
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 15, 30))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 20, 45))
+            .allDay(true)
+            .build();
+
+        // when
+        Plan result = planConverter.toEntity(request, validGoal, validSubGoal);
+
+        // then
+        assertThat(result.getAllDay()).isTrue();
+        assertThat(result.getStartDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 0, 0));
+        assertThat(result.getEndDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 23, 59, 59));
+    }
+
+    @Test
+    @DisplayName("Goal과 SubGoal이 모두 null인 경우")
+    void toEntity_Goal_SubGoal_Both_Null() {
+        // when
+        Plan result = planConverter.toEntity(validRequestDTO, null, null);
+
+        // then
+        assertThat(result.getGoal()).isNull();
+        assertThat(result.getSubGoal()).isNull();
+        assertThat(result.getTitle()).isEqualTo("테스트 일정");
+        assertThat(result.getIsCompleted()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Goal만 null인 경우")
+    void toEntity_Goal_Null() {
+        // when
+        Plan result = planConverter.toEntity(validRequestDTO, null, validSubGoal);
+
+        // then
+        assertThat(result.getGoal()).isNull();
+        assertThat(result.getSubGoal()).isEqualTo(validSubGoal);
+        assertThat(result.getTitle()).isEqualTo("테스트 일정");
+    }
+
+    @Test
+    @DisplayName("SubGoal만 null인 경우")
+    void toEntity_SubGoal_Null() {
+        // when
+        Plan result = planConverter.toEntity(validRequestDTO, validGoal, null);
+
+        // then
+        assertThat(result.getGoal()).isEqualTo(validGoal);
+        assertThat(result.getSubGoal()).isNull();
+        assertThat(result.getTitle()).isEqualTo("테스트 일정");
+    }
+
+    @Test
+    @DisplayName("RequestDTO가 null인 경우")
+    void toEntity_RequestDTO_Null() {
+        // when & then
+        assertThatThrownBy(() -> planConverter.toEntity(null, validGoal, validSubGoal))
+            .isInstanceOf(NullPointerException.class);
+    }
+
+    // 2. toEntity from Plan
 
     @Test
     @DisplayName("Plan 엔티티를 ResponseDTO로 변환")
@@ -91,28 +231,195 @@ public class PlanConverterTest {
     }
 
     @Test
-    @DisplayName("allDay = true인 경우 변환")
-    void toEntity_AllDay_True() {
-        // given
-        PlanCreateRequestDTO allDayRequest = PlanCreateRequestDTO.builder()
-                .title("하루 종일 일정")
-                .allDay(true)
-                .build();
-
-        // when
-        Plan result = planConverter.toEntity(allDayRequest, validGoal, validSubGoal);
-
-        // then
-        assertThat(result.getAllDay()).isTrue();
-        assertThat(result.getStartDateTime()).isNull();
-        assertThat(result.getEndDateTime()).isNull();
-    }
-
-    @Test
     @DisplayName("Plan 객체가 null인 경우")
     void toCreateResponseDTO_PlanNull() {
         // when & then
         assertThatThrownBy(() -> planConverter.toEntity(null))
+            .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @DisplayName("Plan의 Goal이 null인 경우")
+    void toResponseDTO_Plan_Goal_Null() {
+        // given
+        Plan planWithNullGoal = Plan.builder()
+            .planId(1L)
+            .goal(null)
+            .subGoal(validSubGoal)
+            .title("Goal 없는 일정")
+            .allDay(false)
+            .isCompleted(false)
+            .build();
+
+        // when
+        PlanResponseDTO result = planConverter.toEntity(planWithNullGoal);
+
+        // then
+        assertThat(result.getPlanId()).isEqualTo(1L);
+        assertThat(result.getGoalId()).isNull();
+        assertThat(result.getSubGoalId()).isEqualTo(1L);
+        assertThat(result.getTitle()).isEqualTo("Goal 없는 일정");
+    }
+
+    @Test
+    @DisplayName("Plan의 SubGoal이 null인 경우")
+    void toResponseDTO_Plan_SubGoal_Null() {
+        // given
+        Plan planWithNullSubGoal = Plan.builder()
+            .planId(1L)
+            .goal(validGoal)
+            .subGoal(null)
+            .title("SubGoal 없는 일정")
+            .allDay(false)
+            .isCompleted(false)
+            .build();
+
+        // when
+        PlanResponseDTO result = planConverter.toEntity(planWithNullSubGoal);
+
+        // then
+        assertThat(result.getPlanId()).isEqualTo(1L);
+        assertThat(result.getGoalId()).isEqualTo(1L);
+        assertThat(result.getSubGoalId()).isNull();
+        assertThat(result.getTitle()).isEqualTo("SubGoal 없는 일정");
+    }
+
+    @Test
+    @DisplayName("Plan의 SubPlans가 null인 경우")
+    void toResponseDTO_Plan_SubPlans_Null() {
+        // given
+        Plan planWithNullSubPlans = Plan.builder()
+            .planId(1L)
+            .goal(validGoal)
+            .subGoal(validSubGoal)
+            .subPlans(null)
+            .title("SubPlans null인 일정")
+            .allDay(false)
+            .isCompleted(false)
+            .build();
+
+        // when
+        PlanResponseDTO result = planConverter.toEntity(planWithNullSubPlans);
+
+        // then
+        assertThat(result.getSubPlans()).isEmpty();
+        verify(subPlanConverter, never()).toSubPlanResponseDTO(any());
+    }
+
+    @Test
+    @DisplayName("Plan의 SubPlans가 빈 리스트인 경우")
+    void toResponseDTO_Plan_SubPlans_Empty() {
+        // given
+        Plan planWithEmptySubPlans = Plan.builder()
+            .planId(1L)
+            .goal(validGoal)
+            .subGoal(validSubGoal)
+            .subPlans(List.of())
+            .title("SubPlans 빈 리스트인 일정")
+            .allDay(false)
+            .isCompleted(false)
+            .build();
+
+        // when
+        PlanResponseDTO result = planConverter.toEntity(planWithEmptySubPlans);
+
+        // then
+        assertThat(result.getSubPlans()).isEmpty();
+        verify(subPlanConverter, never()).toSubPlanResponseDTO(any());
+    }
+
+    @Test
+    @DisplayName("완료된 Plan 변환 테스트")
+    void toResponseDTO_Plan_Completed() {
+        // given
+        LocalDateTime completedTime = LocalDateTime.of(2025, 8, 1, 15, 0);
+        Plan completedPlan = Plan.builder()
+            .planId(1L)
+            .goal(validGoal)
+            .subGoal(validSubGoal)
+            .title("완료된 일정")
+            .allDay(false)
+            .isCompleted(true)
+            .completedAt(completedTime)
+            .build();
+
+        // when
+        PlanResponseDTO result = planConverter.toEntity(completedPlan);
+
+        // then
+        assertThat(result.getIsCompleted()).isTrue();
+        assertThat(result.getCompletedAt()).isEqualTo(completedTime);
+    }
+
+    // 3. toListPlanResponseDTO
+
+    @Test
+    @DisplayName("정상적인 Plan 리스트 변환")
+    void toListPlanResponseDTO_Success() {
+        // given
+        Plan plan1 = Plan.builder()
+            .planId(1L)
+            .title("일정 1")
+            .goal(validGoal)
+            .subGoal(validSubGoal)
+            .allDay(false)
+            .isCompleted(false)
+            .build();
+
+        Plan plan2 = Plan.builder()
+            .planId(2L)
+            .title("일정 2")
+            .goal(null)
+            .subGoal(null)
+            .allDay(true)
+            .isCompleted(true)
+            .build();
+
+        List<Plan> plans = List.of(plan1, plan2);
+
+        // when
+        List<PlanResponseDTO> result = planConverter.toListPlanResponseDTO(plans);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getPlanId()).isEqualTo(1L);
+        assertThat(result.get(0).getTitle()).isEqualTo("일정 1");
+        assertThat(result.get(0).getGoalId()).isEqualTo(1L);
+
+        assertThat(result.get(1).getPlanId()).isEqualTo(2L);
+        assertThat(result.get(1).getTitle()).isEqualTo("일정 2");
+        assertThat(result.get(1).getGoalId()).isNull();
+    }
+
+    @Test
+    @DisplayName("빈 Plan 리스트 변환")
+    void toListPlanResponseDTO_Empty_List() {
+        // given
+        List<Plan> emptyPlans = List.of();
+
+        // when
+        List<PlanResponseDTO> result = planConverter.toListPlanResponseDTO(emptyPlans);
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @DisplayName("null Plan 리스트 변환")
+    void toListPlanResponseDTO_Null_List() {
+        // when & then
+        assertThatThrownBy(() -> planConverter.toListPlanResponseDTO(null))
+            .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @DisplayName("Plan이 null인 요소가 포함된 리스트")
+    void toListPlanResponseDTO_Contains_Null_Plan() {
+        // given
+        List<Plan> plansWithNull = Arrays.asList(validPlan, null);
+
+        // when & then
+        assertThatThrownBy(() -> planConverter.toListPlanResponseDTO(plansWithNull))
             .isInstanceOf(NullPointerException.class);
     }
 }
