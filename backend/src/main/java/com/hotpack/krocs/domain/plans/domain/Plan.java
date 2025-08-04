@@ -4,6 +4,7 @@ import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,9 @@ public class Plan extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_goal_id")
     private SubGoal subGoal;
+
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SubPlan> subPlans;
 
     @Column(name = "title", nullable = false, length = 200)
     private String title;

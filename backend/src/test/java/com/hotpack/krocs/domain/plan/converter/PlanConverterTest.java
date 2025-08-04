@@ -3,6 +3,7 @@ package com.hotpack.krocs.domain.plan.converter;
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.plans.converter.PlanConverter;
+import com.hotpack.krocs.domain.plans.converter.SubPlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
@@ -21,10 +22,11 @@ public class PlanConverterTest {
     private SubGoal validSubGoal;
     private PlanCreateRequestDTO validRequestDTO;
     private Plan validPlan;
+    private SubPlanConverter subPlanConverter;
 
     @BeforeEach
     void setUp() {
-        planConverter = new PlanConverter();
+        planConverter = new PlanConverter(subPlanConverter);
 
         validGoal = Goal.builder()
                 .goalId(1L)

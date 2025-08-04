@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,6 +18,10 @@ public class PlanResponseDTO {
     private Long goalId;
     @JsonProperty("sub_goal_id")
     private Long subGoalId;
+
+    @JsonProperty("sub_plans")
+    private List<SubPlanResponseDTO> subPlans;
+
     private String title;
 
     @Schema(
