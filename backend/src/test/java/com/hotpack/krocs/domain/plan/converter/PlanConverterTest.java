@@ -5,7 +5,6 @@ import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
-import com.hotpack.krocs.domain.plans.dto.response.PlanCreateResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

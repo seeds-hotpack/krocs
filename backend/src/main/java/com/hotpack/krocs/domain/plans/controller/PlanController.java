@@ -1,7 +1,6 @@
 package com.hotpack.krocs.domain.plans.controller;
 
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
-import com.hotpack.krocs.domain.plans.dto.response.PlanCreateResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanListResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;

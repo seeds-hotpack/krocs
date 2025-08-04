@@ -12,6 +12,7 @@ import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
 import com.hotpack.krocs.domain.plans.validator.PlanValidator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,12 @@ public class PlanServiceImpl implements PlanService{
     @Override
     public PlanListResponseDTO getAllPlans(Long userId) {
         try {
-            return null;
+            List<Plan> plans = planRepositoryFacade.findAllPlans();
+            List<PlanResponseDTO> planResponseDTOs = planConverter.toListPlanResponseDTO(plans);
+
+            return PlanListResponseDTO.builder()
+                .plans(planResponseDTOs)
+                .build();
         } catch (PlanException e) {
             throw e;
         } catch (Exception e) {
