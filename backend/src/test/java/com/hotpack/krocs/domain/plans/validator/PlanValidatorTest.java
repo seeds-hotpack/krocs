@@ -1,4 +1,4 @@
-package com.hotpack.krocs.domain.plan.validator;
+package com.hotpack.krocs.domain.plans.validator;
 
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;

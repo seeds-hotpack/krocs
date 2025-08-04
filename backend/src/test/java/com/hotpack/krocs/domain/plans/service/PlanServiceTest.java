@@ -1,4 +1,4 @@
-package com.hotpack.krocs.domain.plan.service;
+package com.hotpack.krocs.domain.plans.service;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
@@ -10,7 +10,6 @@ import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
-import com.hotpack.krocs.domain.plans.service.PlanServiceImpl;
 import com.hotpack.krocs.domain.plans.validator.PlanValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

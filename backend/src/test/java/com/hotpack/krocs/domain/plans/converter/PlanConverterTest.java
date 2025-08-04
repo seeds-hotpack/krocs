@@ -1,9 +1,7 @@
-package com.hotpack.krocs.domain.plan.converter;
+package com.hotpack.krocs.domain.plans.converter;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
-import com.hotpack.krocs.domain.plans.converter.PlanConverter;
-import com.hotpack.krocs.domain.plans.converter.SubPlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
