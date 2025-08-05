@@ -5,6 +5,7 @@ import com.hotpack.krocs.domain.plans.domain.SubPlan;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.SubPlanUpdateResponseDTO;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SubPlanConverter {
 
-    public SubPlan toEntity(Plan plan, SubPlanRequestDTO requestDTO) {
+    public SubPlan toSubPlanEntity(Plan plan, SubPlanRequestDTO requestDTO) {
         return SubPlan.builder()
             .plan(plan)
             .title(requestDTO.getTitle())
@@ -25,7 +26,7 @@ public class SubPlanConverter {
         SubPlanCreateRequestDTO subPlanCreateRequestDTO) {
         List<SubPlan> subPlans = new ArrayList<>();
         for (SubPlanRequestDTO subPlanRequestDTO : subPlanCreateRequestDTO.getSubPlans()) {
-            subPlans.add(toEntity(plan, subPlanRequestDTO));
+            subPlans.add(toSubPlanEntity(plan, subPlanRequestDTO));
         }
         return subPlans;
     }
@@ -41,12 +42,23 @@ public class SubPlanConverter {
             .build();
     }
 
-
     public List<SubPlanResponseDTO> toSubPlanResponseListDTO(List<SubPlan> subPlans) {
         List<SubPlanResponseDTO> subPlanResponseDTOs = new ArrayList<>();
         for (SubPlan subPlan : subPlans) {
             subPlanResponseDTOs.add(toSubPlanResponseDTO(subPlan));
         }
         return subPlanResponseDTOs;
+    }
+
+    public static SubPlanUpdateResponseDTO toSubPlanUpdateResponseDTO(SubPlan subPlan) {
+        return SubPlanUpdateResponseDTO.builder()
+            .subPlanId(subPlan.getSubPlanId())
+            .planId(subPlan.getPlan().getPlanId())
+            .title(subPlan.getTitle())
+            .isCompleted(subPlan.getIsCompleted())
+            .completedAt(subPlan.getCompletedAt())
+            .createdAt(subPlan.getCreatedAt())
+            .updatedAt(subPlan.getUpdatedAt())
+            .build();
     }
 }

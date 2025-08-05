@@ -2,6 +2,7 @@ package com.hotpack.krocs.domain.plans.controller;
 
 
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanCreateRequestDTO;
+import com.hotpack.krocs.domain.plans.dto.request.SubPlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanCreateResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanListResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
@@ -30,13 +31,12 @@ public class SubPlanController {
     @Operation(summary = "소계획 생성", description = "소계획을 생성합니다.")
     @PostMapping("/plans/{planId}/subplans")
     public ApiResponse<SubPlanCreateResponseDTO> createSubPlans(
-        @PathVariable @Parameter(description = "Plan ID", example = "1")
-        Long planId,
+        @PathVariable @Parameter(description = "Plan ID", example = "1") Long planId,
         @RequestBody @Parameter(description = "SubPlans", example = "{\"title\": \"소계획1\"}")
-        SubPlanCreateRequestDTO subPlanCreateRequestDTO) {
+        SubPlanCreateRequestDTO requestDTO) {
         try {
             SubPlanCreateResponseDTO responseDTO = subPlanService.createSubPlans(planId,
-                subPlanCreateRequestDTO);
+                requestDTO);
             return ApiResponse.success(responseDTO);
         } catch (SubPlanException e) {
             throw e;
@@ -90,6 +90,22 @@ public class SubPlanController {
             throw e;
         } catch (Exception e) {
             throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_DELETE_FAILED);
+        }
+    }
+
+    @Operation(summary = "특정 소계획 수정", description = "특정 소계획을 수정합니다")
+    @PatchMapping("/{subPlanId}")
+    public ApiResponse<SubPlanUpdateResponseDTO> updateSubPlan(
+        @RequestBody @Parameter(description = "SubPlans", example = "{\"title\": \"소계획1\"}")
+        @PathVariable @Parameter(description = "SubPlan ID", example = "1") Long subPlanId,
+        SubPlanUpdateRequestDTO requestDTO) {
+        try {
+            SubPlanUpdateResponseDTO responseDTO = subPlanService.updateSubPlan(subPlanId, requestDTO);
+            return ApiResponse.success(responseDTO);
+        } catch (SubPlanException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_UPDATE_FAILED);
         }
     }
 

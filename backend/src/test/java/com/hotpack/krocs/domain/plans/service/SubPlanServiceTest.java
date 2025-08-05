@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,13 +14,16 @@ import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.domain.SubPlan;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanRequestDTO;
+import com.hotpack.krocs.domain.plans.dto.request.SubPlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanCreateResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanListResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.SubPlanUpdateResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
 import com.hotpack.krocs.domain.plans.facade.SubPlanRepositoryFacade;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +39,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class SubPlanServiceTest {
 
     Plan validPlan = Plan.builder().planId(1L).build();
-    SubPlan validSubPlan = SubPlan.builder().subPlanId(1L).title("테스트 소계획1").isCompleted(false)
+    SubPlan validSubPlan = SubPlan.builder()
+        .subPlanId(1L)
+        .title("테스트 소계획1")
+        .isCompleted(false)
         .build();
-    SubPlanResponseDTO validSubPlanResponseDTO = SubPlanResponseDTO.builder().subPlanId(1L)
-        .title("테스트 소계획1").isCompleted(false).build();
-    SubPlanRequestDTO validSubPlanRequestDTO = SubPlanRequestDTO.builder().title("테스트 소계획1")
+
+    SubPlanResponseDTO validSubPlanResponseDTO = SubPlanResponseDTO.builder()
+        .subPlanId(1L)
+        .title("테스트 소계획1")
+        .isCompleted(false)
         .build();
+
+    SubPlanRequestDTO validSubPlanRequestDTO = SubPlanRequestDTO.builder()
+        .title("테스트 소계획1")
+        .build();
+
     SubPlanCreateRequestDTO validSubPlanCreateRequestDTO = SubPlanCreateRequestDTO.builder()
         .subPlans(List.of(validSubPlanRequestDTO)).build();
     @Mock
@@ -51,6 +65,11 @@ class SubPlanServiceTest {
     private SubPlanConverter subPlanConverter;
     @InjectMocks
     private SubPlanServiceImpl subPlanService;
+
+    SubPlanUpdateRequestDTO updateRequestDTO = SubPlanUpdateRequestDTO.builder()
+        .title("수정된 소계획 제목")
+            .isCompleted(true)
+            .build();
 
     @Test
     @DisplayName("소계획 생성 성공 테스트")
@@ -276,6 +295,84 @@ class SubPlanServiceTest {
             .isInstanceOf(SubPlanException.class)
             .hasFieldOrPropertyWithValue("subPlanExceptionType",
                 SubPlanExceptionType.SUB_PLAN_READ_FAILED);
+    }
+
+
+    @Test
+    @DisplayName("SubPlan 수정 성공")
+    void updateSubPlan_Success() {
+        // given
+        SubPlan updatedSubPlan = SubPlan.builder()
+            .subPlanId(1L)
+            .plan(validPlan)
+            .title(updateRequestDTO.getTitle())
+            .isCompleted(updateRequestDTO.getIsCompleted())
+            .completedAt(LocalDateTime.now())
+            .build();
+
+        SubPlanUpdateResponseDTO expectedResponse = SubPlanUpdateResponseDTO.builder()
+            .subPlanId(1L)
+            .planId(1L)
+            .title(updateRequestDTO.getTitle())
+            .isCompleted(updateRequestDTO.getIsCompleted())
+            .completedAt(updatedSubPlan.getCompletedAt())
+            .createdAt(updatedSubPlan.getCreatedAt())
+            .updatedAt(updatedSubPlan.getUpdatedAt())
+            .build();
+
+        given(subPlanRepositoryFacade.findSubPlanBySubPlanId(1L))
+            .willReturn(validSubPlan) // 첫 번째 조회 (수정 전)
+            .willReturn(updatedSubPlan); // 두 번째 조회 (수정 후)
+
+        // when
+        SubPlanUpdateResponseDTO actualResponse = subPlanService.updateSubPlan(1L, updateRequestDTO);
+
+        // then
+        assertThat(actualResponse.getSubPlanId()).isEqualTo(expectedResponse.getSubPlanId());
+        assertThat(actualResponse.getPlanId()).isEqualTo(expectedResponse.getPlanId());
+        assertThat(actualResponse.getTitle()).isEqualTo(expectedResponse.getTitle());
+        assertThat(actualResponse.getIsCompleted()).isTrue();
+        assertThat(actualResponse.getCompletedAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("SubPlan 수정 실패 - 제목 길이 초과")
+    void updateSubPlan_Fail_TitleTooLong() {
+        // given
+        String longTitle = "A".repeat(201);
+        SubPlanUpdateRequestDTO longTitleRequest = SubPlanUpdateRequestDTO.builder()
+            .title(longTitle)
+            .build();
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.updateSubPlan(1L, longTitleRequest))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_TITLE_TOO_LONG);
+    }
+
+    @Test
+    @DisplayName("SubPlan 수정 실패 - subPlanId 가 null")
+    void updateSubPlan_Fail_NullSubPlanId() {
+        // when & then
+        assertThatThrownBy(() -> subPlanService.updateSubPlan(null, updateRequestDTO))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_ID_IS_NULL);
+    }
+
+    @Test
+    @DisplayName("SubPlan 수정 실패 - 존재하지 않는 subPlan")
+    void updateSubPlan_Fail_NotFound() {
+        // given
+        given(subPlanRepositoryFacade.findSubPlanBySubPlanId(999L))
+            .willThrow(new SubPlanException(SubPlanExceptionType.SUB_PLAN_NOT_FOUND));
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.updateSubPlan(999L, updateRequestDTO))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_NOT_FOUND);
     }
 
     @Test

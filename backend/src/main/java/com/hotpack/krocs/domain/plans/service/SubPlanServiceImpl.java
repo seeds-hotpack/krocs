@@ -6,9 +6,11 @@ import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.domain.SubPlan;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanRequestDTO;
+import com.hotpack.krocs.domain.plans.dto.request.SubPlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanCreateResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanListResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.SubPlanUpdateResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
@@ -144,6 +146,42 @@ public class SubPlanServiceImpl implements SubPlanService {
             throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_DELETE_FAILED);
         }
     }
+    @Override
+    @Transactional
+    public SubPlanUpdateResponseDTO updateSubPlan(Long subPlanId, SubPlanUpdateRequestDTO requestDTO) {
+        try {
+            validateBusinessRules(requestDTO);
+
+            if (subPlanId == null) {
+                throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_ID_IS_NULL);
+            }
+
+            SubPlan subPlan = subPlanRepositoryFacade.findSubPlanBySubPlanId(subPlanId);
+
+            boolean wasCompleted = ( subPlan.getIsCompleted() != null && subPlan.getIsCompleted() );
+            subPlan.updateFrom(requestDTO, wasCompleted);
+
+            return SubPlanConverter.toSubPlanUpdateResponseDTO(
+                subPlanRepositoryFacade.findSubPlanBySubPlanId(subPlanId)
+            );
+        } catch (SubPlanException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("소계획 수정 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_UPDATE_FAILED);
+        }
+    }
+
+    private void validateBusinessRules(SubPlanUpdateRequestDTO requestDTO) {
+        if (requestDTO.getTitle() == null) {
+            return;
+        }
+
+        if (requestDTO.getTitle().length() > 200) {
+            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_TITLE_TOO_LONG);
+        }
+    }
+
 
 }
 
