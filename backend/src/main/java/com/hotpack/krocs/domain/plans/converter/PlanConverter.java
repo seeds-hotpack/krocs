@@ -2,17 +2,22 @@ package com.hotpack.krocs.domain.plans.converter;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
+import com.hotpack.krocs.domain.goals.dto.response.SubGoalResponseDTO;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
-import com.hotpack.krocs.domain.plans.dto.response.PlanCreateResponseDTO;
-import java.time.LocalDate;
+import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class PlanConverter {
+
+    private final SubPlanConverter subPlanConverter;
 
     public Plan toEntity(PlanCreateRequestDTO requestDTO, Goal goal, SubGoal subGoal) {
         LocalDateTime startDateTime = requestDTO.getStartDateTime();
@@ -39,10 +44,17 @@ public class PlanConverter {
                 .build();
     }
 
-    public PlanCreateResponseDTO toCreateResponseDTO(Plan plan) {
-        PlanCreateResponseDTO.PlanCreateResponseDTOBuilder builder = PlanCreateResponseDTO.builder()
+    public PlanResponseDTO toEntity(Plan plan) {
+        List<SubPlanResponseDTO> subPlanResponseDTOs = plan.getSubPlans() != null ?
+            plan.getSubPlans().stream()
+                .map(subPlanConverter::toSubPlanResponseDTO)
+                .collect(Collectors.toList()) :
+            List.of();
+
+        PlanResponseDTO.PlanResponseDTOBuilder builder = PlanResponseDTO.builder()
             .planId(plan.getPlanId())
             .title(plan.getTitle())
+            .subPlans(subPlanResponseDTOs)
             .startDateTime(plan.getStartDateTime())
             .endDateTime(plan.getEndDateTime())
             .allDay(plan.getAllDay())
@@ -60,5 +72,11 @@ public class PlanConverter {
         }
 
         return builder.build();
+    }
+
+    public List<PlanResponseDTO> toListPlanResponseDTO(List<Plan> plans) {
+        return plans.stream()
+            .map(this::toEntity)
+            .collect(Collectors.toList());
     }
 }

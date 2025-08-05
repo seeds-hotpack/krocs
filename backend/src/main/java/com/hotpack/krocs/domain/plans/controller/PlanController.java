@@ -1,12 +1,14 @@
 package com.hotpack.krocs.domain.plans.controller;
 
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
-import com.hotpack.krocs.domain.plans.dto.response.PlanCreateResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.PlanListResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
 import com.hotpack.krocs.domain.plans.service.PlanService;
 import com.hotpack.krocs.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,18 +26,50 @@ public class PlanController {
 
     @Operation(summary = "일정 생성", description = "새로운 일정을 생성합니다.")
     @PostMapping
-    public ApiResponse<PlanCreateResponseDTO> createPlan(
+    public ApiResponse<PlanResponseDTO> createPlan(
             @Valid @RequestBody PlanCreateRequestDTO requestDTO,
             @RequestParam(value = "user_id", required = false) Long userId,
             @RequestParam(value = "sub_goal_id", required = false) Long subGoalId
     ) {
         try {
-            PlanCreateResponseDTO responseDTO = planService.createPlan(requestDTO, userId, subGoalId);
+            PlanResponseDTO responseDTO = planService.createPlan(requestDTO, userId, subGoalId);
             return ApiResponse.success(responseDTO);
         } catch (PlanException e) {
             throw e;
         } catch (Exception e) {
             throw new PlanException(PlanExceptionType.PLAN_CREATION_FAILED);
+        }
+    }
+
+    @Operation(summary = "모든 일정 조회", description = "모든 일정을 조회합니다.")
+    @GetMapping
+    public ApiResponse<PlanListResponseDTO> getPlans(
+        @RequestParam(value = "user_id", required = false) Long userId
+    ) {
+        try {
+            PlanListResponseDTO response = planService.getAllPlans(userId);
+            return ApiResponse.success(response);
+        } catch (PlanException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PlanException(PlanExceptionType.PLAN_FOUND_FAILED);
+        }
+    }
+
+    @Operation(summary = "특정 일정 조회", description = "특정 일정을 조회합니다.")
+    @GetMapping("/{planId}")
+    public ApiResponse<PlanResponseDTO> getPlanById(
+        @PathVariable @Parameter(description = "Plan ID", example = "1")
+        Long planId,
+        @RequestParam(value = "user_id", required = false) Long userId
+    ) {
+        try {
+            PlanResponseDTO response = planService.getPlanById(planId, userId);
+            return ApiResponse.success(response);
+        } catch (PlanException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PlanException(PlanExceptionType.PLAN_FOUND_FAILED);
         }
     }
 }

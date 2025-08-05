@@ -22,6 +22,16 @@ public class PlanValidator {
         validateDateTime(requestDTO);
     }
 
+    public void validateGetPlan(Long planId) {
+        validatePlanIdParameter(planId);
+    }
+
+    private void validatePlanIdParameter(Long planId) {
+        if (planId == null || planId <= 0) {
+            throw new PlanException(PlanExceptionType.PLAN_INVALID_PLAN_ID);
+        }
+    }
+
     public void validateSubGoalIdParameter(Long subGoalId) {
         if (subGoalId == null) return;
         if (subGoalId <= 0) {

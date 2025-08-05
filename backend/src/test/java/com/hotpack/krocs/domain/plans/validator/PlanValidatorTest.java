@@ -1,4 +1,4 @@
-package com.hotpack.krocs.domain.plan.validator;
+package com.hotpack.krocs.domain.plans.validator;
 
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
@@ -248,6 +248,29 @@ public class PlanValidatorTest {
 
         // when & then
         assertThatCode(() -> planValidator.validatePlanCreation(validRequest, 1L))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("validateGetPlan - planId가 null이면 예외 발생")
+    void validateGetPlan_Fail_PlanIdNull() {
+        assertThatThrownBy(() -> planValidator.validateGetPlan(null))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_PLAN_ID);
+    }
+
+    @Test
+    @DisplayName("validateGetPlan - planId가 0 이하이면 예외 발생")
+    void validateGetPlan_Fail_PlanIdZeroOrLess() {
+        assertThatThrownBy(() -> planValidator.validateGetPlan(0L))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_PLAN_ID);
+    }
+
+    @Test
+    @DisplayName("validateGetPlan - 정상 케이스, 예외 발생하지 않음")
+    void validateGetPlan_Success() {
+        assertThatCode(() -> planValidator.validateGetPlan(1L))
             .doesNotThrowAnyException();
     }
 }
