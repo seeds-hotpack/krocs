@@ -41,6 +41,14 @@ public class SubTemplateConverter {
             .build();
     }
 
+    public List<SubTemplateResponseDTO> toListResponseDTO(List<SubTemplate> subTemplates) {
+        List<SubTemplateResponseDTO> subTemplateResponseDTOs = new ArrayList<>();
+        for (SubTemplate subTemplate : subTemplates) {
+            subTemplateResponseDTOs.add(toResponseDTO(subTemplate));
+        }
+        return subTemplateResponseDTOs;
+    }
+
     public SubTemplateResponseDTO toResponseDTO(SubTemplate subTemplate) {
         return SubTemplateResponseDTO.builder()
             .subTemplateId(subTemplate.getSubTemplateId())
