@@ -1,6 +1,7 @@
 package com.hotpack.krocs.domain.plans.service;
 
 
+import com.hotpack.krocs.domain.goals.dto.response.SubGoalListResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.SubPlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanCreateResponseDTO;

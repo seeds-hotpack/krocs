@@ -133,21 +133,6 @@ public class SubPlanServiceImpl implements SubPlanService {
 
     @Override
     @Transactional
-    public void deleteSubPlan(Long subPlanId) {
-        try {
-            if (subPlanId == null) {
-                throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_ID_IS_NULL);
-            }
-            subPlanRepositoryFacade.deleteSubPlanBySubPlanId(subPlanId);
-        } catch (SubPlanException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("소계획 삭제 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
-            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_DELETE_FAILED);
-        }
-    }
-    @Override
-    @Transactional
     public SubPlanUpdateResponseDTO updateSubPlan(Long subPlanId, SubPlanUpdateRequestDTO requestDTO) {
         try {
             validateBusinessRules(requestDTO);
@@ -183,5 +168,20 @@ public class SubPlanServiceImpl implements SubPlanService {
     }
 
 
+    @Override
+    @Transactional
+    public void deleteSubPlan(Long subPlanId) {
+        try {
+            if (subPlanId == null) {
+            }
+                throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_ID_IS_NULL);
+            subPlanRepositoryFacade.deleteSubPlanBySubPlanId(subPlanId);
+            throw e;
+        } catch (SubPlanException e) {
+        } catch (Exception e) {
+            log.error("소계획 삭제 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_DELETE_FAILED);
+        }
+    }
 }
 

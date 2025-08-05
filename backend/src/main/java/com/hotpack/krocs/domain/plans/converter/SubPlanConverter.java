@@ -15,18 +15,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SubPlanConverter {
 
-    public static SubPlanUpdateResponseDTO toSubPlanUpdateResponseDTO(SubPlan subPlan) {
-        return SubPlanUpdateResponseDTO.builder()
-            .subPlanId(subPlan.getSubPlanId())
-            .planId(subPlan.getPlan().getPlanId())
-            .title(subPlan.getTitle())
-            .isCompleted(subPlan.getIsCompleted())
-            .completedAt(subPlan.getCompletedAt())
-            .createdAt(subPlan.getCreatedAt())
-            .updatedAt(subPlan.getUpdatedAt())
-            .build();
-    }
-
     public SubPlan toEntity(Plan plan, SubPlanRequestDTO requestDTO) {
         return SubPlan.builder()
             .plan(plan)
@@ -38,7 +26,7 @@ public class SubPlanConverter {
         SubPlanCreateRequestDTO subPlanCreateRequestDTO) {
         List<SubPlan> subPlans = new ArrayList<>();
         for (SubPlanRequestDTO subPlanRequestDTO : subPlanCreateRequestDTO.getSubPlans()) {
-            subPlans.add(toEntity(plan, subPlanRequestDTO));
+            subPlans.add(toSubPlanEntity(plan, subPlanRequestDTO));
         }
         return subPlans;
     }
@@ -60,5 +48,17 @@ public class SubPlanConverter {
             subPlanResponseDTOs.add(toSubPlanResponseDTO(subPlan));
         }
         return subPlanResponseDTOs;
+    }
+
+    public static SubPlanUpdateResponseDTO toSubPlanUpdateResponseDTO(SubPlan subPlan) {
+        return SubPlanUpdateResponseDTO.builder()
+            .subPlanId(subPlan.getSubPlanId())
+            .planId(subPlan.getPlan().getPlanId())
+            .title(subPlan.getTitle())
+            .isCompleted(subPlan.getIsCompleted())
+            .completedAt(subPlan.getCompletedAt())
+            .createdAt(subPlan.getCreatedAt())
+            .updatedAt(subPlan.getUpdatedAt())
+            .build();
     }
 }

@@ -49,9 +49,8 @@ public class SubPlanController {
 
     @Operation(summary = "특정 plan 소계획 리스트 조회", description = "특정 plan의 소계획 리스트를 조회합니다.")
     @GetMapping("/{planId}/subplans")
-    public ApiResponse<SubPlanListResponseDTO> getAllSubPlans(
-        @PathVariable @Parameter(description = "Plan ID", example = "1") Long planId
-    ) {
+    public ApiResponse<SubPlanListResponseDTO> getSubGoals(
+        @PathVariable @Parameter(description = "Plan ID", example = "1") Long planId) {
         try {
             SubPlanListResponseDTO response = subPlanService.getAllSubPlans(planId);
             return ApiResponse.success(response);
@@ -65,11 +64,8 @@ public class SubPlanController {
     @Operation(summary = "특정 소계획 조회", description = "특정 소계획을 조회합니다")
     @GetMapping("/{planId}/subplans/{subPlanId}")
     public ApiResponse<SubPlanResponseDTO> getSubPlan(
-        @PathVariable @Parameter(description = "Plan ID", example = "1")
-        Long planId,
-        @PathVariable @Parameter(description = "SubPlan ID", example = "23")
-        Long subPlanId
-    ) {
+        @PathVariable @Parameter(description = "Plan ID", example = "1") Long planId,
+        @PathVariable @Parameter(description = "SubPlan ID", example = "23") Long subPlanId) {
         try {
             SubPlanResponseDTO response = subPlanService.getSubPlan(planId, subPlanId);
             return ApiResponse.success(response);
@@ -79,6 +75,23 @@ public class SubPlanController {
             throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_READ_FAILED);
         }
     }
+
+    @Operation(summary = "특정 소계획 수정", description = "특정 소계획을 수정합니다")
+    @PatchMapping("/{subPlanId}")
+    public ApiResponse<SubPlanUpdateResponseDTO> updateSubPlan(
+        @PathVariable @Parameter(description = "SubPlan ID", example = "1") Long subPlanId,
+        @RequestBody @Parameter(description = "SubPlans", example = "{\"title\": \"소계획1\"}")
+        SubPlanUpdateRequestDTO requestDTO) {
+        try {
+            SubPlanUpdateResponseDTO responseDTO = subPlanService.updateSubPlan(subPlanId, requestDTO);
+            return ApiResponse.success(responseDTO);
+        } catch (SubPlanException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_UPDATE_FAILED);
+        }
+    }
+
 
     @Operation(summary = "특정 소계획 삭제", description = "특정 소계획을 삭제합니다")
     @DeleteMapping("subplans/{subPlanId}")
@@ -94,22 +107,4 @@ public class SubPlanController {
             throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_DELETE_FAILED);
         }
     }
-
-    @Operation(summary = "특정 소계획 수정", description = "특정 소계획을 수정합니다")
-    @PatchMapping("/{subPlanId}")
-    public ApiResponse<SubPlanUpdateResponseDTO> updateSubPlan(
-        @RequestBody @Parameter(description = "SubPlans", example = "{\"title\": \"소계획1\"}") SubPlanUpdateRequestDTO requestDTO,
-        @PathVariable @Parameter(description = "SubPlan ID", example = "1")
-        Long subPlanId) {
-        try {
-            SubPlanUpdateResponseDTO responseDTO = subPlanService.updateSubPlan(subPlanId,
-                requestDTO);
-            return ApiResponse.success(responseDTO);
-        } catch (SubPlanException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_UPDATE_FAILED);
-        }
-    }
-
 }

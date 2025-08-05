@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.hotpack.krocs.domain.plans.converter.SubPlanConverter;
@@ -23,6 +21,7 @@ import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
 import com.hotpack.krocs.domain.plans.facade.SubPlanRepositoryFacade;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +67,32 @@ class SubPlanServiceTest {
     private SubPlanConverter subPlanConverter;
     @InjectMocks
     private SubPlanServiceImpl subPlanService;
+
+
+    Plan validPlan = Plan.builder().planId(1L).build();
+    SubPlan validSubPlan = SubPlan.builder()
+        .subPlanId(1L)
+        .title("테스트 소계획1")
+        .isCompleted(false)
+        .build();
+
+    SubPlanResponseDTO validSubPlanResponseDTO = SubPlanResponseDTO.builder()
+        .subPlanId(1L)
+        .title("테스트 소계획1")
+        .isCompleted(false)
+        .build();
+
+    SubPlanRequestDTO validSubPlanRequestDTO = SubPlanRequestDTO.builder()
+        .title("테스트 소계획1")
+        .build();
+
+    SubPlanCreateRequestDTO validSubPlanCreateRequestDTO = SubPlanCreateRequestDTO.builder()
+        .subPlans(List.of(validSubPlanRequestDTO)).build();
+
+    SubPlanUpdateRequestDTO updateRequestDTO = SubPlanUpdateRequestDTO.builder()
+        .title("수정된 소계획 제목")
+            .isCompleted(true)
+            .build();
 
     @Test
     @DisplayName("소계획 생성 성공 테스트")
@@ -323,8 +348,7 @@ class SubPlanServiceTest {
             .willReturn(updatedSubPlan); // 두 번째 조회 (수정 후)
 
         // when
-        SubPlanUpdateResponseDTO actualResponse = subPlanService.updateSubPlan(1L,
-            updateRequestDTO);
+        SubPlanUpdateResponseDTO actualResponse = subPlanService.updateSubPlan(1L, updateRequestDTO);
 
         // then
         assertThat(actualResponse.getSubPlanId()).isEqualTo(expectedResponse.getSubPlanId());
@@ -373,7 +397,6 @@ class SubPlanServiceTest {
             .hasFieldOrPropertyWithValue("subPlanExceptionType",
                 SubPlanExceptionType.SUB_PLAN_NOT_FOUND);
     }
-
     @Test
     @DisplayName("소계획 삭제 성공")
     void deleteSubPlan_Success() {
@@ -396,8 +419,8 @@ class SubPlanServiceTest {
             .when(subPlanRepositoryFacade)
             .deleteSubPlanBySubPlanId(any());
 
-        // when & then
         assertThatThrownBy(() -> subPlanService.deleteSubPlan(1L))
+        // when & then
             .isInstanceOf(SubPlanException.class)
             .hasFieldOrPropertyWithValue("subPlanExceptionType",
                 SubPlanExceptionType.SUB_PLAN_NOT_FOUND);
@@ -406,8 +429,8 @@ class SubPlanServiceTest {
 
     @Test
     @DisplayName("소계획 삭제 실패 - 내부 예외 발생")
-    void deleteSubPlan_Fail_InternalError() {
         doThrow(new RuntimeException())
+    void deleteSubPlan_Fail_InternalError() {
             .when(subPlanRepositoryFacade)
             .deleteSubPlanBySubPlanId(any());
 
@@ -417,5 +440,4 @@ class SubPlanServiceTest {
             .hasFieldOrPropertyWithValue("subPlanExceptionType",
                 SubPlanExceptionType.SUB_PLAN_DELETE_FAILED);
     }
-
 }
