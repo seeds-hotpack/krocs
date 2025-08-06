@@ -10,4 +10,6 @@ public interface SubPlanRepository extends JpaRepository<SubPlan, Long> {
     List<SubPlan> findSubPlansByPlan(Plan plan);
 
     SubPlan findSubPlansBySubPlanId(Long subPlanId);
+
+    void deleteSubPlanBySubPlanId(Long subPlanId);
 }
