@@ -65,9 +65,6 @@ public class SubTemplateServiceImpl implements SubTemplateService {
 
             List<SubTemplate> subTemplates = subTemplateRepositoryFacade.findBySubTemplate(
                 template);
-            if (subTemplates.isEmpty()) {
-                throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_NOT_FOUND);
-            }
 
             return subTemplateConverter.toListResponseDTO(subTemplates);
         } catch (SubTemplateException e) {
