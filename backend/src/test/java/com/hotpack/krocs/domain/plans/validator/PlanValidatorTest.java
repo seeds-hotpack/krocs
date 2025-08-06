@@ -232,7 +232,7 @@ public class PlanValidatorTest {
         // when & then
         assertThatThrownBy(() -> planValidator.validatePlanCreation(validRequest, 0L))
             .isInstanceOf(PlanException.class)
-            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.GOAL_INVALID_GOAL_ID);
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_GOAL_ID);
     }
 
     @Test

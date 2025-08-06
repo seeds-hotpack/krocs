@@ -2,6 +2,8 @@ package com.hotpack.krocs.domain.plans.domain;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
+import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
+import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import java.util.List;
@@ -60,4 +62,31 @@ public class Plan extends BaseTimeEntity {
 
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    public void updateFrom(PlanUpdateRequestDTO request) {
+        if (request.getTitle() != null) {
+            this.title = request.getTitle();
+        }
+
+        if (request.getStartDateTime() != null) {
+            this.startDateTime = request.getStartDateTime();
+        }
+
+        if (request.getEndDateTime() != null) {
+            this.endDateTime = request.getEndDateTime();
+        }
+
+        if (request.getAllDay() != null) {
+            this.allDay = request.getAllDay();
+        }
+
+        if (request.getIsCompleted() != null) {
+            this.isCompleted = request.getIsCompleted();
+            if (request.getIsCompleted()) {
+                this.completedAt = LocalDateTime.now();
+            } else {
+                this.completedAt = null;
+            }
+        }
+    }
 }
