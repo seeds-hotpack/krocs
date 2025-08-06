@@ -5,6 +5,7 @@ import com.hotpack.krocs.domain.templates.domain.SubTemplate;
 import com.hotpack.krocs.domain.templates.domain.Template;
 import com.hotpack.krocs.domain.templates.dto.request.SubTemplateCreateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateCreateResponseDTO;
+import com.hotpack.krocs.domain.templates.dto.response.SubTemplateDeleteResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.exception.SubTemplateException;
 import com.hotpack.krocs.domain.templates.exception.SubTemplateExceptionType;
@@ -70,7 +71,24 @@ public class SubTemplateServiceImpl implements SubTemplateService {
         } catch (SubTemplateException e) {
             throw e;
         } catch (Exception e) {
+            log.error("서브 템플릿 조회 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
             throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_FOUND_FAILED);
+        }
+    }
+
+    @Override
+    public SubTemplateDeleteResponseDTO deleteSubTemplate(Long subTemplateId) {
+        try {
+            Long deletedSubTemplateId = subTemplateRepositoryFacade.deleteBySubTemplateId(
+                subTemplateId);
+            return SubTemplateDeleteResponseDTO.builder()
+                .subTemplateId(deletedSubTemplateId)
+                .build();
+        } catch (SubTemplateException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("서브 템플릿 삭제 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_DELETE_FAILED);
         }
     }
 }

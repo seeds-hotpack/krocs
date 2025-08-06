@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface SubTemplateRepository extends JpaRepository<SubTemplate, Long> {
 
     List<SubTemplate> findByTemplate(Template template);
+
+    SubTemplate findBySubTemplateId(Long subTemplateId);
 }
