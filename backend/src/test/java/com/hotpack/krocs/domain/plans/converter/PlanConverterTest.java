@@ -4,6 +4,7 @@ import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
+import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import java.util.Arrays;
 import java.util.List;
@@ -421,5 +422,247 @@ public class PlanConverterTest {
         // when & then
         assertThatThrownBy(() -> planConverter.toListPlanResponseDTO(plansWithNull))
             .isInstanceOf(NullPointerException.class);
+    }
+
+    // 3. toUpdatePlanRequestDTO
+
+    @Test
+    @DisplayName("수정 요청 DTO 변환 성공 - 기본 케이스")
+    void toUpdatePlanRequestDTO_Success_Basic() {
+        // given
+        PlanUpdateRequestDTO originalRequest = PlanUpdateRequestDTO.builder()
+            .title("수정된 제목")
+            .isCompleted(true)
+            .build();
+
+        Boolean allDay = false;
+        LocalDateTime startDateTime = LocalDateTime.of(2025, 8, 1, 9, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(2025, 8, 1, 10, 0);
+
+        // when
+        PlanUpdateRequestDTO result = planConverter.toUpdatePlanRequestDTO(
+            originalRequest, allDay, startDateTime, endDateTime);
+
+        // then
+        assertThat(result.getTitle()).isEqualTo("수정된 제목");
+        assertThat(result.getStartDateTime()).isEqualTo(startDateTime);
+        assertThat(result.getEndDateTime()).isEqualTo(endDateTime);
+        assertThat(result.getAllDay()).isFalse();
+        assertThat(result.getIsCompleted()).isTrue();
+    }
+
+    @Test
+    @DisplayName("수정 요청 DTO 변환 성공 - allDay=true, 시간 정규화")
+    void toUpdatePlanRequestDTO_Success_AllDay_True() {
+        // given
+        PlanUpdateRequestDTO originalRequest = PlanUpdateRequestDTO.builder()
+            .allDay(true)
+            .build();
+
+        Boolean allDay = true;
+        LocalDateTime normalizedStartDateTime = LocalDateTime.of(2025, 8, 1, 0, 0);
+        LocalDateTime normalizedEndDateTime = LocalDateTime.of(2025, 8, 1, 23, 59, 59);
+
+        // when
+        PlanUpdateRequestDTO result = planConverter.toUpdatePlanRequestDTO(
+            originalRequest, allDay, normalizedStartDateTime, normalizedEndDateTime);
+
+        // then
+        assertThat(result.getTitle()).isNull();
+        assertThat(result.getStartDateTime()).isEqualTo(normalizedStartDateTime);
+        assertThat(result.getEndDateTime()).isEqualTo(normalizedEndDateTime);
+        assertThat(result.getAllDay()).isTrue();
+        assertThat(result.getIsCompleted()).isNull();
+    }
+
+    @Test
+    @DisplayName("수정 요청 DTO 변환 성공 - 시간만 수정")
+    void toUpdatePlanRequestDTO_Success_DateTime_Only() {
+        // given
+        PlanUpdateRequestDTO originalRequest = PlanUpdateRequestDTO.builder()
+            .startDateTime(LocalDateTime.of(2025, 8, 2, 14, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 2, 16, 0))
+            .build();
+
+        Boolean allDay = false;
+        LocalDateTime startDateTime = LocalDateTime.of(2025, 8, 2, 14, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(2025, 8, 2, 16, 0);
+
+        // when
+        PlanUpdateRequestDTO result = planConverter.toUpdatePlanRequestDTO(
+            originalRequest, allDay, startDateTime, endDateTime);
+
+        // then
+        assertThat(result.getTitle()).isNull();
+        assertThat(result.getStartDateTime()).isEqualTo(startDateTime);
+        assertThat(result.getEndDateTime()).isEqualTo(endDateTime);
+        assertThat(result.getAllDay()).isFalse();
+        assertThat(result.getIsCompleted()).isNull();
+    }
+
+    @Test
+    @DisplayName("수정 요청 DTO 변환 성공 - 완료 상태만 수정")
+    void toUpdatePlanRequestDTO_Success_Completed_Only() {
+        // given
+        PlanUpdateRequestDTO originalRequest = PlanUpdateRequestDTO.builder()
+            .isCompleted(true)
+            .build();
+
+        Boolean allDay = false;
+        LocalDateTime startDateTime = LocalDateTime.of(2025, 8, 1, 9, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(2025, 8, 1, 10, 0);
+
+        // when
+        PlanUpdateRequestDTO result = planConverter.toUpdatePlanRequestDTO(
+            originalRequest, allDay, startDateTime, endDateTime);
+
+        // then
+        assertThat(result.getTitle()).isNull();
+        assertThat(result.getStartDateTime()).isEqualTo(startDateTime);
+        assertThat(result.getEndDateTime()).isEqualTo(endDateTime);
+        assertThat(result.getAllDay()).isFalse();
+        assertThat(result.getIsCompleted()).isTrue();
+    }
+
+    @Test
+    @DisplayName("수정 요청 DTO 변환 성공 - 모든 필드 수정")
+    void toUpdatePlanRequestDTO_Success_All_Fields() {
+        // given
+        PlanUpdateRequestDTO originalRequest = PlanUpdateRequestDTO.builder()
+            .title("완전히 새로운 제목")
+            .startDateTime(LocalDateTime.of(2025, 8, 3, 10, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 3, 12, 0))
+            .allDay(true)
+            .isCompleted(true)
+            .build();
+
+        Boolean allDay = true;
+        LocalDateTime normalizedStartDateTime = LocalDateTime.of(2025, 8, 3, 0, 0);
+        LocalDateTime normalizedEndDateTime = LocalDateTime.of(2025, 8, 3, 23, 59, 59);
+
+        // when
+        PlanUpdateRequestDTO result = planConverter.toUpdatePlanRequestDTO(
+            originalRequest, allDay, normalizedStartDateTime, normalizedEndDateTime);
+
+        // then
+        assertThat(result.getTitle()).isEqualTo("완전히 새로운 제목");
+        assertThat(result.getStartDateTime()).isEqualTo(normalizedStartDateTime);
+        assertThat(result.getEndDateTime()).isEqualTo(normalizedEndDateTime);
+        assertThat(result.getAllDay()).isTrue();
+        assertThat(result.getIsCompleted()).isTrue();
+    }
+
+    @Test
+    @DisplayName("수정 요청 DTO 변환 성공 - 빈 요청")
+    void toUpdatePlanRequestDTO_Success_Empty_Request() {
+        // given
+        PlanUpdateRequestDTO emptyRequest = PlanUpdateRequestDTO.builder().build();
+
+        Boolean allDay = false;
+        LocalDateTime startDateTime = LocalDateTime.of(2025, 8, 1, 9, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(2025, 8, 1, 10, 0);
+
+        // when
+        PlanUpdateRequestDTO result = planConverter.toUpdatePlanRequestDTO(
+            emptyRequest, allDay, startDateTime, endDateTime);
+
+        // then
+        assertThat(result.getTitle()).isNull();
+        assertThat(result.getStartDateTime()).isEqualTo(startDateTime);
+        assertThat(result.getEndDateTime()).isEqualTo(endDateTime);
+        assertThat(result.getAllDay()).isFalse();
+        assertThat(result.getIsCompleted()).isNull();
+    }
+
+    @Test
+    @DisplayName("수정 요청 DTO 변환 성공 - allDay false에서 true로 변경")
+    void toUpdatePlanRequestDTO_Success_AllDay_False_To_True() {
+        // given
+        PlanUpdateRequestDTO originalRequest = PlanUpdateRequestDTO.builder()
+            .allDay(true)
+            .build();
+
+        Boolean allDay = true;
+        LocalDateTime normalizedStartDateTime = LocalDateTime.of(2025, 8, 1, 0, 0);
+        LocalDateTime normalizedEndDateTime = LocalDateTime.of(2025, 8, 1, 23, 59, 59);
+
+        // when
+        PlanUpdateRequestDTO result = planConverter.toUpdatePlanRequestDTO(
+            originalRequest, allDay, normalizedStartDateTime, normalizedEndDateTime);
+
+        // then
+        assertThat(result.getAllDay()).isTrue();
+        assertThat(result.getStartDateTime()).isEqualTo(normalizedStartDateTime);
+        assertThat(result.getEndDateTime()).isEqualTo(normalizedEndDateTime);
+    }
+
+    @Test
+    @DisplayName("수정 요청 DTO 변환 성공 - allDay true에서 false로 변경")
+    void toUpdatePlanRequestDTO_Success_AllDay_True_To_False() {
+        // given
+        PlanUpdateRequestDTO originalRequest = PlanUpdateRequestDTO.builder()
+            .allDay(false)
+            .build();
+
+        Boolean allDay = false; // 변경된 값
+        LocalDateTime startDateTime = LocalDateTime.of(2025, 8, 1, 0, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(2025, 8, 1, 23, 59, 59);
+
+        // when
+        PlanUpdateRequestDTO result = planConverter.toUpdatePlanRequestDTO(
+            originalRequest, allDay, startDateTime, endDateTime);
+
+        // then
+        assertThat(result.getAllDay()).isFalse();
+        assertThat(result.getStartDateTime()).isEqualTo(startDateTime);
+        assertThat(result.getEndDateTime()).isEqualTo(endDateTime);
+    }
+
+    @Test
+    @DisplayName("수정 요청 DTO 변환 성공 - 완료 상태 true에서 false로 변경")
+    void toUpdatePlanRequestDTO_Success_Completed_True_To_False() {
+        // given
+        PlanUpdateRequestDTO originalRequest = PlanUpdateRequestDTO.builder()
+            .isCompleted(false)
+            .build();
+
+        Boolean allDay = false;
+        LocalDateTime startDateTime = LocalDateTime.of(2025, 8, 1, 9, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(2025, 8, 1, 10, 0);
+
+        // when
+        PlanUpdateRequestDTO result = planConverter.toUpdatePlanRequestDTO(
+            originalRequest, allDay, startDateTime, endDateTime);
+
+        // then
+        assertThat(result.getIsCompleted()).isFalse();
+        assertThat(result.getTitle()).isNull();
+        assertThat(result.getStartDateTime()).isEqualTo(startDateTime);
+        assertThat(result.getEndDateTime()).isEqualTo(endDateTime);
+        assertThat(result.getAllDay()).isFalse();
+    }
+
+    @Test
+    @DisplayName("수정 요청 DTO 변환 성공 - 제목만 수정 (시간은 기존값 유지)")
+    void toUpdatePlanRequestDTO_Success_Title_Only_Keep_DateTime() {
+        // given
+        PlanUpdateRequestDTO originalRequest = PlanUpdateRequestDTO.builder()
+            .title("제목만 수정")
+            .build();
+
+        Boolean allDay = false;
+        LocalDateTime startDateTime = LocalDateTime.of(2025, 8, 1, 9, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(2025, 8, 1, 10, 0);
+
+        // when
+        PlanUpdateRequestDTO result = planConverter.toUpdatePlanRequestDTO(
+            originalRequest, allDay, startDateTime, endDateTime);
+
+        // then
+        assertThat(result.getTitle()).isEqualTo("제목만 수정");
+        assertThat(result.getStartDateTime()).isEqualTo(startDateTime);
+        assertThat(result.getEndDateTime()).isEqualTo(endDateTime);
+        assertThat(result.getAllDay()).isFalse();
+        assertThat(result.getIsCompleted()).isNull();
     }
 }

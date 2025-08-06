@@ -21,6 +21,8 @@ public class PlanValidatorTest {
         planValidator = new PlanValidator();
     }
 
+    // ========== CREATE 관련 테스트 (validatePlanCreation) ==========
+
     @Test
     @DisplayName("유효성 검사 성공 - allDay = false")
     void validatePlanCreation_Success_AllDayFalse() {
@@ -82,6 +84,22 @@ public class PlanValidatorTest {
 
         // when & then
         assertThatCode(() -> planValidator.validatePlanCreation(validRequest, null))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("유효성 검사 성공 - allDay가 null인 경우 (기본값 false로 처리)")
+    void validatePlanCreation_Success_AllDayNull() {
+        // given
+        PlanCreateRequestDTO validRequest = PlanCreateRequestDTO.builder()
+            .title("테스트 일정")
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
+            .allDay(null) // null인 경우
+            .build();
+
+        // when & then
+        assertThatCode(() -> planValidator.validatePlanCreation(validRequest, 1L))
             .doesNotThrowAnyException();
     }
 
@@ -235,19 +253,12 @@ public class PlanValidatorTest {
             .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_GOAL_ID);
     }
 
-    @Test
-    @DisplayName("유효성 검사 성공 - allDay가 null인 경우 (기본값 false로 처리)")
-    void validatePlanCreation_Success_AllDayNull() {
-        // given
-        PlanCreateRequestDTO validRequest = PlanCreateRequestDTO.builder()
-            .title("테스트 일정")
-            .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
-            .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
-            .allDay(null) // null인 경우
-            .build();
+    // ========== GET 관련 테스트 (validateGetPlan) ==========
 
-        // when & then
-        assertThatCode(() -> planValidator.validatePlanCreation(validRequest, 1L))
+    @Test
+    @DisplayName("validateGetPlan - 정상 케이스, 예외 발생하지 않음")
+    void validateGetPlan_Success() {
+        assertThatCode(() -> planValidator.validateGetPlan(1L))
             .doesNotThrowAnyException();
     }
 
@@ -267,10 +278,148 @@ public class PlanValidatorTest {
             .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_PLAN_ID);
     }
 
+    // ========== UPDATE 관련 테스트 (validateUpdatePlan) ==========
+
     @Test
-    @DisplayName("validateGetPlan - 정상 케이스, 예외 발생하지 않음")
-    void validateGetPlan_Success() {
-        assertThatCode(() -> planValidator.validateGetPlan(1L))
+    @DisplayName("일정 수정 검증 성공 - 정상적인 planId")
+    void validateUpdatePlan_Success() {
+        // when & then
+        assertThatCode(() -> planValidator.validateUpdatePlan(1L))
             .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("일정 수정 검증 실패 - planId가 null")
+    void validateUpdatePlan_Fail_PlanIdNull() {
+        // when & then
+        assertThatThrownBy(() -> planValidator.validateUpdatePlan(null))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_PLAN_ID);
+    }
+
+    @Test
+    @DisplayName("일정 수정 검증 실패 - planId가 0")
+    void validateUpdatePlan_Fail_PlanIdZero() {
+        // when & then
+        assertThatThrownBy(() -> planValidator.validateUpdatePlan(0L))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_PLAN_ID);
+    }
+
+    @Test
+    @DisplayName("일정 수정 검증 실패 - planId가 음수")
+    void validateUpdatePlan_Fail_PlanIdNegative() {
+        // when & then
+        assertThatThrownBy(() -> planValidator.validateUpdatePlan(-1L))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_PLAN_ID);
+    }
+
+    // ========== validateDateRange 단독 테스트 ==========
+
+    @Test
+    @DisplayName("날짜 범위 검증 성공 - 정상적인 시간 순서")
+    void validateDateRange_Success() {
+        // given
+        LocalDateTime startTime = LocalDateTime.of(2025, 8, 1, 9, 0);
+        LocalDateTime endTime = LocalDateTime.of(2025, 8, 1, 10, 0);
+
+        // when & then
+        assertThatCode(() -> planValidator.validateDateRange(startTime, endTime))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("날짜 범위 검증 성공 - 같은 시간")
+    void validateDateRange_Success_SameTime() {
+        // given
+        LocalDateTime sameTime = LocalDateTime.of(2025, 8, 1, 9, 0);
+
+        // when & then
+        assertThatCode(() -> planValidator.validateDateRange(sameTime, sameTime))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("날짜 범위 검증 실패 - 시작시간이 종료시간보다 늦음")
+    void validateDateRange_Fail_StartAfterEnd() {
+        // given
+        LocalDateTime startTime = LocalDateTime.of(2025, 8, 1, 10, 0);
+        LocalDateTime endTime = LocalDateTime.of(2025, 8, 1, 9, 0);
+
+        // when & then
+        assertThatThrownBy(() -> planValidator.validateDateRange(startTime, endTime))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.INVALID_PLAN_DATE_RANGE);
+    }
+
+    // ========== validateAllDayDateTime 단독 테스트 ==========
+
+    @Test
+    @DisplayName("allDay 날짜시간 검증 성공 - allDay=false")
+    void validateAllDayDateTime_Success_AllDayFalse() {
+        // given
+        LocalDateTime startTime = LocalDateTime.of(2025, 8, 1, 9, 0);
+        LocalDateTime endTime = LocalDateTime.of(2025, 8, 1, 10, 0);
+
+        // when & then
+        assertThatCode(() -> planValidator.validateAllDayDateTime(false, startTime, endTime))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("allDay 날짜시간 검증 성공 - allDay=true, 같은 날짜")
+    void validateAllDayDateTime_Success_AllDayTrue_SameDate() {
+        // given
+        LocalDateTime startTime = LocalDateTime.of(2025, 8, 1, 15, 30);
+        LocalDateTime endTime = LocalDateTime.of(2025, 8, 1, 8, 45);
+
+        // when & then
+        assertThatCode(() -> planValidator.validateAllDayDateTime(true, startTime, endTime))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("allDay 날짜시간 검증 실패 - allDay=true, 시작날짜가 종료날짜보다 늦음")
+    void validateAllDayDateTime_Fail_AllDayTrue_InvalidDateRange() {
+        // given
+        LocalDateTime startTime = LocalDateTime.of(2025, 8, 5, 10, 0);
+        LocalDateTime endTime = LocalDateTime.of(2025, 8, 3, 15, 0);
+
+        // when & then
+        assertThatThrownBy(() -> planValidator.validateAllDayDateTime(true, startTime, endTime))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.INVALID_PLAN_DATE_RANGE);
+    }
+
+    // ========== 경계값 테스트 ==========
+
+    @Test
+    @DisplayName("제목 검증 성공 - 정확히 200자")
+    void validateTitle_Success_ExactlyMaxLength() {
+        // given
+        String maxLengthTitle = "a".repeat(200);
+
+        // when & then
+        assertThatCode(() -> planValidator.validateTitle(maxLengthTitle))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("제목 검증 실패 - 공백만 있는 문자열")
+    void validateTitle_Fail_WhitespaceOnly() {
+        // when & then
+        assertThatThrownBy(() -> planValidator.validateTitle("   "))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_TITLE_EMPTY);
+    }
+
+    @Test
+    @DisplayName("제목 검증 실패 - null 제목")
+    void validateTitle_Fail_NullTitle() {
+        // when & then
+        assertThatThrownBy(() -> planValidator.validateTitle(null))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_TITLE_EMPTY);
     }
 }
