@@ -12,6 +12,7 @@ import com.hotpack.krocs.domain.templates.domain.Template;
 import com.hotpack.krocs.domain.templates.dto.request.SubTemplateCreateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.request.SubTemplateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateCreateResponseDTO;
+import com.hotpack.krocs.domain.templates.dto.response.SubTemplateDeleteResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.exception.SubTemplateException;
 import com.hotpack.krocs.domain.templates.exception.SubTemplateExceptionType;
@@ -173,6 +174,47 @@ class SubTemplateServiceTest {
                 SubTemplateException e = (SubTemplateException) ex;
                 assertThat(e.getSubTemplateExceptionType()).isEqualTo(
                     SubTemplateExceptionType.SUB_TEMPLATE_FOUND_FAILED);
+            });
+    }
+
+    @Test
+    @DisplayName("서브 템플릿 삭제 - 성공")
+    void deleteSubTemplate_Success() {
+        // when
+        when(subTemplateRepositoryFacade.deleteBySubTemplateId(1L)).thenReturn(1L);
+        SubTemplateDeleteResponseDTO responseDTO = subTemplateService.deleteSubTemplate(1L);
+
+        // then
+        assertThat(responseDTO.getSubTemplateId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("서브 템플릿 삭제 - subTemplate이 null인 경우")
+    void deleteSubTemplate_subTemplateIsNull() {
+        // given
+        when(subTemplateRepositoryFacade.deleteBySubTemplateId(1L)).thenThrow(
+            new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_NOT_FOUND));
+
+        // when & then
+        assertThatThrownBy(() -> subTemplateService.deleteSubTemplate(1L))
+            .isInstanceOf(SubTemplateException.class)
+            .satisfies(ex -> {
+                SubTemplateException e = (SubTemplateException) ex;
+                assertThat(e.getSubTemplateExceptionType()).isEqualTo(
+                    SubTemplateExceptionType.SUB_TEMPLATE_NOT_FOUND);
+            });
+    }
+
+    @Test
+    @DisplayName("서브 템플릿 삭제 - subTemplate이 null인 경우")
+    void deleteSubTemplate_subTemplateIdIsNull() {
+        // when & then
+        assertThatThrownBy(() -> subTemplateService.deleteSubTemplate(null))
+            .isInstanceOf(SubTemplateException.class)
+            .satisfies(ex -> {
+                SubTemplateException e = (SubTemplateException) ex;
+                assertThat(e.getSubTemplateExceptionType()).isEqualTo(
+                    SubTemplateExceptionType.SUB_TEMPLATE_TEMPLATE_ID_IS_NULL);
             });
     }
 }
