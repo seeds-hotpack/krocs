@@ -6,6 +6,7 @@ import com.hotpack.krocs.domain.plans.dto.request.SubPlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanCreateResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanListResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
+import com.hotpack.krocs.domain.plans.dto.response.SubPlanUpdateResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.service.SubPlanService;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -96,11 +98,12 @@ public class SubPlanController {
     @Operation(summary = "특정 소계획 수정", description = "특정 소계획을 수정합니다")
     @PatchMapping("/{subPlanId}")
     public ApiResponse<SubPlanUpdateResponseDTO> updateSubPlan(
-        @RequestBody @Parameter(description = "SubPlans", example = "{\"title\": \"소계획1\"}")
-        @PathVariable @Parameter(description = "SubPlan ID", example = "1") Long subPlanId,
-        SubPlanUpdateRequestDTO requestDTO) {
+        @RequestBody @Parameter(description = "SubPlans", example = "{\"title\": \"소계획1\"}") SubPlanUpdateRequestDTO requestDTO,
+        @PathVariable @Parameter(description = "SubPlan ID", example = "1")
+        Long subPlanId) {
         try {
-            SubPlanUpdateResponseDTO responseDTO = subPlanService.updateSubPlan(subPlanId, requestDTO);
+            SubPlanUpdateResponseDTO responseDTO = subPlanService.updateSubPlan(subPlanId,
+                requestDTO);
             return ApiResponse.success(responseDTO);
         } catch (SubPlanException e) {
             throw e;

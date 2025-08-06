@@ -23,7 +23,6 @@ import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
 import com.hotpack.krocs.domain.plans.facade.SubPlanRepositoryFacade;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +56,10 @@ class SubPlanServiceTest {
 
     SubPlanCreateRequestDTO validSubPlanCreateRequestDTO = SubPlanCreateRequestDTO.builder()
         .subPlans(List.of(validSubPlanRequestDTO)).build();
+    SubPlanUpdateRequestDTO updateRequestDTO = SubPlanUpdateRequestDTO.builder()
+        .title("수정된 소계획 제목")
+        .isCompleted(true)
+        .build();
     @Mock
     private PlanRepositoryFacade planRepositoryFacade;
     @Mock
@@ -65,11 +68,6 @@ class SubPlanServiceTest {
     private SubPlanConverter subPlanConverter;
     @InjectMocks
     private SubPlanServiceImpl subPlanService;
-
-    SubPlanUpdateRequestDTO updateRequestDTO = SubPlanUpdateRequestDTO.builder()
-        .title("수정된 소계획 제목")
-            .isCompleted(true)
-            .build();
 
     @Test
     @DisplayName("소계획 생성 성공 테스트")
@@ -325,7 +323,8 @@ class SubPlanServiceTest {
             .willReturn(updatedSubPlan); // 두 번째 조회 (수정 후)
 
         // when
-        SubPlanUpdateResponseDTO actualResponse = subPlanService.updateSubPlan(1L, updateRequestDTO);
+        SubPlanUpdateResponseDTO actualResponse = subPlanService.updateSubPlan(1L,
+            updateRequestDTO);
 
         // then
         assertThat(actualResponse.getSubPlanId()).isEqualTo(expectedResponse.getSubPlanId());
