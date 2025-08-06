@@ -79,8 +79,14 @@ public class SubTemplateServiceImpl implements SubTemplateService {
     @Override
     public SubTemplateDeleteResponseDTO deleteSubTemplate(Long subTemplateId) {
         try {
+            if (subTemplateId == null) {
+                throw new SubTemplateException(
+                    SubTemplateExceptionType.SUB_TEMPLATE_TEMPLATE_ID_IS_NULL);
+            }
+
             Long deletedSubTemplateId = subTemplateRepositoryFacade.deleteBySubTemplateId(
                 subTemplateId);
+
             return SubTemplateDeleteResponseDTO.builder()
                 .subTemplateId(deletedSubTemplateId)
                 .build();

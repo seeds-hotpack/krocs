@@ -34,9 +34,9 @@ public class SubTemplateRepositoryFacade {
         if (subTemplate == null) {
             throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_NOT_FOUND);
         }
-
-        subTemplateRepository.delete(subTemplate);
         
+        subTemplateRepository.delete(subTemplate);
+
         return subTemplateId;
     }
 }
