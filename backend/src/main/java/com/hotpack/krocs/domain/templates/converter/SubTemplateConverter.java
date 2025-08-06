@@ -42,11 +42,9 @@ public class SubTemplateConverter {
     }
 
     public List<SubTemplateResponseDTO> toListResponseDTO(List<SubTemplate> subTemplates) {
-        List<SubTemplateResponseDTO> subTemplateResponseDTOs = new ArrayList<>();
-        for (SubTemplate subTemplate : subTemplates) {
-            subTemplateResponseDTOs.add(toResponseDTO(subTemplate));
-        }
-        return subTemplateResponseDTOs;
+        return subTemplates.stream()
+            .map(this::toResponseDTO)
+            .toList();
     }
 
     public SubTemplateResponseDTO toResponseDTO(SubTemplate subTemplate) {
