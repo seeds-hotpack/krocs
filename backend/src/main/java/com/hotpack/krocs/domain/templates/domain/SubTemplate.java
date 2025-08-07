@@ -1,5 +1,6 @@
 package com.hotpack.krocs.domain.templates.domain;
 
+import com.hotpack.krocs.domain.templates.dto.request.SubTemplateUpdateRequestDTO;
 import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,15 +24,21 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SubTemplate extends BaseTimeEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "sub_template_id")
-  private Long subTemplateId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "sub_template_id")
+    private Long subTemplateId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "template_id", nullable = false)
-  private Template template;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "template_id", nullable = false)
+    private Template template;
 
-  @Column(name = "title", nullable = false, length = 200)
-  private String title;
+    @Column(name = "title", nullable = false, length = 200)
+    private String title;
+
+    public void updateFrom(SubTemplateUpdateRequestDTO requestDTO) {
+        if (requestDTO.getTitle() != null) {
+            this.title = requestDTO.getTitle();
+        }
+    }
 }
