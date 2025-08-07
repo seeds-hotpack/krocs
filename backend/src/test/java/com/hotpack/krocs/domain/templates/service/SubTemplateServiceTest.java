@@ -11,6 +11,7 @@ import com.hotpack.krocs.domain.templates.domain.SubTemplate;
 import com.hotpack.krocs.domain.templates.domain.Template;
 import com.hotpack.krocs.domain.templates.dto.request.SubTemplateCreateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.request.SubTemplateRequestDTO;
+import com.hotpack.krocs.domain.templates.dto.request.SubTemplateUpdateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateCreateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateDeleteResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateResponseDTO;
@@ -44,6 +45,7 @@ class SubTemplateServiceTest {
 
     private SubTemplateCreateRequestDTO validCreateRequestDTO;
     private SubTemplateRequestDTO validSubTemplateRequestDTO;
+    private SubTemplateUpdateRequestDTO validSubTemplateUpdateRequestDTO;
     private SubTemplate validSubTemplate;
     private Template validTemplate;
 
@@ -69,6 +71,10 @@ class SubTemplateServiceTest {
             .subTemplateId(1L)
             .template(validTemplate)
             .title("테스트입니다")
+            .build();
+
+        validSubTemplateUpdateRequestDTO = SubTemplateUpdateRequestDTO.builder()
+            .title("수정되었습니다")
             .build();
     }
 
@@ -131,6 +137,8 @@ class SubTemplateServiceTest {
             SubTemplateExceptionType.SUB_TEMPLATE_CREATION_FAILED);
     }
 
+    // ======= READ =======
+
     @Test
     @DisplayName("서브 템플릿 전체 조회 - 성공")
     void getSubTemplates_Success() {
@@ -177,6 +185,8 @@ class SubTemplateServiceTest {
             });
     }
 
+    // ======= DELETE =======
+
     @Test
     @DisplayName("서브 템플릿 삭제 - 성공")
     void deleteSubTemplate_Success() {
@@ -206,7 +216,7 @@ class SubTemplateServiceTest {
     }
 
     @Test
-    @DisplayName("서브 템플릿 삭제 - subTemplate이 null인 경우")
+    @DisplayName("서브 템플릿 삭제 - subTemplateId가 null인 경우")
     void deleteSubTemplate_subTemplateIdIsNull() {
         // when & then
         assertThatThrownBy(() -> subTemplateService.deleteSubTemplate(null))
@@ -214,7 +224,64 @@ class SubTemplateServiceTest {
             .satisfies(ex -> {
                 SubTemplateException e = (SubTemplateException) ex;
                 assertThat(e.getSubTemplateExceptionType()).isEqualTo(
-                    SubTemplateExceptionType.SUB_TEMPLATE_TEMPLATE_ID_IS_NULL);
+                    SubTemplateExceptionType.SUB_TEMPLATE_SUB_TEMPLATE_ID_IS_NULL);
+            });
+    }
+
+    // ======= UPDATE =======
+
+    @Test
+    @DisplayName("서브 템플릿 수정 - 성공")
+    void updateSubTemplate_Success() {
+        // given
+        SubTemplate updatedSubTemplate = SubTemplate.builder()
+            .subTemplateId(1L)
+            .title("수정되었습니다")
+            .template(validTemplate)
+            .build();
+
+        when(subTemplateRepositoryFacade.updateBySubTemplateId(1L,
+            validSubTemplateUpdateRequestDTO)).thenReturn(updatedSubTemplate);
+
+        // when
+        SubTemplateResponseDTO responseDTO = subTemplateService.updateSubTemplate(1L,
+            validSubTemplateUpdateRequestDTO);
+
+        // then
+        assertThat(responseDTO.getTitle()).isEqualTo("수정되었습니다");
+        assertThat(responseDTO.getSubTemplateId()).isEqualTo(1L);
+        assertThat(responseDTO.getTemplateId()).isEqualTo(validTemplate.getTemplateId());
+    }
+    
+    @Test
+    @DisplayName("서브 템플릿 수정 - subTemplateId가 null인 경우")
+    void updateSubTemplate_subTemplateIdIsNull() {
+        // when & then
+        assertThatThrownBy(
+            () -> subTemplateService.updateSubTemplate(null, validSubTemplateUpdateRequestDTO))
+            .isInstanceOf(SubTemplateException.class)
+            .satisfies(ex -> {
+                SubTemplateException e = (SubTemplateException) ex;
+                assertThat(e.getSubTemplateExceptionType()).isEqualTo(
+                    SubTemplateExceptionType.SUB_TEMPLATE_SUB_TEMPLATE_ID_IS_NULL);
+            });
+    }
+
+    @Test
+    @DisplayName("서브 템플릿 수정 - 예상치 못한 예외")
+    void updateSubTemplate_unknownException() {
+        // given
+        when(subTemplateRepositoryFacade.updateBySubTemplateId(1L,
+            validSubTemplateUpdateRequestDTO)).thenThrow(new RuntimeException());
+
+        // when & then
+        assertThatThrownBy(
+            () -> subTemplateService.updateSubTemplate(1L, validSubTemplateUpdateRequestDTO))
+            .isInstanceOf(SubTemplateException.class)
+            .satisfies(ex -> {
+                SubTemplateException e = (SubTemplateException) ex;
+                assertThat(e.getSubTemplateExceptionType()).isEqualTo(
+                    SubTemplateExceptionType.SUB_TEMPLATE_UPDATE_FAILED);
             });
     }
 }
