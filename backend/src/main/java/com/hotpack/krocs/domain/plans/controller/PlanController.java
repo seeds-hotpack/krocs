@@ -1,6 +1,7 @@
 package com.hotpack.krocs.domain.plans.controller;
 
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
+import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanListResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
@@ -70,6 +71,25 @@ public class PlanController {
             throw e;
         } catch (Exception e) {
             throw new PlanException(PlanExceptionType.PLAN_FOUND_FAILED);
+        }
+    }
+
+    @Operation(summary = "일정 수정", description = "기존 일정의 정보를 수정합니다."
+    )
+    @PatchMapping("/{planId}")
+    public ApiResponse<PlanResponseDTO> updatePlanById(
+        @PathVariable Long planId,
+        @Valid @RequestBody PlanUpdateRequestDTO request,
+        @RequestParam(value = "user_id", required = false) Long userId,
+        @RequestParam(value = "sub_goal_id", required = false) Long subGoalId) {
+        try{
+            PlanResponseDTO responseDTO = planService.updatePlanById(planId, subGoalId, request, userId);
+
+            return ApiResponse.success(responseDTO);
+        } catch (PlanException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PlanException(PlanExceptionType.PLAN_UPDATE_FAILED);
         }
     }
 }

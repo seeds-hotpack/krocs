@@ -5,6 +5,7 @@ import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.dto.response.SubGoalResponseDTO;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
+import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
 import java.time.LocalDateTime;
@@ -78,5 +79,15 @@ public class PlanConverter {
         return plans.stream()
             .map(this::toEntity)
             .collect(Collectors.toList());
+    }
+
+    public PlanUpdateRequestDTO toUpdatePlanRequestDTO(PlanUpdateRequestDTO request, Boolean allDay, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return PlanUpdateRequestDTO.builder()
+            .title(request.getTitle())
+            .startDateTime(startDateTime)
+            .endDateTime(endDateTime)
+            .allDay(allDay)
+            .isCompleted(request.getIsCompleted())
+            .build();
     }
 }
