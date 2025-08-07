@@ -111,4 +111,20 @@ class SubTemplateConverterTest {
         assertThat(responseDTO.getTitle()).isEqualTo(validSubTemplate.getTitle());
     }
 
+    @Test
+    @DisplayName("List<SubTemplate>를 List<SubTemplateResponseDTO>로 변환")
+    void toListResponseDTO_Success() {
+        // when
+        List<SubTemplateResponseDTO> responseDTOs = subTemplateConverter.toListResponseDTO(
+            List.of(validSubTemplate));
+
+        // then
+        assertThat(responseDTOs).hasSize(1);
+        assertThat(responseDTOs.getFirst().getSubTemplateId()).isEqualTo(
+            validSubTemplate.getSubTemplateId());
+        assertThat(responseDTOs.getFirst().getTemplateId()).isEqualTo(
+            validSubTemplate.getTemplate().getTemplateId());
+        assertThat(responseDTOs.getFirst().getTitle()).isEqualTo(validSubTemplate.getTitle());
+    }
+
 }
