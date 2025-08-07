@@ -12,5 +12,5 @@ public interface PlanService {
 
     PlanResponseDTO getPlanById(Long planId, Long userId);
 
-    PlanResponseDTO updatePlanById(Long planId, PlanUpdateRequestDTO request, Long userId);
+    PlanResponseDTO updatePlanById(Long planId, Long subGoalId, PlanUpdateRequestDTO request, Long userId);
 }

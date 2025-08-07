@@ -5,6 +5,7 @@ import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.facade.SubGoalRepositoryFacade;
 import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
+import com.hotpack.krocs.domain.plans.domain.SubPlan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanListResponseDTO;
@@ -12,6 +13,7 @@ import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
+import com.hotpack.krocs.domain.plans.facade.SubPlanRepositoryFacade;
 import com.hotpack.krocs.domain.plans.validator.PlanValidator;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -100,13 +102,23 @@ public class PlanServiceImpl implements PlanService{
 
     @Override
     @Transactional
-    public PlanResponseDTO updatePlanById(Long planId, PlanUpdateRequestDTO request, Long userId) {
+    public PlanResponseDTO updatePlanById(Long planId, Long subGoalId, PlanUpdateRequestDTO request, Long userId) {
         try {
             planValidator.validateUpdatePlan(planId);
 
             Plan plan = planRepositoryFacade.findPlanById(planId);
             if (plan == null) {
                 throw new PlanException(PlanExceptionType.PLAN_NOT_FOUND);
+            }
+
+            SubGoal subGoal = plan.getSubGoal();
+            Goal goal = plan.getGoal();
+            if (subGoalId != null) {
+                subGoal = subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId);
+                if(subGoal == null) {
+                    throw new PlanException(PlanExceptionType.PLAN_SUB_GOAL_NOT_FOUND);
+                }
+                goal = subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId);
             }
 
             if (request.getTitle() != null) {
@@ -140,7 +152,7 @@ public class PlanServiceImpl implements PlanService{
             PlanUpdateRequestDTO updatePlanRequestDTO = planConverter.toUpdatePlanRequestDTO(
                 request, allDay, startDateTime, endDateTime);
 
-            plan.updateFrom(updatePlanRequestDTO);
+            plan.updateFrom(updatePlanRequestDTO, goal, subGoal);
 
             return planConverter.toEntity(plan);
         } catch (PlanException e) {

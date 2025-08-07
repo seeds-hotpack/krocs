@@ -63,7 +63,7 @@ public class Plan extends BaseTimeEntity {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-    public void updateFrom(PlanUpdateRequestDTO request) {
+    public void updateFrom(PlanUpdateRequestDTO request, Goal goal, SubGoal subGoal) {
         if (request.getTitle() != null) {
             this.title = request.getTitle();
         }
@@ -87,6 +87,14 @@ public class Plan extends BaseTimeEntity {
             } else {
                 this.completedAt = null;
             }
+        }
+
+        if (goal != null) {
+            this.goal = goal;
+        }
+
+        if (subGoal != null) {
+            this.subGoal = subGoal;
         }
     }
 }

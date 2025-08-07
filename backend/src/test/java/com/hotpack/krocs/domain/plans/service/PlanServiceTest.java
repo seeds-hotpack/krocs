@@ -580,6 +580,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
             .title("수정된 제목")
@@ -587,19 +588,23 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         doNothing().when(planValidator).validateTitle("수정된 제목");
         when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
             .thenReturn(mock(PlanUpdateRequestDTO.class)); // 아무 DTO나 반환
         when(planConverter.toEntity(validPlan)).thenReturn(validResponseDTO);
 
         // when
-        PlanResponseDTO result = planService.updatePlanById(planId, updateRequest, userId);
+        PlanResponseDTO result = planService.updatePlanById(planId, subGoalId, updateRequest, userId);
 
         // then
         assertThat(result).isNotNull();
         assertThat(result).isEqualTo(validResponseDTO);
 
         verify(planValidator).validateUpdatePlan(planId);
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
         verify(planValidator).validateTitle("수정된 제목");
         verify(planConverter).toUpdatePlanRequestDTO(
             updateRequest,
@@ -615,6 +620,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         LocalDateTime newStartTime = LocalDateTime.of(2025, 8, 2, 14, 0);
         LocalDateTime newEndTime = LocalDateTime.of(2025, 8, 2, 16, 0);
@@ -626,18 +632,22 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         doNothing().when(planValidator).validateDateRange(newStartTime, newEndTime);
         when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
             .thenReturn(mock(PlanUpdateRequestDTO.class));
         when(planConverter.toEntity(validPlan)).thenReturn(validResponseDTO);
 
         // when
-        PlanResponseDTO result = planService.updatePlanById(planId, updateRequest, userId);
+        PlanResponseDTO result = planService.updatePlanById(planId, subGoalId, updateRequest, userId);
 
         // then
         assertThat(result).isNotNull();
 
         verify(planValidator).validateUpdatePlan(planId);
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
         verify(planValidator).validateDateRange(newStartTime, newEndTime);
         verify(planConverter).toUpdatePlanRequestDTO(
             updateRequest,
@@ -653,6 +663,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         LocalDateTime normalizedStartTime = LocalDateTime.of(2025, 8, 1, 0, 0);
         LocalDateTime normalizedEndTime = LocalDateTime.of(2025, 8, 1, 23, 59, 59);
@@ -663,18 +674,22 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         doNothing().when(planValidator).validateAllDayDateTime(true, normalizedStartTime, normalizedEndTime);
         when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
             .thenReturn(mock(PlanUpdateRequestDTO.class));
         when(planConverter.toEntity(validPlan)).thenReturn(validResponseDTO);
 
         // when
-        PlanResponseDTO result = planService.updatePlanById(planId, updateRequest, userId);
+        PlanResponseDTO result = planService.updatePlanById(planId, subGoalId, updateRequest, userId);
 
         // then
         assertThat(result).isNotNull();
 
         verify(planValidator).validateUpdatePlan(planId);
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
         verify(planValidator).validateAllDayDateTime(true, normalizedStartTime, normalizedEndTime);
         verify(planConverter).toUpdatePlanRequestDTO(
             updateRequest,
@@ -690,6 +705,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         Plan allDayPlan = Plan.builder()
             .planId(1L)
@@ -708,18 +724,22 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(allDayPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         doNothing().when(planValidator).validateAllDayDateTime(false, allDayPlan.getStartDateTime(), allDayPlan.getEndDateTime());
         when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
             .thenReturn(mock(PlanUpdateRequestDTO.class));
         when(planConverter.toEntity(allDayPlan)).thenReturn(validResponseDTO);
 
         // when
-        PlanResponseDTO result = planService.updatePlanById(planId, updateRequest, userId);
+        PlanResponseDTO result = planService.updatePlanById(planId, subGoalId, updateRequest, userId);
 
         // then
         assertThat(result).isNotNull();
 
         verify(planValidator).validateUpdatePlan(planId);
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
         verify(planValidator).validateAllDayDateTime(false, allDayPlan.getStartDateTime(), allDayPlan.getEndDateTime());
         verify(planConverter).toUpdatePlanRequestDTO(
             updateRequest,
@@ -735,6 +755,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
             .isCompleted(true)
@@ -742,17 +763,21 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
             .thenReturn(mock(PlanUpdateRequestDTO.class));
         when(planConverter.toEntity(validPlan)).thenReturn(validResponseDTO);
 
         // when
-        PlanResponseDTO result = planService.updatePlanById(planId, updateRequest, userId);
+        PlanResponseDTO result = planService.updatePlanById(planId, subGoalId, updateRequest, userId);
 
         // then
         assertThat(result).isNotNull();
 
         verify(planValidator).validateUpdatePlan(planId);
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
         verify(planConverter).toUpdatePlanRequestDTO(
             updateRequest,
             validPlan.getAllDay(),
@@ -767,6 +792,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         Plan completedPlan = Plan.builder()
             .planId(1L)
@@ -786,17 +812,21 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(completedPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
             .thenReturn(mock(PlanUpdateRequestDTO.class));
         when(planConverter.toEntity(completedPlan)).thenReturn(validResponseDTO);
 
         // when
-        PlanResponseDTO result = planService.updatePlanById(planId, updateRequest, userId);
+        PlanResponseDTO result = planService.updatePlanById(planId, subGoalId, updateRequest, userId);
 
         // then
         assertThat(result).isNotNull();
 
         verify(planValidator).validateUpdatePlan(planId);
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
         verify(planConverter).toUpdatePlanRequestDTO(
             updateRequest,
             completedPlan.getAllDay(),
@@ -811,6 +841,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         LocalDateTime newStartTime = LocalDateTime.of(2025, 8, 3, 10, 0);
         LocalDateTime newEndTime = LocalDateTime.of(2025, 8, 3, 12, 0);
@@ -830,17 +861,21 @@ public class PlanServiceTest {
         doNothing().when(planValidator).validateTitle("완전히 새로운 제목");
         doNothing().when(planValidator).validateDateRange(newStartTime, newEndTime);
         doNothing().when(planValidator).validateAllDayDateTime(true, normalizedStartTime, normalizedEndTime);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
             .thenReturn(mock(PlanUpdateRequestDTO.class));
         when(planConverter.toEntity(validPlan)).thenReturn(validResponseDTO);
 
         // when
-        PlanResponseDTO result = planService.updatePlanById(planId, updateRequest, userId);
+        PlanResponseDTO result = planService.updatePlanById(planId, subGoalId, updateRequest, userId);
 
         // then
         assertThat(result).isNotNull();
 
         verify(planValidator).validateUpdatePlan(planId);
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
         verify(planValidator).validateTitle("완전히 새로운 제목");
         verify(planValidator).validateDateRange(newStartTime, newEndTime);
         verify(planValidator).validateAllDayDateTime(true, normalizedStartTime, normalizedEndTime);
@@ -858,6 +893,7 @@ public class PlanServiceTest {
         // given
         Long planId = 999L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
             .title("수정된 제목")
@@ -867,7 +903,7 @@ public class PlanServiceTest {
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(null);
 
         // when & then
-        assertThatThrownBy(() -> planService.updatePlanById(planId, updateRequest, userId))
+        assertThatThrownBy(() -> planService.updatePlanById(planId, subGoalId, updateRequest, userId))
             .isInstanceOf(PlanException.class)
             .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_NOT_FOUND);
 
@@ -882,6 +918,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
             .title("") // 빈 제목
@@ -889,15 +926,19 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         doThrow(new PlanException(PlanExceptionType.PLAN_TITLE_EMPTY))
             .when(planValidator).validateTitle("");
 
         // when & then
-        assertThatThrownBy(() -> planService.updatePlanById(planId, updateRequest, userId))
+        assertThatThrownBy(() -> planService.updatePlanById(planId, subGoalId, updateRequest, userId))
             .isInstanceOf(PlanException.class)
             .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_TITLE_EMPTY);
 
         verify(planValidator).validateTitle("");
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
         verify(planConverter, never()).toUpdatePlanRequestDTO(any(), any(), any(), any());
     }
 
@@ -907,6 +948,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         LocalDateTime invalidStartTime = LocalDateTime.of(2025, 8, 1, 15, 0);
         LocalDateTime invalidEndTime = LocalDateTime.of(2025, 8, 1, 10, 0);
@@ -918,14 +960,18 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         doThrow(new PlanException(PlanExceptionType.INVALID_PLAN_DATE_RANGE))
             .when(planValidator).validateDateRange(invalidStartTime, invalidEndTime);
 
         // when & then
-        assertThatThrownBy(() -> planService.updatePlanById(planId, updateRequest, userId))
+        assertThatThrownBy(() -> planService.updatePlanById(planId, subGoalId, updateRequest, userId))
             .isInstanceOf(PlanException.class)
             .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.INVALID_PLAN_DATE_RANGE);
 
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
         verify(planValidator).validateDateRange(invalidStartTime, invalidEndTime);
         verify(planConverter, never()).toUpdatePlanRequestDTO(any(), any(), any(), any());
     }
@@ -936,6 +982,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
             .allDay(true)
@@ -943,14 +990,18 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         doThrow(new PlanException(PlanExceptionType.INVALID_PLAN_DATE_RANGE))
             .when(planValidator).validateAllDayDateTime(any(), any(), any());
 
         // when & then
-        assertThatThrownBy(() -> planService.updatePlanById(planId, updateRequest, userId))
+        assertThatThrownBy(() -> planService.updatePlanById(planId, subGoalId, updateRequest, userId))
             .isInstanceOf(PlanException.class)
             .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.INVALID_PLAN_DATE_RANGE);
 
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
         verify(planValidator).validateAllDayDateTime(any(), any(), any());
         verify(planConverter, never()).toUpdatePlanRequestDTO(any(), any(), any(), any());
     }
@@ -961,6 +1012,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
             .title("수정된 제목")
@@ -970,7 +1022,7 @@ public class PlanServiceTest {
         when(planRepositoryFacade.findPlanById(planId)).thenThrow(new RuntimeException("데이터베이스 오류"));
 
         // when & then
-        assertThatThrownBy(() -> planService.updatePlanById(planId, updateRequest, userId))
+        assertThatThrownBy(() -> planService.updatePlanById(planId, subGoalId, updateRequest, userId))
             .isInstanceOf(PlanException.class)
             .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_UPDATE_FAILED);
 
@@ -984,6 +1036,7 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
             .title("수정된 제목")
@@ -991,12 +1044,14 @@ public class PlanServiceTest {
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         doNothing().when(planValidator).validateTitle("수정된 제목");
         when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
             .thenThrow(new RuntimeException("변환 오류"));
 
         // when & then
-        assertThatThrownBy(() -> planService.updatePlanById(planId, updateRequest, userId))
+        assertThatThrownBy(() -> planService.updatePlanById(planId, subGoalId, updateRequest, userId))
             .isInstanceOf(PlanException.class)
             .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_UPDATE_FAILED);
     }
@@ -1007,17 +1062,20 @@ public class PlanServiceTest {
         // given
         Long planId = 1L;
         Long userId = 1L;
+        Long subGoalId = 1L;
 
         PlanUpdateRequestDTO emptyRequest = PlanUpdateRequestDTO.builder().build();
 
         doNothing().when(planValidator).validateUpdatePlan(planId);
         when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
         when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
             .thenReturn(mock(PlanUpdateRequestDTO.class));
         when(planConverter.toEntity(validPlan)).thenReturn(validResponseDTO);
 
         // when
-        PlanResponseDTO result = planService.updatePlanById(planId, emptyRequest, userId);
+        PlanResponseDTO result = planService.updatePlanById(planId, subGoalId, emptyRequest, userId);
 
         // then
         assertThat(result).isNotNull();
@@ -1032,5 +1090,75 @@ public class PlanServiceTest {
             validPlan.getStartDateTime(),
             validPlan.getEndDateTime()
         );
+    }
+
+    @Test
+    @DisplayName("일정 수정 성공 - subGoalId만 변경")
+    void updatePlanById_Success_SubGoalIdOnly() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+        Long newSubGoalId = 2L;
+
+        // 새로운 SubGoal과 Goal 생성
+        SubGoal newSubGoal = SubGoal.builder()
+            .subGoalId(2L)
+            .goal(validGoal)
+            .title("새로운 서브목표")
+            .isCompleted(false)
+            .build();
+
+        PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
+            .build(); // 빈 요청 (subGoalId만 변경)
+
+        doNothing().when(planValidator).validateUpdatePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(newSubGoalId)).thenReturn(newSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(newSubGoalId)).thenReturn(validGoal);
+        when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
+            .thenReturn(mock(PlanUpdateRequestDTO.class));
+        when(planConverter.toEntity(validPlan)).thenReturn(validResponseDTO);
+
+        // when
+        PlanResponseDTO result = planService.updatePlanById(planId, newSubGoalId, updateRequest, userId);
+
+        // then
+        assertThat(result).isNotNull();
+
+        verify(planValidator).validateUpdatePlan(planId);
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(newSubGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(newSubGoalId);
+        verify(planConverter).toUpdatePlanRequestDTO(
+            updateRequest,
+            validPlan.getAllDay(),
+            validPlan.getStartDateTime(),
+            validPlan.getEndDateTime()
+        );
+    }
+
+    @Test
+    @DisplayName("일정 수정 실패 - 존재하지 않는 subGoalId")
+    void updatePlanById_Fail_SubGoalNotFound() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+        Long invalidSubGoalId = 999L;
+
+        PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
+            .title("수정된 제목")
+            .build();
+
+        doNothing().when(planValidator).validateUpdatePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(invalidSubGoalId)).thenReturn(null);
+
+        // when & then
+        assertThatThrownBy(() -> planService.updatePlanById(planId, invalidSubGoalId, updateRequest, userId))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_SUB_GOAL_NOT_FOUND);
+
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(invalidSubGoalId);
+        verify(subGoalRepositoryFacade, never()).findGoalBySubGoalId(any());
+        verify(planConverter, never()).toUpdatePlanRequestDTO(any(), any(), any(), any());
     }
 }

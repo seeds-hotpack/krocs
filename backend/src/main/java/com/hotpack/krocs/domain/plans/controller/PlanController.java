@@ -80,9 +80,10 @@ public class PlanController {
     public ApiResponse<PlanResponseDTO> updatePlanById(
         @PathVariable Long planId,
         @Valid @RequestBody PlanUpdateRequestDTO request,
-        @RequestParam(value = "user_id", required = false) Long userId) {
+        @RequestParam(value = "user_id", required = false) Long userId,
+        @RequestParam(value = "sub_goal_id", required = false) Long subGoalId) {
         try{
-            PlanResponseDTO responseDTO = planService.updatePlanById(planId, request, userId);
+            PlanResponseDTO responseDTO = planService.updatePlanById(planId, subGoalId, request, userId);
 
             return ApiResponse.success(responseDTO);
         } catch (PlanException e) {
