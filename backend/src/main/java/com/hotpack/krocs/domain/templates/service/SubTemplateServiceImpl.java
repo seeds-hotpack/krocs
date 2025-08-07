@@ -85,7 +85,7 @@ public class SubTemplateServiceImpl implements SubTemplateService {
         try {
             if (subTemplateId == null) {
                 throw new SubTemplateException(
-                    SubTemplateExceptionType.SUB_TEMPLATE_TEMPLATE_ID_IS_NULL);
+                    SubTemplateExceptionType.SUB_TEMPLATE_SUB_TEMPLATE_ID_IS_NULL);
             }
 
             Long deletedSubTemplateId = subTemplateRepositoryFacade.deleteBySubTemplateId(
@@ -109,9 +109,9 @@ public class SubTemplateServiceImpl implements SubTemplateService {
         try {
             if (subTemplateId == null) {
                 throw new SubTemplateException(
-                    SubTemplateExceptionType.SUB_TEMPLATE_TEMPLATE_ID_IS_NULL);
+                    SubTemplateExceptionType.SUB_TEMPLATE_SUB_TEMPLATE_ID_IS_NULL);
             }
-
+            
             SubTemplate updatedSubTemplate = subTemplateRepositoryFacade.updateBySubTemplateId(
                 subTemplateId, requestDTO);
 
