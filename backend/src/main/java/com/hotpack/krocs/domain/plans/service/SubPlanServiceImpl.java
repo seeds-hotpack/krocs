@@ -133,22 +133,21 @@ public class SubPlanServiceImpl implements SubPlanService {
 
     @Override
     @Transactional
-    public SubPlanUpdateResponseDTO updateSubPlan(Long subPlanId, SubPlanUpdateRequestDTO requestDTO) {
+    public SubPlanUpdateResponseDTO updateSubPlan(Long subPlanId,
+        SubPlanUpdateRequestDTO requestDTO) {
         try {
-            validateBusinessRules(requestDTO);
-
             if (subPlanId == null) {
                 throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_ID_IS_NULL);
             }
 
+            validateBusinessRules(requestDTO);
+
             SubPlan subPlan = subPlanRepositoryFacade.findSubPlanBySubPlanId(subPlanId);
 
-            boolean wasCompleted = ( subPlan.getIsCompleted() != null && subPlan.getIsCompleted() );
+            boolean wasCompleted = Boolean.TRUE.equals(subPlan.getIsCompleted());
             subPlan.updateFrom(requestDTO, wasCompleted);
 
-            return SubPlanConverter.toSubPlanUpdateResponseDTO(
-                subPlanRepositoryFacade.findSubPlanBySubPlanId(subPlanId)
-            );
+            return subPlanConverter.toSubPlanUpdateResponseDTO(subPlan);
         } catch (SubPlanException e) {
             throw e;
         } catch (Exception e) {

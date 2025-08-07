@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,29 +37,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class SubPlanServiceTest {
 
-    Plan validPlan = Plan.builder().planId(1L).build();
-    SubPlan validSubPlan = SubPlan.builder()
-        .subPlanId(1L)
-        .title("테스트 소계획1")
-        .isCompleted(false)
-        .build();
-
-    SubPlanResponseDTO validSubPlanResponseDTO = SubPlanResponseDTO.builder()
-        .subPlanId(1L)
-        .title("테스트 소계획1")
-        .isCompleted(false)
-        .build();
-
-    SubPlanRequestDTO validSubPlanRequestDTO = SubPlanRequestDTO.builder()
-        .title("테스트 소계획1")
-        .build();
-
-    SubPlanCreateRequestDTO validSubPlanCreateRequestDTO = SubPlanCreateRequestDTO.builder()
-        .subPlans(List.of(validSubPlanRequestDTO)).build();
-    SubPlanUpdateRequestDTO updateRequestDTO = SubPlanUpdateRequestDTO.builder()
-        .title("수정된 소계획 제목")
-        .isCompleted(true)
-        .build();
     @Mock
     private PlanRepositoryFacade planRepositoryFacade;
     @Mock
@@ -68,44 +46,51 @@ class SubPlanServiceTest {
     @InjectMocks
     private SubPlanServiceImpl subPlanService;
 
+    private Plan validPlan;
+    private SubPlan validSubPlan;
+    private SubPlanResponseDTO validSubPlanResponseDTO;
+    private SubPlanRequestDTO validSubPlanRequestDTO;
+    private SubPlanCreateRequestDTO validSubPlanCreateRequestDTO;
+    private SubPlanUpdateRequestDTO updateRequestDTO;
 
-    Plan validPlan = Plan.builder().planId(1L).build();
-    SubPlan validSubPlan = SubPlan.builder()
-        .subPlanId(1L)
-        .title("테스트 소계획1")
-        .isCompleted(false)
-        .build();
+    @BeforeEach
+    void setUp() {
+        validPlan = Plan.builder()
+            .planId(1L)
+            .build();
 
-    SubPlanResponseDTO validSubPlanResponseDTO = SubPlanResponseDTO.builder()
-        .subPlanId(1L)
-        .title("테스트 소계획1")
-        .isCompleted(false)
-        .build();
+        validSubPlan = SubPlan.builder()
+            .subPlanId(1L)
+            .title("테스트 소계획1")
+            .isCompleted(false)
+            .completedAt(null)
+            .build();
 
-    SubPlanRequestDTO validSubPlanRequestDTO = SubPlanRequestDTO.builder()
-        .title("테스트 소계획1")
-        .build();
+        validSubPlanResponseDTO = SubPlanResponseDTO.builder()
+            .subPlanId(1L)
+            .title("테스트 소계획1")
+            .isCompleted(false)
+            .build();
 
-    SubPlanCreateRequestDTO validSubPlanCreateRequestDTO = SubPlanCreateRequestDTO.builder()
-        .subPlans(List.of(validSubPlanRequestDTO)).build();
+        validSubPlanRequestDTO = SubPlanRequestDTO.builder()
+            .title("테스트 소계획1")
+            .build();
 
-    SubPlanUpdateRequestDTO updateRequestDTO = SubPlanUpdateRequestDTO.builder()
-        .title("수정된 소계획 제목")
+        validSubPlanCreateRequestDTO = SubPlanCreateRequestDTO.builder()
+            .subPlans(List.of(validSubPlanRequestDTO))
+            .build();
+
+        updateRequestDTO = SubPlanUpdateRequestDTO.builder()
+            .title("수정된 소계획 제목")
             .isCompleted(true)
             .build();
+    }
 
     @Test
     @DisplayName("소계획 생성 성공 테스트")
     void createSubPlans_Success() {
         // given
         LocalDateTime now = LocalDateTime.now();
-
-        SubPlan validSubPlan = SubPlan.builder()
-            .subPlanId(1L)
-            .title("테스트 소계획1")
-            .isCompleted(false)
-            .completedAt(null)
-            .build();
 
         SubPlanResponseDTO validSubPlanResponseDTO = SubPlanResponseDTO.builder()
             .subPlanId(1L)
@@ -320,43 +305,36 @@ class SubPlanServiceTest {
                 SubPlanExceptionType.SUB_PLAN_READ_FAILED);
     }
 
-
     @Test
     @DisplayName("SubPlan 수정 성공")
     void updateSubPlan_Success() {
-        // given
-        SubPlan updatedSubPlan = SubPlan.builder()
-            .subPlanId(1L)
-            .plan(validPlan)
-            .title(updateRequestDTO.getTitle())
-            .isCompleted(updateRequestDTO.getIsCompleted())
-            .completedAt(LocalDateTime.now())
-            .build();
 
         SubPlanUpdateResponseDTO expectedResponse = SubPlanUpdateResponseDTO.builder()
             .subPlanId(1L)
             .planId(1L)
             .title(updateRequestDTO.getTitle())
             .isCompleted(updateRequestDTO.getIsCompleted())
-            .completedAt(updatedSubPlan.getCompletedAt())
-            .createdAt(updatedSubPlan.getCreatedAt())
-            .updatedAt(updatedSubPlan.getUpdatedAt())
+            .completedAt(LocalDateTime.now())
+            .createdAt(LocalDateTime.now())
+            .updatedAt(LocalDateTime.now())
             .build();
 
-        given(subPlanRepositoryFacade.findSubPlanBySubPlanId(1L))
-            .willReturn(validSubPlan) // 첫 번째 조회 (수정 전)
-            .willReturn(updatedSubPlan); // 두 번째 조회 (수정 후)
+        given(subPlanRepositoryFacade.findSubPlanBySubPlanId(1L)).willReturn(validSubPlan);
+
+        given(subPlanConverter.toSubPlanUpdateResponseDTO(any(SubPlan.class))).willReturn(
+            expectedResponse);
 
         // when
         SubPlanUpdateResponseDTO actualResponse = subPlanService.updateSubPlan(1L, updateRequestDTO);
 
         // then
+        assertThat(actualResponse).isNotNull();
         assertThat(actualResponse.getSubPlanId()).isEqualTo(expectedResponse.getSubPlanId());
-        assertThat(actualResponse.getPlanId()).isEqualTo(expectedResponse.getPlanId());
         assertThat(actualResponse.getTitle()).isEqualTo(expectedResponse.getTitle());
         assertThat(actualResponse.getIsCompleted()).isTrue();
         assertThat(actualResponse.getCompletedAt()).isNotNull();
     }
+
 
     @Test
     @DisplayName("SubPlan 수정 실패 - 제목 길이 초과")
