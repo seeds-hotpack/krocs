@@ -4,12 +4,11 @@ import com.hotpack.krocs.domain.templates.domain.Template;
 import com.hotpack.krocs.domain.templates.exception.TemplateException;
 import com.hotpack.krocs.domain.templates.exception.TemplateExceptionType;
 import com.hotpack.krocs.domain.templates.repository.TemplateRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @Slf4j
@@ -46,7 +45,7 @@ public class TemplateRepositoryFacade {
         return template;
     }
 
-    public void existsByTemplateTitle(String title){
+    public void existsByTemplateTitle(String title) {
         if (templateRepository.existsByTitle(title)) {
             throw new TemplateException(TemplateExceptionType.TEMPLATE_DUPLICATE_TITLE);
         }

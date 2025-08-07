@@ -41,6 +41,12 @@ public class SubTemplateConverter {
             .build();
     }
 
+    public List<SubTemplateResponseDTO> toListResponseDTO(List<SubTemplate> subTemplates) {
+        return subTemplates.stream()
+            .map(this::toResponseDTO)
+            .toList();
+    }
+
     public SubTemplateResponseDTO toResponseDTO(SubTemplate subTemplate) {
         return SubTemplateResponseDTO.builder()
             .subTemplateId(subTemplate.getSubTemplateId())
