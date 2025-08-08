@@ -2,9 +2,6 @@ package com.hotpack.krocs.domain.plans.facade;
 
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.domain.SubPlan;
-import com.hotpack.krocs.domain.plans.dto.request.SubPlanCreateRequestDTO;
-import com.hotpack.krocs.domain.plans.dto.response.SubPlanCreateResponseDTO;
-import com.hotpack.krocs.domain.plans.dto.response.SubPlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.repository.SubPlanRepository;
@@ -32,12 +29,9 @@ public class SubPlanRepositoryFacade {
         return subPlanRepository.save(subPlan);
     }
 
+    // 빈 리스트는 정상 응답으로 간주하고 그대로 반환
     public List<SubPlan> findSubPlansByPlan(Plan plan) {
         List<SubPlan> subPlans = subPlanRepository.findSubPlansByPlan(plan);
-        if (subPlans.isEmpty()) {
-            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_NOT_FOUND);
-        }
-
         return subPlans;
     }
 
@@ -48,5 +42,12 @@ public class SubPlanRepositoryFacade {
         }
         return subPlan;
     }
-}
 
+    @Transactional
+    public void deleteSubPlanBySubPlanId(Long subPlanId) {
+        findSubPlanBySubPlanId(subPlanId);
+        subPlanRepository.deleteSubPlanBySubPlanId(subPlanId);
+    }
+
+
+}

@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.hotpack.krocs.domain.plans.converter.SubPlanConverter;
@@ -275,5 +277,49 @@ class SubPlanServiceTest {
             .hasFieldOrPropertyWithValue("subPlanExceptionType",
                 SubPlanExceptionType.SUB_PLAN_READ_FAILED);
     }
-}
 
+    @Test
+    @DisplayName("소계획 삭제 성공")
+    void deleteSubPlan_Success() {
+
+        // given
+        Long subPlanId = 1L;
+
+        // when
+        subPlanService.deleteSubPlan(subPlanId);
+
+        // then
+        verify(subPlanRepositoryFacade).deleteSubPlanBySubPlanId(subPlanId);
+    }
+
+    @Test
+    @DisplayName("소계획 삭제 - 조회 실패")
+    void deleteSubPlan_ReadFailure() {
+        // given
+        doThrow(new SubPlanException(SubPlanExceptionType.SUB_PLAN_NOT_FOUND))
+            .when(subPlanRepositoryFacade)
+            .deleteSubPlanBySubPlanId(any());
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.deleteSubPlan(1L))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_NOT_FOUND);
+
+    }
+
+    @Test
+    @DisplayName("소계획 삭제 실패 - 내부 예외 발생")
+    void deleteSubPlan_Fail_InternalError() {
+        doThrow(new RuntimeException())
+            .when(subPlanRepositoryFacade)
+            .deleteSubPlanBySubPlanId(any());
+
+        // when & then
+        assertThatThrownBy(() -> subPlanService.deleteSubPlan(1L))
+            .isInstanceOf(SubPlanException.class)
+            .hasFieldOrPropertyWithValue("subPlanExceptionType",
+                SubPlanExceptionType.SUB_PLAN_DELETE_FAILED);
+    }
+
+}

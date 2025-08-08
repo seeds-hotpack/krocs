@@ -12,6 +12,7 @@ import com.hotpack.krocs.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -77,5 +78,19 @@ public class SubPlanController {
         }
     }
 
+    @Operation(summary = "특정 소계획 삭제", description = "특정 소계획을 삭제합니다")
+    @DeleteMapping("subplans/{subPlanId}")
+    public ApiResponse<Void> deleteSubPlan(
+        @PathVariable @Parameter(description = "SubPlan ID", example = "1") Long subPlanId
+    ) {
+        try {
+            subPlanService.deleteSubPlan(subPlanId);
+            return ApiResponse.success();
+        } catch (SubPlanException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SubPlanException(SubPlanExceptionType.SUB_PLAN_DELETE_FAILED);
+        }
+    }
 
 }
