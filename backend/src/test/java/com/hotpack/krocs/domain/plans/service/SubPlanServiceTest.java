@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.hotpack.krocs.domain.plans.converter.SubPlanConverter;
@@ -21,7 +23,6 @@ import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
 import com.hotpack.krocs.domain.plans.facade.SubPlanRepositoryFacade;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -325,7 +326,8 @@ class SubPlanServiceTest {
             expectedResponse);
 
         // when
-        SubPlanUpdateResponseDTO actualResponse = subPlanService.updateSubPlan(1L, updateRequestDTO);
+        SubPlanUpdateResponseDTO actualResponse = subPlanService.updateSubPlan(1L,
+            updateRequestDTO);
 
         // then
         assertThat(actualResponse).isNotNull();
@@ -375,6 +377,7 @@ class SubPlanServiceTest {
             .hasFieldOrPropertyWithValue("subPlanExceptionType",
                 SubPlanExceptionType.SUB_PLAN_NOT_FOUND);
     }
+
     @Test
     @DisplayName("소계획 삭제 성공")
     void deleteSubPlan_Success() {
@@ -398,7 +401,7 @@ class SubPlanServiceTest {
             .deleteSubPlanBySubPlanId(any());
 
         assertThatThrownBy(() -> subPlanService.deleteSubPlan(1L))
-        // when & then
+            // when & then
             .isInstanceOf(SubPlanException.class)
             .hasFieldOrPropertyWithValue("subPlanExceptionType",
                 SubPlanExceptionType.SUB_PLAN_NOT_FOUND);
@@ -407,8 +410,8 @@ class SubPlanServiceTest {
 
     @Test
     @DisplayName("소계획 삭제 실패 - 내부 예외 발생")
-        doThrow(new RuntimeException())
     void deleteSubPlan_Fail_InternalError() {
+        doThrow(new RuntimeException())
             .when(subPlanRepositoryFacade)
             .deleteSubPlanBySubPlanId(any());
 
