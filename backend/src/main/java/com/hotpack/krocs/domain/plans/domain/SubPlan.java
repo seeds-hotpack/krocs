@@ -1,5 +1,7 @@
 package com.hotpack.krocs.domain.plans.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hotpack.krocs.domain.plans.dto.request.SubPlanUpdateRequestDTO;
 import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,6 +42,26 @@ public class SubPlan extends BaseTimeEntity {
     @Builder.Default
     private Boolean isCompleted = false;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    public void updateFrom(SubPlanUpdateRequestDTO requestDTO, Boolean wasCompleted) {
+        if (requestDTO.getTitle() != null) {
+            this.title = requestDTO.getTitle();
+        }
+
+        Boolean reqCompleted = requestDTO.getIsCompleted();
+        if (reqCompleted == null) {
+            return;             // 변경 없음
+        }
+
+        this.isCompleted = reqCompleted;
+
+        if (!wasCompleted && reqCompleted) {        // 미완료 → 완료
+            this.completedAt = LocalDateTime.now();
+        } else if (!reqCompleted && wasCompleted) {     // 완료 → 미완료
+            this.completedAt = null;
+        }
+    }
 }
