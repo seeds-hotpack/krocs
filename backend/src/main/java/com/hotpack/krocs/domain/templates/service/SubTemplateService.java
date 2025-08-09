@@ -1,6 +1,7 @@
 package com.hotpack.krocs.domain.templates.service;
 
 import com.hotpack.krocs.domain.templates.dto.request.SubTemplateCreateRequestDTO;
+import com.hotpack.krocs.domain.templates.dto.request.SubTemplateUpdateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateCreateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateDeleteResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateResponseDTO;
@@ -14,5 +15,8 @@ public interface SubTemplateService {
 
     List<SubTemplateResponseDTO> getSubTemplates(Long templateId);
 
-    SubTemplateDeleteResponseDTO deleteSubTemplate(Long templateId);
+    SubTemplateDeleteResponseDTO deleteSubTemplate(Long subTemplateId);
+
+    SubTemplateResponseDTO updateSubTemplate(Long subTemplateId,
+        SubTemplateUpdateRequestDTO requestDTO);
 }

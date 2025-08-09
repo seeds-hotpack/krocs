@@ -2,6 +2,7 @@ package com.hotpack.krocs.domain.templates.facade;
 
 import com.hotpack.krocs.domain.templates.domain.SubTemplate;
 import com.hotpack.krocs.domain.templates.domain.Template;
+import com.hotpack.krocs.domain.templates.dto.request.SubTemplateUpdateRequestDTO;
 import com.hotpack.krocs.domain.templates.exception.SubTemplateException;
 import com.hotpack.krocs.domain.templates.exception.SubTemplateExceptionType;
 import com.hotpack.krocs.domain.templates.repository.SubTemplateRepository;
@@ -34,9 +35,22 @@ public class SubTemplateRepositoryFacade {
         if (subTemplate == null) {
             throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_NOT_FOUND);
         }
-        
+
         subTemplateRepository.delete(subTemplate);
 
         return subTemplateId;
+    }
+
+    @Transactional
+    public SubTemplate updateBySubTemplateId(Long subTemplateId,
+        SubTemplateUpdateRequestDTO requestDTO) {
+        SubTemplate subTemplate = subTemplateRepository.findBySubTemplateId(subTemplateId);
+        if (subTemplate == null) {
+            throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_NOT_FOUND);
+        }
+
+        subTemplate.updateFrom(requestDTO);
+
+        return subTemplate;
     }
 }

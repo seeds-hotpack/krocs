@@ -1,6 +1,8 @@
 package com.hotpack.krocs.domain.templates.controller;
 
+import com.hotpack.krocs.domain.templates.dto.request.SubTemplateUpdateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.SubTemplateDeleteResponseDTO;
+import com.hotpack.krocs.domain.templates.dto.response.SubTemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.exception.SubTemplateException;
 import com.hotpack.krocs.domain.templates.exception.SubTemplateExceptionType;
 import com.hotpack.krocs.domain.templates.service.SubTemplateService;
@@ -9,7 +11,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +39,24 @@ public class SubTemplateController {
         } catch (Exception e) {
             throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_DELETE_FAILED);
         }
-
     }
+
+    @Operation(summary = "서브 템플릿 수정", description = "subTemplateId를 조회하여 서브템플릿을 수정합니다.")
+    @PatchMapping("/{subTemplateId}")
+    public ApiResponse<SubTemplateResponseDTO> updateSubTemplate(
+        @PathVariable("subTemplateId") Long subTemplateId,
+        @RequestBody SubTemplateUpdateRequestDTO request
+    ) {
+        try {
+            SubTemplateResponseDTO responseDTO = subTemplateService.updateSubTemplate(subTemplateId,
+                request);
+            return ApiResponse.success(responseDTO);
+        } catch (SubTemplateException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SubTemplateException(SubTemplateExceptionType.SUB_TEMPLATE_UPDATE_FAILED);
+        }
+    }
+
 
 }
