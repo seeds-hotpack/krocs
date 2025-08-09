@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -1160,5 +1161,369 @@ public class PlanServiceTest {
         verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(invalidSubGoalId);
         verify(subGoalRepositoryFacade, never()).findGoalBySubGoalId(any());
         verify(planConverter, never()).toUpdatePlanRequestDTO(any(), any(), any(), any());
+    }
+
+    // ========== DELETE 테스트 ==========
+
+    @Test
+    @DisplayName("일정 삭제 성공")
+    void deletePlan_Success() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        doNothing().when(planRepositoryFacade).deletePlanByPlanId(planId);
+
+        // when
+        planService.deletePlan(planId, userId);
+
+        // then
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(planRepositoryFacade).deletePlanByPlanId(planId);
+    }
+
+    @Test
+    @DisplayName("일정 삭제 성공 - Goal/SubGoal과 연결된 일정")
+    void deletePlan_Success_WithGoalAndSubGoal() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+
+        Plan planWithRelations = Plan.builder()
+            .planId(1L)
+            .goal(validGoal)
+            .subGoal(validSubGoal)
+            .title("목표와 연결된 일정")
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
+            .allDay(false)
+            .isCompleted(false)
+            .build();
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(planWithRelations);
+        doNothing().when(planRepositoryFacade).deletePlanByPlanId(planId);
+
+        // when
+        planService.deletePlan(planId, userId);
+
+        // then
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(planRepositoryFacade).deletePlanByPlanId(planId);
+    }
+
+    @Test
+    @DisplayName("일정 삭제 성공 - 독립 일정 (Goal/SubGoal 없음)")
+    void deletePlan_Success_IndependentPlan() {
+        // given
+        Long planId = 2L;
+        Long userId = 1L;
+
+        Plan independentPlan = Plan.builder()
+            .planId(2L)
+            .goal(null)
+            .subGoal(null)
+            .title("독립 일정")
+            .startDateTime(LocalDateTime.of(2025, 8, 2, 14, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 2, 15, 0))
+            .allDay(false)
+            .isCompleted(false)
+            .build();
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(independentPlan);
+        doNothing().when(planRepositoryFacade).deletePlanByPlanId(planId);
+
+        // when
+        planService.deletePlan(planId, userId);
+
+        // then
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(planRepositoryFacade).deletePlanByPlanId(planId);
+    }
+
+    @Test
+    @DisplayName("일정 삭제 성공 - 완료된 일정")
+    void deletePlan_Success_CompletedPlan() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+
+        Plan completedPlan = Plan.builder()
+            .planId(1L)
+            .goal(validGoal)
+            .subGoal(validSubGoal)
+            .title("완료된 일정")
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
+            .allDay(false)
+            .isCompleted(true)
+            .completedAt(LocalDateTime.now())
+            .build();
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(completedPlan);
+        doNothing().when(planRepositoryFacade).deletePlanByPlanId(planId);
+
+        // when
+        planService.deletePlan(planId, userId);
+
+        // then
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(planRepositoryFacade).deletePlanByPlanId(planId);
+    }
+
+    @Test
+    @DisplayName("일정 삭제 성공 - allDay 일정")
+    void deletePlan_Success_AllDayPlan() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+
+        Plan allDayPlan = Plan.builder()
+            .planId(1L)
+            .goal(null)
+            .subGoal(null)
+            .title("하루 종일 일정")
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 0, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 23, 59, 59))
+            .allDay(true)
+            .isCompleted(false)
+            .build();
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(allDayPlan);
+        doNothing().when(planRepositoryFacade).deletePlanByPlanId(planId);
+
+        // when
+        planService.deletePlan(planId, userId);
+
+        // then
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(planRepositoryFacade).deletePlanByPlanId(planId);
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - 존재하지 않는 planId")
+    void deletePlan_Fail_PlanNotFound() {
+        // given
+        Long planId = 999L;
+        Long userId = 1L;
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(null);
+
+        // when & then
+        assertThatThrownBy(() -> planService.deletePlan(planId, userId))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_NOT_FOUND);
+
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(planRepositoryFacade, never()).deletePlanByPlanId(any());
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - null planId")
+    void deletePlan_Fail_NullPlanId() {
+        // given
+        Long planId = null;
+        Long userId = 1L;
+
+        doThrow(new PlanException(PlanExceptionType.PLAN_INVALID_PLAN_ID))
+            .when(planValidator).validateDeletePlan(planId);
+
+        // when & then
+        assertThatThrownBy(() -> planService.deletePlan(planId, userId))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_PLAN_ID);
+
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade, never()).findPlanById(any());
+        verify(planRepositoryFacade, never()).deletePlanByPlanId(any());
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - 음수 planId")
+    void deletePlan_Fail_NegativePlanId() {
+        // given
+        Long planId = -1L;
+        Long userId = 1L;
+
+        doThrow(new PlanException(PlanExceptionType.PLAN_INVALID_PLAN_ID))
+            .when(planValidator).validateDeletePlan(planId);
+
+        // when & then
+        assertThatThrownBy(() -> planService.deletePlan(planId, userId))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_PLAN_ID);
+
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade, never()).findPlanById(any());
+        verify(planRepositoryFacade, never()).deletePlanByPlanId(any());
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - 0인 planId")
+    void deletePlan_Fail_ZeroPlanId() {
+        // given
+        Long planId = 0L;
+        Long userId = 1L;
+
+        doThrow(new PlanException(PlanExceptionType.PLAN_INVALID_PLAN_ID))
+            .when(planValidator).validateDeletePlan(planId);
+
+        // when & then
+        assertThatThrownBy(() -> planService.deletePlan(planId, userId))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_PLAN_ID);
+
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade, never()).findPlanById(any());
+        verify(planRepositoryFacade, never()).deletePlanByPlanId(any());
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - Repository findById에서 예외 발생")
+    void deletePlan_Fail_FindByIdRepositoryException() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenThrow(new RuntimeException("데이터베이스 조회 오류"));
+
+        // when & then
+        assertThatThrownBy(() -> planService.deletePlan(planId, userId))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_DELETE_FAILED);
+
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(planRepositoryFacade, never()).deletePlanByPlanId(any());
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - Repository delete에서 예외 발생")
+    void deletePlan_Fail_DeleteRepositoryException() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        doThrow(new RuntimeException("데이터베이스 삭제 오류"))
+            .when(planRepositoryFacade).deletePlanByPlanId(planId);
+
+        // when & then
+        assertThatThrownBy(() -> planService.deletePlan(planId, userId))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_DELETE_FAILED);
+
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(planRepositoryFacade).deletePlanByPlanId(planId);
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - Validator에서 예외 발생")
+    void deletePlan_Fail_ValidatorException() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+
+        doThrow(new PlanException(PlanExceptionType.PLAN_INVALID_PLAN_ID))
+            .when(planValidator).validateDeletePlan(planId);
+
+        // when & then
+        assertThatThrownBy(() -> planService.deletePlan(planId, userId))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_INVALID_PLAN_ID);
+
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade, never()).findPlanById(any());
+        verify(planRepositoryFacade, never()).deletePlanByPlanId(any());
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - SubPlan이 연결된 일정 (Cascade 삭제 동작 확인)")
+    void deletePlan_Success_WithSubPlans() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+
+        // SubPlan 리스트가 있는 Plan 생성 (실제로는 JPA Cascade가 처리)
+        Plan planWithSubPlans = Plan.builder()
+            .planId(1L)
+            .goal(validGoal)
+            .subGoal(validSubGoal)
+            .title("SubPlan이 있는 일정")
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
+            .allDay(false)
+            .isCompleted(false)
+            .subPlans(Collections.emptyList()) // 실제로는 SubPlan들이 들어있겠지만 테스트에서는 빈 리스트
+            .build();
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(planWithSubPlans);
+        doNothing().when(planRepositoryFacade).deletePlanByPlanId(planId);
+
+        // when
+        planService.deletePlan(planId, userId);
+
+        // then
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(planRepositoryFacade).deletePlanByPlanId(planId);
+    }
+
+    @Test
+    @DisplayName("일정 삭제 로직 검증 - 메서드 호출 순서 확인")
+    void deletePlan_Success_MethodCallOrder() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        doNothing().when(planRepositoryFacade).deletePlanByPlanId(planId);
+
+        // when
+        planService.deletePlan(planId, userId);
+
+        // then - 메서드 호출 순서 검증
+        InOrder inOrder = inOrder(planValidator, planRepositoryFacade);
+        inOrder.verify(planValidator).validateDeletePlan(planId);
+        inOrder.verify(planRepositoryFacade).findPlanById(planId);
+        inOrder.verify(planRepositoryFacade).deletePlanByPlanId(planId);
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - PlanException이 아닌 다른 Exception 발생 시 PlanException으로 래핑")
+    void deletePlan_Fail_UnexpectedException() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+
+        doNothing().when(planValidator).validateDeletePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId))
+            .thenThrow(new IllegalArgumentException("예상치 못한 오류"));
+
+        // when & then
+        assertThatThrownBy(() -> planService.deletePlan(planId, userId))
+            .isInstanceOf(PlanException.class)
+            .hasFieldOrPropertyWithValue("planExceptionType", PlanExceptionType.PLAN_DELETE_FAILED);
+
+        verify(planValidator).validateDeletePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(planRepositoryFacade, never()).deletePlanByPlanId(any());
     }
 }

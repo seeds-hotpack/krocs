@@ -5,7 +5,6 @@ import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.facade.SubGoalRepositoryFacade;
 import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
-import com.hotpack.krocs.domain.plans.domain.SubPlan;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanListResponseDTO;
@@ -13,7 +12,6 @@ import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
-import com.hotpack.krocs.domain.plans.facade.SubPlanRepositoryFacade;
 import com.hotpack.krocs.domain.plans.validator.PlanValidator;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -160,6 +158,24 @@ public class PlanServiceImpl implements PlanService{
         } catch (Exception e) {
             log.error("일정 수정 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
             throw new PlanException(PlanExceptionType.PLAN_UPDATE_FAILED);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deletePlan(Long planId, Long userId) {
+        try {
+            planValidator.validateDeletePlan(planId);
+            if (planRepositoryFacade.findPlanById(planId) == null) {
+                throw new PlanException(PlanExceptionType.PLAN_NOT_FOUND);
+            }
+
+            planRepositoryFacade.deletePlanByPlanId(planId);
+        } catch (PlanException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("계획 삭제 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new PlanException(PlanExceptionType.PLAN_DELETE_FAILED);
         }
     }
 }

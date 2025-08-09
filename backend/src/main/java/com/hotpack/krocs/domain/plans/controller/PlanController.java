@@ -92,4 +92,20 @@ public class PlanController {
             throw new PlanException(PlanExceptionType.PLAN_UPDATE_FAILED);
         }
     }
+
+    @Operation(summary = "일정 삭제", description = "일정을 삭제합니다")
+    @DeleteMapping("/{planId}")
+    public ApiResponse<Void> deletePlan(
+        @PathVariable @Parameter(description = "Plan ID", example = "1") Long planId,
+        @RequestParam(value = "user_id", required = false) Long userId
+    ) {
+        try {
+            planService.deletePlan(planId, userId);
+            return ApiResponse.success();
+        } catch (PlanException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PlanException(PlanExceptionType.PLAN_DELETE_FAILED);
+        }
+    }
 }
