@@ -6,8 +6,6 @@ import com.hotpack.krocs.domain.plans.dto.response.PlanListResponseDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
-import com.hotpack.krocs.domain.plans.exception.SubPlanException;
-import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.service.PlanService;
 import com.hotpack.krocs.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -95,7 +93,7 @@ public class PlanController {
         }
     }
 
-    @Operation(summary = "계획 삭제", description = "계획을 삭제합니다")
+    @Operation(summary = "일정 삭제", description = "일정을 삭제합니다")
     @DeleteMapping("/{planId}")
     public ApiResponse<Void> deleteSubPlan(
         @PathVariable @Parameter(description = "Plan ID", example = "1") Long planId,
