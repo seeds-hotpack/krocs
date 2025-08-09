@@ -13,4 +13,6 @@ public interface PlanService {
     PlanResponseDTO getPlanById(Long planId, Long userId);
 
     PlanResponseDTO updatePlanById(Long planId, Long subGoalId, PlanUpdateRequestDTO request, Long userId);
+
+    void deletePlan(Long planId, Long userId);
 }

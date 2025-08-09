@@ -34,6 +34,10 @@ public class PlanValidator {
         validatePlanIdParameter(planId);
     }
 
+    public void validateDeletePlan(Long planId) {
+        validatePlanIdParameter(planId);
+    }
+
     private void validatePlanIdParameter(Long planId) {
         if (planId == null || planId <= 0) {
             throw new PlanException(PlanExceptionType.PLAN_INVALID_PLAN_ID);

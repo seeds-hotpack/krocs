@@ -30,4 +30,9 @@ public class PlanRepositoryFacade {
     public List<Plan> findAllPlans() {
         return planRepository.findAll();
     }
+
+    @Transactional
+    public void deletePlanByPlanId(Long planId) {
+        planRepository.deleteById(planId);
+    }
 }
