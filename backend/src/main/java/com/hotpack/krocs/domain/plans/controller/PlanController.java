@@ -95,7 +95,7 @@ public class PlanController {
 
     @Operation(summary = "일정 삭제", description = "일정을 삭제합니다")
     @DeleteMapping("/{planId}")
-    public ApiResponse<Void> deleteSubPlan(
+    public ApiResponse<Void> deletePlan(
         @PathVariable @Parameter(description = "Plan ID", example = "1") Long planId,
         @RequestParam(value = "user_id", required = false) Long userId
     ) {
