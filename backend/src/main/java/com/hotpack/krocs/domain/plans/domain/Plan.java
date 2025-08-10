@@ -4,6 +4,7 @@ import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
+import com.hotpack.krocs.domain.user.domain.User;
 import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import java.util.List;
@@ -12,7 +13,11 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "plans")
+@Table(name = "plans", indexes = {
+    @Index(name = "idx_plans_user_id", columnList = "user_id"),
+    @Index(name = "idx_plans_goal_id", columnList = "goal_id"),
+    @Index(name = "idx_plans_sub_goal_id", columnList = "sub_goal_id")
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -23,6 +28,10 @@ public class Plan extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "plan_id")
     private Long planId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "goal_id")
@@ -97,4 +106,5 @@ public class Plan extends BaseTimeEntity {
             this.subGoal = subGoal;
         }
     }
+
 }

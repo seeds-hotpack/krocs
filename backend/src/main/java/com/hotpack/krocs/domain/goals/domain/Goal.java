@@ -1,6 +1,7 @@
 package com.hotpack.krocs.domain.goals.domain;
 
 import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
+import com.hotpack.krocs.domain.user.domain.User;
 import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import com.hotpack.krocs.global.common.entity.Priority;
 import jakarta.persistence.CascadeType;
@@ -13,6 +14,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
@@ -25,7 +28,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "goals",
     indexes = {
-        @Index(name = "idx_goals_date_range", columnList = "start_date, end_date")
+        @Index(name = "idx_goals_date_range", columnList = "start_date, end_date"),
+        @Index(name = "idx_goals_user_id", columnList = "user_id")
     })
 @Getter
 @NoArgsConstructor
@@ -37,6 +41,10 @@ public class Goal extends BaseTimeEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "goal_id")
   private Long goalId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
   @Column(name = "title", nullable = false, length = 200)
   private String title;
@@ -76,4 +84,5 @@ public class Goal extends BaseTimeEntity {
       this.endDate = requestDTO.getEndDate();
     }
   }
+
 }
