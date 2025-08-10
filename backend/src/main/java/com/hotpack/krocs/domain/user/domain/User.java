@@ -39,8 +39,8 @@ import lombok.NoArgsConstructor;
 public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", length = 50)
-    private String userId;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
