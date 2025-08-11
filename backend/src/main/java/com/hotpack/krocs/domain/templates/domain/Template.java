@@ -1,6 +1,7 @@
 package com.hotpack.krocs.domain.templates.domain;
 
 import com.hotpack.krocs.domain.templates.dto.request.TemplateUpdateRequestDTO;
+import com.hotpack.krocs.domain.user.domain.User;
 import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
 import com.hotpack.krocs.global.common.entity.Priority;
 import jakarta.persistence.CascadeType;
@@ -12,6 +13,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
@@ -21,7 +25,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "templates")
+@Table(name = "templates", indexes = {
+    @Index(name = "idx_templates_user_id", columnList = "user_id")
+})
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,6 +38,10 @@ public class Template extends BaseTimeEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "template_id")
   private Long templateId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
   @Column(name = "title", nullable = false, length = 200)
   private String title;
@@ -62,4 +72,5 @@ public class Template extends BaseTimeEntity {
     }
     
   }
+
 }
