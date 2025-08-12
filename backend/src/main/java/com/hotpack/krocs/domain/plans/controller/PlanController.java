@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -42,13 +44,18 @@ public class PlanController {
         }
     }
 
-    @Operation(summary = "모든 일정 조회", description = "모든 일정을 조회합니다.")
+    @Operation(summary = "범위로 일정 조회", description = "범위로 일정을 조회합니다.")
     @GetMapping
     public ApiResponse<PlanListResponseDTO> getPlans(
+        @RequestParam(required = false) LocalDateTime dateTime,
         @RequestParam(value = "user_id", required = false) Long userId
     ) {
         try {
-            PlanListResponseDTO response = planService.getAllPlans(userId);
+            if(dateTime == null){
+                dateTime = LocalDateTime.now();
+            }
+
+            PlanListResponseDTO response = planService.getPlans(dateTime, userId);
             return ApiResponse.success(response);
         } catch (PlanException e) {
             throw e;
