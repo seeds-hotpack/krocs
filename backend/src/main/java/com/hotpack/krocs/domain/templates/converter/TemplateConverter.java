@@ -7,6 +7,7 @@ import com.hotpack.krocs.domain.templates.dto.response.SubTemplateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateCreateResponseDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateResponseDTO;
 import com.hotpack.krocs.global.common.entity.Priority;
+import com.hotpack.krocs.domain.user.domain.User;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,20 @@ public class TemplateConverter {
         .priority(priority)
         .duration(requestDTO.getDuration())
         .subTemplates(List.of()) // 초기 생성 시 빈 리스트 (추후 추가 가능)
+        .build();
+  }
+
+  public Template toEntity(TemplateCreateRequestDTO requestDTO, User user) {
+    Priority priority = requestDTO.getPriority();
+    if (requestDTO.getPriority() == null) {
+      priority = Priority.MEDIUM;
+    }
+    return Template.builder()
+        .user(user)
+        .title(requestDTO.getTitle())
+        .priority(priority)
+        .duration(requestDTO.getDuration())
+        .subTemplates(List.of())
         .build();
   }
 

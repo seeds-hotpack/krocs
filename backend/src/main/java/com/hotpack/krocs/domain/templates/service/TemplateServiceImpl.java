@@ -3,6 +3,7 @@ package com.hotpack.krocs.domain.templates.service;
 
 import com.hotpack.krocs.domain.templates.converter.TemplateConverter;
 import com.hotpack.krocs.domain.templates.domain.Template;
+import com.hotpack.krocs.domain.user.domain.User;
 import com.hotpack.krocs.domain.templates.dto.request.TemplateCreateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.request.TemplateUpdateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.response.TemplateCreateResponseDTO;
@@ -35,9 +36,16 @@ public class TemplateServiceImpl implements TemplateService {
       Long userId) {
     try {
 
-      // 이후에 비즈니스 적용으로 삭제
       templateValidator.validateTemplateCreateDTO(requestDTO);
-      Template template = templateConverter.toEntity(requestDTO);
+      Template template;
+      if (userId != null) {
+        User userRef = User.builder()
+            .userId(userId)
+            .build();
+        template = templateConverter.toEntity(requestDTO, userRef);
+      } else {
+        template = templateConverter.toEntity(requestDTO);
+      }
       // templateValidator.validateTemplateBusiness(template); 유효성 검사 적용 이후
       templateRepositoryFacade.existsByTemplateTitle(template.getTitle());
       Template savedTemplate = templateRepositoryFacade.save(template);

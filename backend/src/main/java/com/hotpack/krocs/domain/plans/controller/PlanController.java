@@ -1,5 +1,6 @@
 package com.hotpack.krocs.domain.plans.controller;
 
+import com.hotpack.krocs.domain.auth.dto.UserSession;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanListResponseDTO;
@@ -8,6 +9,7 @@ import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
 import com.hotpack.krocs.domain.plans.service.PlanService;
 import com.hotpack.krocs.global.common.response.ApiResponse;
+import com.hotpack.krocs.global.security.annotation.Login;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,10 +32,11 @@ public class PlanController {
     @PostMapping
     public ApiResponse<PlanResponseDTO> createPlan(
             @Valid @RequestBody PlanCreateRequestDTO requestDTO,
-            @RequestParam(value = "user_id", required = false) Long userId,
+            @Login UserSession user,
             @RequestParam(value = "sub_goal_id", required = false) Long subGoalId
     ) {
         try {
+            Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
             PlanResponseDTO responseDTO = planService.createPlan(requestDTO, userId, subGoalId);
             return ApiResponse.success(responseDTO);
         } catch (PlanException e) {
@@ -46,11 +49,11 @@ public class PlanController {
     @Operation(summary = "범위로 일정 조회", description = "범위로 일정을 조회합니다.")
     @GetMapping
     public ApiResponse<PlanListResponseDTO> getPlans(
-        @RequestParam(required = false) LocalDateTime dateTime,
-        @RequestParam(value = "user_id", required = false) Long userId
+        @Login UserSession user
     ) {
         try {
-            PlanListResponseDTO response = planService.getPlans(dateTime, userId);
+            Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
+            PlanListResponseDTO response = planService.getAllPlans(userId);
             return ApiResponse.success(response);
         } catch (PlanException e) {
             throw e;
@@ -64,9 +67,10 @@ public class PlanController {
     public ApiResponse<PlanResponseDTO> getPlanById(
         @PathVariable @Parameter(description = "Plan ID", example = "1")
         Long planId,
-        @RequestParam(value = "user_id", required = false) Long userId
+        @Login UserSession user
     ) {
         try {
+            Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
             PlanResponseDTO response = planService.getPlanById(planId, userId);
             return ApiResponse.success(response);
         } catch (PlanException e) {
@@ -82,9 +86,10 @@ public class PlanController {
     public ApiResponse<PlanResponseDTO> updatePlanById(
         @PathVariable Long planId,
         @Valid @RequestBody PlanUpdateRequestDTO request,
-        @RequestParam(value = "user_id", required = false) Long userId,
+        @Login UserSession user,
         @RequestParam(value = "sub_goal_id", required = false) Long subGoalId) {
         try{
+            Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
             PlanResponseDTO responseDTO = planService.updatePlanById(planId, subGoalId, request, userId);
 
             return ApiResponse.success(responseDTO);
@@ -99,9 +104,10 @@ public class PlanController {
     @DeleteMapping("/{planId}")
     public ApiResponse<Void> deletePlan(
         @PathVariable @Parameter(description = "Plan ID", example = "1") Long planId,
-        @RequestParam(value = "user_id", required = false) Long userId
+        @Login UserSession user
     ) {
         try {
+            Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
             planService.deletePlan(planId, userId);
             return ApiResponse.success();
         } catch (PlanException e) {

@@ -5,6 +5,7 @@ import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.facade.SubGoalRepositoryFacade;
 import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
+import com.hotpack.krocs.domain.user.domain.User;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanListResponseDTO;
@@ -53,7 +54,15 @@ public class PlanServiceImpl implements PlanService{
                 }
             }
 
-            Plan plan = planConverter.toEntity(requestDTO, goal, subGoal);
+            Plan plan;
+            if (userId != null) {
+                User userRef = User.builder()
+                    .userId(userId)
+                    .build();
+                plan = planConverter.toEntity(requestDTO, goal, subGoal, userRef);
+            } else {
+                plan = planConverter.toEntity(requestDTO, goal, subGoal);
+            }
             Plan savedPlan = planRepositoryFacade.savePlan(plan);
 
             return planConverter.toEntity(savedPlan);
