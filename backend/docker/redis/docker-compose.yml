@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: krocs-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - krocs-redis-data:/data
+    command: ["redis-server", "--appendonly", "yes", "--save", "60", "1"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+volumes:
+  krocs-redis-data:
+
