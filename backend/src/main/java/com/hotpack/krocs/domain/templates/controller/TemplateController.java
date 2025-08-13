@@ -1,6 +1,7 @@
 package com.hotpack.krocs.domain.templates.controller;
 
 
+import com.hotpack.krocs.domain.auth.dto.UserSession;
 import com.hotpack.krocs.domain.templates.dto.request.SubTemplateCreateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.request.TemplateCreateRequestDTO;
 import com.hotpack.krocs.domain.templates.dto.request.TemplateUpdateRequestDTO;
@@ -15,6 +16,7 @@ import com.hotpack.krocs.domain.templates.exception.TemplateExceptionType;
 import com.hotpack.krocs.domain.templates.service.SubTemplateService;
 import com.hotpack.krocs.domain.templates.service.TemplateService;
 import com.hotpack.krocs.global.common.response.ApiResponse;
+import com.hotpack.krocs.global.security.annotation.Login;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -44,9 +46,10 @@ public class TemplateController {
     @PostMapping
     public ApiResponse<TemplateCreateResponseDTO> createTemplate(
         @Valid @RequestBody TemplateCreateRequestDTO requestDTO,
-        @RequestParam(value = "user_id", required = false) Long userId
+        @Login UserSession user
     ) {
         try {
+            Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
             TemplateCreateResponseDTO responseDTO = templateService.createTemplate(requestDTO,
                 userId);
             return ApiResponse.success(responseDTO);
@@ -62,9 +65,10 @@ public class TemplateController {
     @Operation(summary = "템플릿 전체 조회 및 검색", description = "사용자 ID 기반으로 템플릿을 조회하며, title 키워드로 부분 검색이 가능합니다.")
     @GetMapping
     public ApiResponse<List<TemplateResponseDTO>> getTemplates(
-        @RequestParam(value = "user_id") Long userId,
+        @Login UserSession user,
         @RequestParam(required = false) String title) {
         try {
+            Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
             List<TemplateResponseDTO> responseDTO = templateService.getTemplatesByUserAndTitle(
                 userId,
                 title);
@@ -83,9 +87,10 @@ public class TemplateController {
     @PatchMapping("/{template_id}")
     public ApiResponse<TemplateResponseDTO> updateTemplates(
         @PathVariable(value = "template_id") Long templateId,
-        @RequestParam(value = "user_id") Long userId,
+        @Login UserSession user,
         @RequestBody TemplateUpdateRequestDTO requestDTO) {
         try {
+            Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
             TemplateResponseDTO responseDTO = templateService.updateTemplate(templateId, userId,
                 requestDTO);
             return ApiResponse.success(responseDTO);
@@ -102,8 +107,9 @@ public class TemplateController {
     @DeleteMapping("/{template_id}")
     public ApiResponse<Void> deleteTemplate(
         @PathVariable(value = "template_id") Long templateId,
-        @RequestParam(value = "user_id") Long userId) {
+        @Login UserSession user) {
         try {
+            Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
             templateService.deleteTemplate(templateId, userId);
             return ApiResponse.success(null);
 
@@ -122,9 +128,10 @@ public class TemplateController {
     public ApiResponse<SubTemplateCreateResponseDTO> saveSubTemplates(
         @Valid @RequestBody SubTemplateCreateRequestDTO requestDTO,
         @PathVariable(value = "templateId") Long templateId,
-        @RequestParam(value = "userId") Long userId
+        @Login UserSession user
     ) {
         try {
+            Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
             SubTemplateCreateResponseDTO responseDTO = subTemplateService.createSubTemplates(
                 templateId,
                 requestDTO, userId);
@@ -140,7 +147,7 @@ public class TemplateController {
     @GetMapping("/{templateId}/subtemplates")
     public ApiResponse<List<SubTemplateResponseDTO>> getSubTemplates(
         @PathVariable(value = "templateId") Long templateId,
-        @RequestParam(value = "userId") Long userId
+        @Login UserSession user
     ) {
         try {
             List<SubTemplateResponseDTO> responseDTOs = subTemplateService.getSubTemplates(

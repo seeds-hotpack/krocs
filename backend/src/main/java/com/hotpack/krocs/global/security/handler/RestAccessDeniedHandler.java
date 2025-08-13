@@ -23,7 +23,8 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
             throws IOException, ServletException {
         response.setStatus(ErrorStatus.FORBIDDEN.getHttpStatus().value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
         ApiResponse<Void> body = ApiResponse.onFailure(ErrorStatus.FORBIDDEN);
         response.getWriter().write(objectMapper.writeValueAsString(body));
     }

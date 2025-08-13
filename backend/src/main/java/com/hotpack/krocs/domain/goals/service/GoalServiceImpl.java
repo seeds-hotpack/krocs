@@ -4,6 +4,7 @@ import com.hotpack.krocs.domain.goals.converter.GoalConverter;
 import com.hotpack.krocs.domain.goals.converter.SubGoalConverter;
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
+import com.hotpack.krocs.domain.user.domain.User;
 import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.request.SubGoalCreateRequestDTO;
@@ -48,7 +49,15 @@ public class GoalServiceImpl implements GoalService {
       if (goalRepositoryFacade.existsByTitle(requestDTO.getTitle())) {
         throw new GoalException(GoalExceptionType.GOAL_DUPLICATE_TITLE);
       }
-      Goal goal = goalConverter.toEntity(requestDTO);
+      Goal goal;
+      if (userId != null) {
+        User userRef = User.builder()
+            .userId(userId)
+            .build();
+        goal = goalConverter.toEntity(requestDTO, userRef);
+      } else {
+        goal = goalConverter.toEntity(requestDTO);
+      }
       Goal savedGoal = goalRepositoryFacade.saveGoal(goal);
 
       return goalConverter.toCreateResponseDTO(savedGoal);
