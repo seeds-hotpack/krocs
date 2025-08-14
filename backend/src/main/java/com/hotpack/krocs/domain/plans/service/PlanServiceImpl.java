@@ -68,6 +68,7 @@ public class PlanServiceImpl implements PlanService{
     @Override
     public PlanListResponseDTO getPlans(LocalDateTime dateTime, Long userId) {
         try {
+            if(dateTime == null) dateTime = LocalDateTime.now();
             List<Plan> plans = planRepositoryFacade.findPlans(dateTime);
             List<PlanResponseDTO> planResponseDTOs = planConverter.toListPlanResponseDTO(plans);
 

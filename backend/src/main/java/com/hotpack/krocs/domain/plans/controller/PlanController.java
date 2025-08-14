@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,10 +50,6 @@ public class PlanController {
         @RequestParam(value = "user_id", required = false) Long userId
     ) {
         try {
-            if(dateTime == null){
-                dateTime = LocalDateTime.now();
-            }
-
             PlanListResponseDTO response = planService.getPlans(dateTime, userId);
             return ApiResponse.success(response);
         } catch (PlanException e) {
