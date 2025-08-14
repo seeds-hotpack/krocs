@@ -12,25 +12,28 @@ import lombok.Getter;
 @Builder
 public class GoalCreateResponseDTO {
 
-  private final Long goalId;
+    private final Long goalId;
 
-  private final String title;
+    private final Long userId;
 
-  private final Priority priority;
+    private final String title;
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  private final LocalDate startDate;
+    private final Priority priority;
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  private final LocalDate endDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private final LocalDate startDate;
 
-  private final boolean isCompleted;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private final LocalDate endDate;
 
-  private final List<SubGoalResponseDTO> subGoals;
+    private final boolean isCompleted;
 
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private final LocalDateTime createdAt;
+    private final List<SubGoalResponseDTO> subGoals;
 
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private final LocalDateTime updatedAt;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private final LocalDateTime createdAt;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private final LocalDateTime updatedAt;
+
 }
