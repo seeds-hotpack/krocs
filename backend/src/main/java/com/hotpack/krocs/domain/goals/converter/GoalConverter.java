@@ -2,6 +2,7 @@ package com.hotpack.krocs.domain.goals.converter;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
+import com.hotpack.krocs.domain.user.domain.User;
 import com.hotpack.krocs.domain.goals.dto.request.GoalCreateRequestDTO;
 import com.hotpack.krocs.domain.goals.dto.response.GoalCreateResponseDTO;
 import com.hotpack.krocs.domain.goals.dto.response.GoalResponseDTO;
@@ -18,6 +19,17 @@ public class GoalConverter {
 
   public Goal toEntity(GoalCreateRequestDTO requestDTO) {
     return Goal.builder()
+        .title(requestDTO.getTitle())
+        .priority(requestDTO.getPriority() != null ? requestDTO.getPriority() : Priority.MEDIUM)
+        .startDate(requestDTO.getStartDate())
+        .endDate(requestDTO.getEndDate())
+        .isCompleted(false)
+        .build();
+  }
+
+  public Goal toEntity(GoalCreateRequestDTO requestDTO, User user) {
+    return Goal.builder()
+        .user(user)
         .title(requestDTO.getTitle())
         .priority(requestDTO.getPriority() != null ? requestDTO.getPriority() : Priority.MEDIUM)
         .startDate(requestDTO.getStartDate())
