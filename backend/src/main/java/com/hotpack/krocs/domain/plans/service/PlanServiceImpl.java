@@ -13,6 +13,7 @@ import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
 import com.hotpack.krocs.domain.plans.validator.PlanValidator;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -65,9 +66,10 @@ public class PlanServiceImpl implements PlanService{
     }
 
     @Override
-    public PlanListResponseDTO getAllPlans(Long userId) {
+    public PlanListResponseDTO getPlans(LocalDateTime dateTime, Long userId) {
         try {
-            List<Plan> plans = planRepositoryFacade.findAllPlans();
+            if(dateTime == null) dateTime = LocalDateTime.now();
+            List<Plan> plans = planRepositoryFacade.findPlans(dateTime);
             List<PlanResponseDTO> planResponseDTOs = planConverter.toListPlanResponseDTO(plans);
 
             return PlanListResponseDTO.builder()
