@@ -2,6 +2,7 @@ package com.hotpack.krocs.domain.plans.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hotpack.krocs.domain.plans.domain.PlanCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +24,9 @@ public class PlanResponseDTO {
     private List<SubPlanResponseDTO> subPlans;
 
     private String title;
+
+    @JsonProperty("plan_category")
+    private PlanCategory planCategory;
 
     @Schema(
         description = "시작 일시",
