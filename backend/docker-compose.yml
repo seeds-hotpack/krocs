@@ -1,0 +1,86 @@
+version: "3.8"
+
+services:
+  # Spring Boot 애플리케이션
+  krocs-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: krocs-backend
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - krocs-network
+
+  # PostgreSQL 데이터베이스
+  postgres:
+    image: postgres:15-alpine
+    container_name: krocs-postgres
+    environment:
+      - POSTGRES_DB=${DB_NAME:-krocs}
+      - POSTGRES_USER=${DB_USERNAME:-krocs}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-krocs123}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - krocs-postgres-data:/var/lib/postgresql/data
+      - ./src/main/resources/db/changelog:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-krocs} -d ${DB_NAME:-krocs}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - krocs-network
+
+  # Redis (기존 설정 유지)
+  redis:
+    image: redis:7-alpine
+    container_name: krocs-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - krocs-redis-data:/data
+    command: ["redis-server", "--appendonly", "yes", "--save", "60", "1"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    networks:
+      - krocs-network
+
+  # pgAdmin (PostgreSQL 관리 도구, 선택사항)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: krocs-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:-admin@krocs.com}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-admin123}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - krocs-network
+
+volumes:
+  krocs-postgres-data:
+  krocs-redis-data:
+
+networks:
+  krocs-network:
+    driver: bridge
