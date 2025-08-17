@@ -49,11 +49,13 @@ public class PlanController {
     @Operation(summary = "범위로 일정 조회", description = "범위로 일정을 조회합니다.")
     @GetMapping
     public ApiResponse<PlanListResponseDTO> getPlans(
-        @Login UserSession user
+            @Login UserSession user,
+            @RequestParam(required = false) LocalDateTime dateTime
     ) {
         try {
             Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
-            PlanListResponseDTO response = planService.getAllPlans(userId);
+
+            PlanListResponseDTO response = planService.getPlans(dateTime, userId);
             return ApiResponse.success(response);
         } catch (PlanException e) {
             throw e;
@@ -65,9 +67,9 @@ public class PlanController {
     @Operation(summary = "특정 일정 조회", description = "특정 일정을 조회합니다.")
     @GetMapping("/{planId}")
     public ApiResponse<PlanResponseDTO> getPlanById(
-        @PathVariable @Parameter(description = "Plan ID", example = "1")
-        Long planId,
-        @Login UserSession user
+            @PathVariable @Parameter(description = "Plan ID", example = "1")
+            Long planId,
+            @Login UserSession user
     ) {
         try {
             Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
@@ -84,11 +86,11 @@ public class PlanController {
     )
     @PatchMapping("/{planId}")
     public ApiResponse<PlanResponseDTO> updatePlanById(
-        @PathVariable Long planId,
-        @Valid @RequestBody PlanUpdateRequestDTO request,
-        @Login UserSession user,
-        @RequestParam(value = "sub_goal_id", required = false) Long subGoalId) {
-        try{
+            @PathVariable Long planId,
+            @Valid @RequestBody PlanUpdateRequestDTO request,
+            @Login UserSession user,
+            @RequestParam(value = "sub_goal_id", required = false) Long subGoalId) {
+        try {
             Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
             PlanResponseDTO responseDTO = planService.updatePlanById(planId, subGoalId, request, userId);
 
@@ -103,8 +105,8 @@ public class PlanController {
     @Operation(summary = "일정 삭제", description = "일정을 삭제합니다")
     @DeleteMapping("/{planId}")
     public ApiResponse<Void> deletePlan(
-        @PathVariable @Parameter(description = "Plan ID", example = "1") Long planId,
-        @Login UserSession user
+            @PathVariable @Parameter(description = "Plan ID", example = "1") Long planId,
+            @Login UserSession user
     ) {
         try {
             Long userId = user != null ? Long.valueOf(user.getUserId()) : null;
