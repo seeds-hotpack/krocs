@@ -1,3 +1,6 @@
 [submodule "backend/src/main/resources/krocs-config"]
 	path = backend/src/main/resources/krocs-config
 	url = git@github.com:seeds-hotpack/krocs-submodule.git
+[submodule "backend/backend/src/main/resources/krocs-config"]
+	path = backend/backend/src/main/resources/krocs-config
+	url = git@github.com:seeds-hotpack/krocs-submodule.git
