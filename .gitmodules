@@ -1,0 +1,3 @@
+[submodule "/Users/yeoli/git/krocs-backend/backend/src/main/resources/krocs-config"]
+	path = /Users/yeoli/git/krocs-backend/backend/src/main/resources/krocs-config
+	url = git@github.com:seeds-hotpack/krocs-submodule.git
