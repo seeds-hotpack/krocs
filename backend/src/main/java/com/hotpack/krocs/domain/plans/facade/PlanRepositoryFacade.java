@@ -4,7 +4,6 @@ import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.exception.SubPlanException;
 import com.hotpack.krocs.domain.plans.exception.SubPlanExceptionType;
 import com.hotpack.krocs.domain.plans.repository.PlanRepository;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PlanRepositoryFacade {
+
     private final PlanRepository planRepository;
 
     @Transactional
@@ -36,5 +36,9 @@ public class PlanRepositoryFacade {
     @Transactional
     public void deletePlanByPlanId(Long planId) {
         planRepository.deleteById(planId);
+    }
+
+    public List<Plan> findAllPlans() {
+        return planRepository.findAll();
     }
 }

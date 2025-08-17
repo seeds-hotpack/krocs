@@ -76,15 +76,22 @@ jacocoTestReport {
         xml.required = true
         html.required = true
     }
-    
+
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
-                '**/KrocsApplication.class',
-                '**/global/**',
-                '**/config/**'
+                    '**/KrocsApplication.class',
+                    '**/global/**',
+                    '**/config/**'
             ])
         }))
+    }
+}
+
+processResources {
+    from("src/main/resources/krocs-config") {
+        include "application.properties"
+        into ""
     }
 }
 
@@ -105,13 +112,13 @@ jacocoTestCoverageVerification {
             }
         }
     }
-    
+
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
-                '**/KrocsApplication.class',
-                '**/global/**',
-                '**/config/**'
+                    '**/KrocsApplication.class',
+                    '**/global/**',
+                    '**/config/**'
             ])
         }))
     }
