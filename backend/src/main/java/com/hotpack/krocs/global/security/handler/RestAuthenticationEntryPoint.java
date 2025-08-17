@@ -20,8 +20,11 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-            throws IOException, ServletException {
+    public void commence(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticationException authException
+    ) throws IOException {
         response.setStatus(ErrorStatus.UNAUTHORIZED.getHttpStatus().value());
         response.setCharacterEncoding("UTF-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
@@ -29,4 +32,3 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.getWriter().write(objectMapper.writeValueAsString(body));
     }
 }
-

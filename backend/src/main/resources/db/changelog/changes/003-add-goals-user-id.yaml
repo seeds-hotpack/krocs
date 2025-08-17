@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-add-goals-user-id
+      author: system
+      changes:
+        - addColumn:
+            tableName: goals
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseTableName: goals
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: user_id
+            constraintName: fk_goals_user
+

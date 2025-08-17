@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-drop-goals-duration
+      author: system
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: goals
+            columnName: duration
+      changes:
+        - dropColumn:
+            tableName: goals
+            columnName: duration
+

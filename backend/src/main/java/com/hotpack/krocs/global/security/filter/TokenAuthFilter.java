@@ -23,14 +23,20 @@ public class TokenAuthFilter extends OncePerRequestFilter {
     private final AuthenticationManager authenticationManager;
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
-    public TokenAuthFilter(AuthenticationManager authenticationManager, AuthenticationEntryPoint authenticationEntryPoint) {
+    public TokenAuthFilter(
+            AuthenticationManager authenticationManager,
+            AuthenticationEntryPoint authenticationEntryPoint
+    ) {
         this.authenticationManager = authenticationManager;
         this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
         var current = SecurityContextHolder.getContext().getAuthentication();
         if (current != null && current.isAuthenticated() && !(current instanceof AnonymousAuthenticationToken)) {
             filterChain.doFilter(request, response);
@@ -40,7 +46,8 @@ public class TokenAuthFilter extends OncePerRequestFilter {
         try {
             resolveToken(request).ifPresent(token -> {
                 if (log.isDebugEnabled()) {
-                    String masked = token.length() <= 8 ? "***" : token.substring(0, 4) + "***" + token.substring(token.length() - 4);
+                    String masked = token.length() <= 8 ? "***"
+                            : token.substring(0, 4) + "***" + token.substring(token.length() - 4);
                     log.debug("Authenticating with bearer token: {}", masked);
                 }
                 var authRequest = TokenAuthentication.unauthenticated(token);
@@ -58,7 +65,9 @@ public class TokenAuthFilter extends OncePerRequestFilter {
 
     private Optional<String> resolveToken(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (!StringUtils.hasText(header)) return Optional.empty();
+        if (!StringUtils.hasText(header)) {
+            return Optional.empty();
+        }
         String value = header.trim();
         if (value.toLowerCase().startsWith("bearer ")) {
             String token = value.substring(7).trim();
@@ -67,4 +76,3 @@ public class TokenAuthFilter extends OncePerRequestFilter {
         return Optional.empty();
     }
 }
-
