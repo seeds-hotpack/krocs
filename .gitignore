@@ -45,3 +45,4 @@ frontend-legacy/build/
 
 # ===== 기타 =====
 !.gitignore
+backend/src/main/resources/krocs-config
