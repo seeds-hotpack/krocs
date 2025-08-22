@@ -3,6 +3,7 @@ package com.hotpack.krocs.domain.plans.converter;
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.plans.domain.Plan;
+import com.hotpack.krocs.domain.plans.domain.PlanCategory;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanResponseDTO;
@@ -41,9 +42,9 @@ public class PlanConverterTest {
     @BeforeEach
     void setUp() {
         validGoal = Goal.builder()
-                .goalId(1L)
-                .title("테스트 목표")
-                .build();
+            .goalId(1L)
+            .title("테스트 목표")
+            .build();
 
         validSubGoal = SubGoal.builder()
             .subGoalId(1L)
@@ -53,22 +54,24 @@ public class PlanConverterTest {
             .build();
 
         validRequestDTO = PlanCreateRequestDTO.builder()
-                .title("테스트 일정")
-                .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
-                .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
-                .allDay(false)
-                .build();
+            .title("테스트 일정")
+            .planCategory(PlanCategory.STUDY)
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
+            .allDay(false)
+            .build();
 
         validPlan = Plan.builder()
-                .planId(1L)
-                .goal(validGoal)
-                .subGoal(validSubGoal)
-                .title("테스트 일정")
-                .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
-                .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
-                .allDay(false)
-                .isCompleted(false)
-                .build();
+            .planId(1L)
+            .goal(validGoal)
+            .subGoal(validSubGoal)
+            .title("테스트 일정")
+            .planCategory(PlanCategory.STUDY)
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
+            .allDay(false)
+            .isCompleted(false)
+            .build();
     }
 
     // 1. toEntity from Request DTO
@@ -83,6 +86,7 @@ public class PlanConverterTest {
         assertThat(result.getTitle()).isEqualTo("테스트 일정");
         assertThat(result.getGoal()).isEqualTo(validGoal);
         assertThat(result.getSubGoal()).isEqualTo(validSubGoal);
+        assertThat(result.getPlanCategory()).isEqualTo(PlanCategory.STUDY);
         assertThat(result.getStartDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 9, 0));
         assertThat(result.getEndDateTime()).isEqualTo(LocalDateTime.of(2025, 8, 1, 10, 0));
         assertThat(result.getAllDay()).isFalse();

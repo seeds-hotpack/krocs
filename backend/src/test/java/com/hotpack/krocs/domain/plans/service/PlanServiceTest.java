@@ -17,6 +17,7 @@ import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.facade.SubGoalRepositoryFacade;
 import com.hotpack.krocs.domain.plans.converter.PlanConverter;
 import com.hotpack.krocs.domain.plans.domain.Plan;
+import com.hotpack.krocs.domain.plans.domain.PlanCategory;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.response.PlanListResponseDTO;
@@ -25,8 +26,8 @@ import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
 import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
 import com.hotpack.krocs.domain.plans.validator.PlanValidator;
-import com.hotpack.krocs.domain.user.domain.User;
 import java.time.LocalDateTime;
+import com.hotpack.krocs.domain.user.domain.User;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -81,6 +82,7 @@ public class PlanServiceTest {
 
         validRequestDTO = PlanCreateRequestDTO.builder()
             .title("테스트 일정")
+            .planCategory(PlanCategory.WORK)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
@@ -91,6 +93,7 @@ public class PlanServiceTest {
             .goal(validGoal)
             .subGoal(validSubGoal)
             .title("테스트 일정")
+            .planCategory(PlanCategory.WORK)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
@@ -102,6 +105,7 @@ public class PlanServiceTest {
             .goalId(1L)
             .subGoalId(1L)
             .title("테스트 일정")
+            .planCategory(PlanCategory.WORK)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
@@ -113,6 +117,7 @@ public class PlanServiceTest {
             .goal(null)
             .subGoal(null)
             .title("독립 일정")
+            .planCategory(PlanCategory.STUDY)
             .startDateTime(LocalDateTime.of(2025, 8, 2, 14, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 2, 15, 0))
             .allDay(false)
@@ -126,6 +131,7 @@ public class PlanServiceTest {
             .goalId(null)
             .subGoalId(null)
             .title("독립 일정")
+            .planCategory(PlanCategory.STUDY)
             .startDateTime(LocalDateTime.of(2025, 8, 2, 14, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 2, 15, 0))
             .allDay(false)
@@ -210,6 +216,7 @@ public class PlanServiceTest {
 
         PlanCreateRequestDTO allDayRequest = PlanCreateRequestDTO.builder()
             .title("하루 종일 일정")
+            .planCategory(PlanCategory.WORK)
             .allDay(true)
             .build();
 
@@ -217,6 +224,7 @@ public class PlanServiceTest {
             .planId(1L)
             .goal(validGoal)
             .subGoal(validSubGoal)
+            .planCategory(PlanCategory.WORK)
             .title("하루 종일 일정")
             .allDay(true)
             .isCompleted(false)
@@ -226,6 +234,7 @@ public class PlanServiceTest {
             .planId(1L)
             .goalId(1L)
             .subGoalId(1L)
+            .planCategory(PlanCategory.WORK)
             .title("하루 종일 일정")
             .allDay(true)
             .isCompleted(false)
@@ -248,6 +257,7 @@ public class PlanServiceTest {
         // then
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("하루 종일 일정");
+        assertThat(result.getPlanCategory()).isEqualTo(PlanCategory.WORK);
         assertThat(result.getAllDay()).isTrue();
         assertThat(result.getStartDateTime()).isNull();  // allDay = true면 시간은 null
         assertThat(result.getEndDateTime()).isNull();
@@ -409,7 +419,7 @@ public class PlanServiceTest {
         Long userId = 1L;
         LocalDateTime dateTime = LocalDateTime.of(2025, 8, 1, 10, 0);
 
-        when(planRepositoryFacade.findAllPlans()).thenReturn(validPlanList);
+        when(planRepositoryFacade.findPlans(dateTime)).thenReturn(validPlanList);
         when(planConverter.toListPlanResponseDTO(validPlanList)).thenThrow(
             new RuntimeException("변환 오류"));
 
