@@ -10,6 +10,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, Long> {
-    @Query("SELECT p FROM Plan p WHERE :date BETWEEN p.startDateTime AND p.endDateTime")
-    List<Plan> findPlans(@Param("date") LocalDateTime dateTime);
+    @Query("SELECT p FROM Plan p WHERE p.user.userId = :userId AND p.startDateTime <= :endOfDay AND p.endDateTime >= :startOfDay")
+    List<Plan> findPlansByDateRange(
+        @Param("startOfDay") LocalDateTime startOfDay,
+        @Param("endOfDay") LocalDateTime endOfDay,
+        @Param("userId") Long userId // userId 조건도 추가
+    );
 }
