@@ -2,8 +2,12 @@ package com.hotpack.krocs.domain.plans.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hotpack.krocs.domain.plans.domain.Color;
 import com.hotpack.krocs.domain.plans.domain.PlanCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -25,6 +29,10 @@ public class PlanCreateRequestDTO {
     @JsonProperty("plan_category")
     @Builder.Default
     private PlanCategory planCategory = PlanCategory.ETC;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Color color = Color.BLUE;
 
     @Schema(
         description = "시작 일시",

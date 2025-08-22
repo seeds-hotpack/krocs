@@ -67,6 +67,11 @@ public class Plan extends BaseTimeEntity {
     @Builder.Default
     private PlanCategory planCategory = PlanCategory.ETC;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "color", nullable = false)
+    @Builder.Default
+    private Color color = Color.BLUE;
+
     @Column(name = "start_datetime")
     private LocalDateTime startDateTime;
 
@@ -99,6 +104,10 @@ public class Plan extends BaseTimeEntity {
 
         if (request.getPlanCategory() != null) {
             this.planCategory = request.getPlanCategory();
+        }
+
+        if (request.getColor() != null) {
+            this.color = request.getColor();
         }
 
         if (request.getStartDateTime() != null) {

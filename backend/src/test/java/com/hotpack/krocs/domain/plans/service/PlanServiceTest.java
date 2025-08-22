@@ -1,5 +1,6 @@
 package com.hotpack.krocs.domain.plans.service;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
@@ -16,6 +17,7 @@ import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
 import com.hotpack.krocs.domain.goals.facade.SubGoalRepositoryFacade;
 import com.hotpack.krocs.domain.plans.converter.PlanConverter;
+import com.hotpack.krocs.domain.plans.domain.Color;
 import com.hotpack.krocs.domain.plans.domain.Plan;
 import com.hotpack.krocs.domain.plans.domain.PlanCategory;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
@@ -83,6 +85,7 @@ public class PlanServiceTest {
         validRequestDTO = PlanCreateRequestDTO.builder()
             .title("테스트 일정")
             .planCategory(PlanCategory.WORK)
+            .color(Color.BLUE)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
@@ -94,6 +97,7 @@ public class PlanServiceTest {
             .subGoal(validSubGoal)
             .title("테스트 일정")
             .planCategory(PlanCategory.WORK)
+            .color(Color.BLUE)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
@@ -106,6 +110,7 @@ public class PlanServiceTest {
             .subGoalId(1L)
             .title("테스트 일정")
             .planCategory(PlanCategory.WORK)
+            .color(Color.BLUE)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
@@ -118,6 +123,7 @@ public class PlanServiceTest {
             .subGoal(null)
             .title("독립 일정")
             .planCategory(PlanCategory.STUDY)
+            .color(Color.GREEN)
             .startDateTime(LocalDateTime.of(2025, 8, 2, 14, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 2, 15, 0))
             .allDay(false)
@@ -132,6 +138,7 @@ public class PlanServiceTest {
             .subGoalId(null)
             .title("독립 일정")
             .planCategory(PlanCategory.STUDY)
+            .color(Color.GREEN)
             .startDateTime(LocalDateTime.of(2025, 8, 2, 14, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 2, 15, 0))
             .allDay(false)
@@ -169,6 +176,8 @@ public class PlanServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getPlanId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("테스트 일정");
+        assertThat(result.getPlanCategory()).isEqualTo(PlanCategory.WORK);
+        assertThat(result.getColor()).isEqualTo(Color.BLUE);
         assertThat(result.getGoalId()).isEqualTo(1L);
         assertThat(result.getSubGoalId()).isEqualTo(1L); // SubGoalId 검증도 추가
     }
@@ -217,6 +226,7 @@ public class PlanServiceTest {
         PlanCreateRequestDTO allDayRequest = PlanCreateRequestDTO.builder()
             .title("하루 종일 일정")
             .planCategory(PlanCategory.WORK)
+            .color(Color.RED)
             .allDay(true)
             .build();
 
@@ -225,6 +235,7 @@ public class PlanServiceTest {
             .goal(validGoal)
             .subGoal(validSubGoal)
             .planCategory(PlanCategory.WORK)
+            .color(Color.RED)
             .title("하루 종일 일정")
             .allDay(true)
             .isCompleted(false)
@@ -235,6 +246,7 @@ public class PlanServiceTest {
             .goalId(1L)
             .subGoalId(1L)
             .planCategory(PlanCategory.WORK)
+            .color(Color.RED)
             .title("하루 종일 일정")
             .allDay(true)
             .isCompleted(false)
@@ -258,6 +270,7 @@ public class PlanServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("하루 종일 일정");
         assertThat(result.getPlanCategory()).isEqualTo(PlanCategory.WORK);
+        assertThat(result.getColor()).isEqualTo(Color.RED);
         assertThat(result.getAllDay()).isTrue();
         assertThat(result.getStartDateTime()).isNull();  // allDay = true면 시간은 null
         assertThat(result.getEndDateTime()).isNull();
@@ -360,6 +373,7 @@ public class PlanServiceTest {
         PlanResponseDTO firstPlan = result.getPlans().getFirst();
         assertThat(firstPlan.getPlanId()).isEqualTo(1L);
         assertThat(firstPlan.getTitle()).isEqualTo("테스트 일정");
+        assertThat(firstPlan.getColor()).isEqualTo(Color.BLUE);
         assertThat(firstPlan.getGoalId()).isEqualTo(1L);
         assertThat(firstPlan.getSubGoalId()).isEqualTo(1L);
         assertThat(firstPlan.getIsCompleted()).isFalse();
@@ -368,6 +382,7 @@ public class PlanServiceTest {
         PlanResponseDTO secondPlan = result.getPlans().get(1);
         assertThat(secondPlan.getPlanId()).isEqualTo(2L);
         assertThat(secondPlan.getTitle()).isEqualTo("독립 일정");
+        assertThat(secondPlan.getColor()).isEqualTo(Color.GREEN);
         assertThat(secondPlan.getGoalId()).isNull();
         assertThat(secondPlan.getSubGoalId()).isNull();
         assertThat(secondPlan.getIsCompleted()).isFalse();
@@ -448,6 +463,7 @@ public class PlanServiceTest {
         assertThat(result.getPlanId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("테스트 일정");
         assertThat(result.getPlanCategory()).isEqualTo(PlanCategory.WORK);
+        assertThat(result.getColor()).isEqualTo(Color.BLUE);
         assertThat(result.getGoalId()).isEqualTo(1L);
         assertThat(result.getSubGoalId()).isEqualTo(1L);
         assertThat(result.getAllDay()).isFalse();
@@ -467,7 +483,8 @@ public class PlanServiceTest {
             .goal(null)
             .subGoal(null)
             .title("독립 일정")
-            .planCategory(null)
+            .planCategory(PlanCategory.ETC)
+            .color(Color.NAVY)
             .allDay(true)
             .isCompleted(false)
             .build();
@@ -477,7 +494,8 @@ public class PlanServiceTest {
             .goalId(null)
             .subGoalId(null)
             .title("독립 일정")
-            .planCategory(null)
+            .planCategory(PlanCategory.ETC)
+            .color(Color.NAVY)
             .allDay(true)
             .isCompleted(false)
             .build();
@@ -493,6 +511,8 @@ public class PlanServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getPlanId()).isEqualTo(2L);
         assertThat(result.getTitle()).isEqualTo("독립 일정");
+        assertThat(result.getPlanCategory()).isEqualTo(PlanCategory.ETC);
+        assertThat(result.getColor()).isEqualTo(Color.NAVY);
         assertThat(result.getGoalId()).isNull();
         assertThat(result.getSubGoalId()).isNull();
         assertThat(result.getAllDay()).isTrue();
@@ -667,6 +687,7 @@ public class PlanServiceTest {
             .goalId(1L)
             .subGoalId(1L)
             .planCategory(PlanCategory.STUDY)
+            .color(validPlan.getColor())
             .title("테스트 일정")
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
@@ -700,6 +721,7 @@ public class PlanServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getPlanCategory()).isEqualTo(newCategory);
         assertThat(result.getTitle()).isEqualTo(validPlan.getTitle());
+        assertThat(result.getColor()).isEqualTo(validPlan.getColor());
         assertThat(result.getStartDateTime()).isEqualTo(validPlan.getStartDateTime());
 
 
@@ -714,6 +736,45 @@ public class PlanServiceTest {
             validPlan.getStartDateTime(),
             validPlan.getEndDateTime()
         );
+    }
+
+    @Test
+    @DisplayName("일정 수정 성공 - 색상만 수정")
+    void updatePlanById_Success_ColorOnly() {
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+        Color newColor = Color.ORANGE; // 새로운 색상
+
+        PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
+            .color(newColor)
+            .build();
+
+        PlanResponseDTO expectedResponse = PlanResponseDTO.builder()
+            .planId(validPlan.getPlanId())
+            .goalId(validPlan.getGoal().getGoalId())
+            .subGoalId(validPlan.getSubGoal().getSubGoalId())
+            .title(validPlan.getTitle())
+            .planCategory(validPlan.getPlanCategory())
+            .color(newColor) // 색상만 새로운 값으로 변경
+            .startDateTime(validPlan.getStartDateTime())
+            .endDateTime(validPlan.getEndDateTime())
+            .allDay(validPlan.getAllDay())
+            .isCompleted(validPlan.getIsCompleted())
+            .build();
+
+        doNothing().when(planValidator).validateUpdatePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any())).thenReturn(updateRequest);
+        when(planConverter.toEntity(validPlan)).thenReturn(expectedResponse);
+
+        // when
+        PlanResponseDTO result = planService.updatePlanById(planId, null, updateRequest, userId);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getColor()).isEqualTo(newColor); // 색상이 잘 바뀌었는지 확인
+        assertThat(result.getTitle()).isEqualTo(validPlan.getTitle()); // 다른 값은 그대로인지 확인
     }
 
     @Test
@@ -1325,6 +1386,7 @@ public class PlanServiceTest {
             .subGoal(validSubGoal)
             .title("목표와 연결된 일정")
             .planCategory(PlanCategory.STUDY)
+            .color(Color.PINK)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
@@ -1356,6 +1418,8 @@ public class PlanServiceTest {
             .goal(null)
             .subGoal(null)
             .title("독립 일정")
+            .planCategory(PlanCategory.STUDY)
+            .color(Color.PINK)
             .startDateTime(LocalDateTime.of(2025, 8, 2, 14, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 2, 15, 0))
             .allDay(false)
@@ -1388,6 +1452,7 @@ public class PlanServiceTest {
             .subGoal(validSubGoal)
             .title("완료된 일정")
             .planCategory(PlanCategory.WORK)
+            .color(Color.PINK)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
@@ -1421,6 +1486,7 @@ public class PlanServiceTest {
             .subGoal(null)
             .title("하루 종일 일정")
             .planCategory(PlanCategory.WORK)
+            .color(Color.PINK)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 0, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 23, 59, 59))
             .allDay(true)
@@ -1601,6 +1667,7 @@ public class PlanServiceTest {
             .subGoal(validSubGoal)
             .title("SubPlan이 있는 일정")
             .planCategory(PlanCategory.WORK)
+            .color(Color.PINK)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
