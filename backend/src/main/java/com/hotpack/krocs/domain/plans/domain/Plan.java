@@ -64,7 +64,8 @@ public class Plan extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "plan_category", nullable = false)
-    private PlanCategory planCategory;
+    @Builder.Default
+    private PlanCategory planCategory = PlanCategory.ETC;
 
     @Column(name = "start_datetime")
     private LocalDateTime startDateTime;
@@ -94,6 +95,10 @@ public class Plan extends BaseTimeEntity {
     public void updateFrom(PlanUpdateRequestDTO request, Goal goal, SubGoal subGoal) {
         if (request.getTitle() != null) {
             this.title = request.getTitle();
+        }
+
+        if (request.getPlanCategory() != null) {
+            this.planCategory = request.getPlanCategory();
         }
 
         if (request.getStartDateTime() != null) {

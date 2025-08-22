@@ -1,5 +1,6 @@
 package com.hotpack.krocs.domain.plans.validator;
 
+import com.hotpack.krocs.domain.plans.domain.PlanCategory;
 import com.hotpack.krocs.domain.plans.dto.request.PlanCreateRequestDTO;
 import com.hotpack.krocs.domain.plans.exception.PlanException;
 import com.hotpack.krocs.domain.plans.exception.PlanExceptionType;
@@ -22,6 +23,7 @@ public class PlanValidator {
         }
 
         validateTitle(requestDTO.getTitle());
+        validatePlanCategory(requestDTO.getPlanCategory());
         validateSubGoalIdParameter(subGoalId);
         validateAllDayDateTime(allDay, requestDTO.getStartDateTime(), requestDTO.getEndDateTime());
     }
@@ -57,6 +59,12 @@ public class PlanValidator {
         }
         if (title.length() > 200) {
             throw new PlanException(PlanExceptionType.PLAN_TITLE_TOO_LONG);
+        }
+    }
+
+    public void validatePlanCategory(PlanCategory planCategory){
+        if(planCategory == null){
+            throw new PlanException(PlanExceptionType.PLAN_PLANCATEGORY_IS_NULL);
         }
     }
 

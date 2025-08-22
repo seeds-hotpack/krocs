@@ -447,6 +447,7 @@ public class PlanServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getPlanId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("테스트 일정");
+        assertThat(result.getPlanCategory()).isEqualTo(PlanCategory.WORK);
         assertThat(result.getGoalId()).isEqualTo(1L);
         assertThat(result.getSubGoalId()).isEqualTo(1L);
         assertThat(result.getAllDay()).isFalse();
@@ -466,6 +467,7 @@ public class PlanServiceTest {
             .goal(null)
             .subGoal(null)
             .title("독립 일정")
+            .planCategory(null)
             .allDay(true)
             .isCompleted(false)
             .build();
@@ -475,6 +477,7 @@ public class PlanServiceTest {
             .goalId(null)
             .subGoalId(null)
             .title("독립 일정")
+            .planCategory(null)
             .allDay(true)
             .isCompleted(false)
             .build();
@@ -656,6 +659,64 @@ public class PlanServiceTest {
     }
 
     @Test
+    @DisplayName("일정 수정 성공 - 카테고리만 수정")
+    void updatePlanById_Success_CategoryOnly() {
+
+        PlanResponseDTO expectedUpdateResponse = PlanResponseDTO.builder()
+            .planId(1L)
+            .goalId(1L)
+            .subGoalId(1L)
+            .planCategory(PlanCategory.STUDY)
+            .title("테스트 일정")
+            .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
+            .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
+            .allDay(false)
+            .isCompleted(false)
+            .build();
+
+        // given
+        Long planId = 1L;
+        Long userId = 1L;
+        Long subGoalId = 1L;
+        PlanCategory newCategory = PlanCategory.STUDY; // 기존 WORK에서 STUDY로 변경
+
+        PlanUpdateRequestDTO updateRequest = PlanUpdateRequestDTO.builder()
+            .planCategory(newCategory)
+            .build();
+
+        doNothing().when(planValidator).validateUpdatePlan(planId);
+        when(planRepositoryFacade.findPlanById(planId)).thenReturn(validPlan);
+        when(subGoalRepositoryFacade.findSubGoalBySubGoalId(subGoalId)).thenReturn(validSubGoal);
+        when(subGoalRepositoryFacade.findGoalBySubGoalId(subGoalId)).thenReturn(validGoal);
+        when(planConverter.toUpdatePlanRequestDTO(any(), any(), any(), any()))
+            .thenReturn(mock(PlanUpdateRequestDTO.class));
+        when(planConverter.toEntity(validPlan)).thenReturn(validResponseDTO);
+
+        // when
+        when(planConverter.toEntity(validPlan)).thenReturn(expectedUpdateResponse);
+        PlanResponseDTO result = planService.updatePlanById(planId, subGoalId, updateRequest, userId);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getPlanCategory()).isEqualTo(newCategory);
+        assertThat(result.getTitle()).isEqualTo(validPlan.getTitle());
+        assertThat(result.getStartDateTime()).isEqualTo(validPlan.getStartDateTime());
+
+
+        verify(planValidator).validateUpdatePlan(planId);
+        verify(planRepositoryFacade).findPlanById(planId);
+        verify(subGoalRepositoryFacade).findSubGoalBySubGoalId(subGoalId);
+        verify(subGoalRepositoryFacade).findGoalBySubGoalId(subGoalId);
+
+        verify(planConverter).toUpdatePlanRequestDTO(
+            updateRequest,
+            validPlan.getAllDay(),
+            validPlan.getStartDateTime(),
+            validPlan.getEndDateTime()
+        );
+    }
+
+    @Test
     @DisplayName("일정 수정 성공 - 시간만 수정")
     void updatePlanById_Success_DateTimeOnly() {
         // given
@@ -755,6 +816,7 @@ public class PlanServiceTest {
             .planId(1L)
             .goal(validGoal)
             .subGoal(validSubGoal)
+            .planCategory(PlanCategory.WORK)
             .title("하루 종일 일정")
             .startDateTime(LocalDateTime.of(2025, 8, 1, 0, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 23, 59, 59))
@@ -846,6 +908,7 @@ public class PlanServiceTest {
             .planId(1L)
             .goal(validGoal)
             .subGoal(validSubGoal)
+            .planCategory(PlanCategory.WORK)
             .title("완료된 일정")
             .startDateTime(validPlan.getStartDateTime())
             .endDateTime(validPlan.getEndDateTime())
@@ -901,6 +964,7 @@ public class PlanServiceTest {
             .title("완전히 새로운 제목")
             .startDateTime(newStartTime)
             .endDateTime(newEndTime)
+            .planCategory(PlanCategory.STUDY)
             .allDay(true)
             .isCompleted(true)
             .build();
@@ -1260,6 +1324,7 @@ public class PlanServiceTest {
             .goal(validGoal)
             .subGoal(validSubGoal)
             .title("목표와 연결된 일정")
+            .planCategory(PlanCategory.STUDY)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
@@ -1322,6 +1387,7 @@ public class PlanServiceTest {
             .goal(validGoal)
             .subGoal(validSubGoal)
             .title("완료된 일정")
+            .planCategory(PlanCategory.WORK)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)
@@ -1354,6 +1420,7 @@ public class PlanServiceTest {
             .goal(null)
             .subGoal(null)
             .title("하루 종일 일정")
+            .planCategory(PlanCategory.WORK)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 0, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 23, 59, 59))
             .allDay(true)
@@ -1533,6 +1600,7 @@ public class PlanServiceTest {
             .goal(validGoal)
             .subGoal(validSubGoal)
             .title("SubPlan이 있는 일정")
+            .planCategory(PlanCategory.WORK)
             .startDateTime(LocalDateTime.of(2025, 8, 1, 9, 0))
             .endDateTime(LocalDateTime.of(2025, 8, 1, 10, 0))
             .allDay(false)

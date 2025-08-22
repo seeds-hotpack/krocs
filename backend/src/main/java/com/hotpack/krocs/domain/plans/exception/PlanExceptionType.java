@@ -18,6 +18,7 @@ public enum PlanExceptionType implements BaseCode {
     PLAN_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "PLAN400", "이미 완료된 일정입니다."),
     INVALID_PLAN_DATE_RANGE(HttpStatus.BAD_REQUEST, "PLAN400", "유효하지 않은 일정 기간입니다."),
     PLAN_TITLE_EMPTY(HttpStatus.BAD_REQUEST, "PLAN400", "일정 제목은 필수입니다."),
+    PLAN_PLANCATEGORY_IS_NULL(HttpStatus.BAD_REQUEST, "PLAN400", "일정 카테고리가 기본값이 아닌 null입니다"),
     PLAN_DURATION_INVALID(HttpStatus.BAD_REQUEST, "PLAN400", "일정 기간은 1일 이상이어야 합니다."),
     PLAN_TITLE_TOO_LONG(HttpStatus.BAD_REQUEST, "PLAN400", "일정 제목이 너무 깁니다."),
     PLAN_INVALID_PRIORITY(HttpStatus.BAD_REQUEST, "PLAN400", "유효하지 않은 우선순위입니다."),

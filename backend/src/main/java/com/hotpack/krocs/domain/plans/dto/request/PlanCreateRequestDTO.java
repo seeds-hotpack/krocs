@@ -23,7 +23,8 @@ public class PlanCreateRequestDTO {
     private String title;
 
     @JsonProperty("plan_category")
-    private PlanCategory planCategory;
+    @Builder.Default
+    private PlanCategory planCategory = PlanCategory.ETC;
 
     @Schema(
         description = "시작 일시",

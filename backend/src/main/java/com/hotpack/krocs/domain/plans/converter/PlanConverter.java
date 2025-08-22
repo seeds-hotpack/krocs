@@ -61,15 +61,16 @@ public class PlanConverter {
         }
 
         return Plan.builder()
-                .user(user)
-                .goal(goal)
-                .subGoal(subGoal)
-                .title(requestDTO.getTitle())
-                .startDateTime(startDateTime)
-                .endDateTime(endDateTime)
-                .allDay(requestDTO.getAllDay())
-                .isCompleted(false)
-                .build();
+            .user(user)
+            .goal(goal)
+            .subGoal(subGoal)
+            .planCategory(requestDTO.getPlanCategory())
+            .title(requestDTO.getTitle())
+            .startDateTime(startDateTime)
+            .endDateTime(endDateTime)
+            .allDay(requestDTO.getAllDay())
+            .isCompleted(false)
+            .build();
     }
 
     public PlanResponseDTO toEntity(Plan plan) {
@@ -113,6 +114,7 @@ public class PlanConverter {
         LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return PlanUpdateRequestDTO.builder()
             .title(request.getTitle())
+            .planCategory(request.getPlanCategory())
             .startDateTime(startDateTime)
             .endDateTime(endDateTime)
             .allDay(allDay)
