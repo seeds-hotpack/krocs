@@ -16,6 +16,7 @@ import com.hotpack.krocs.domain.plans.facade.PlanRepositoryFacade;
 import com.hotpack.krocs.domain.plans.validator.PlanValidator;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,10 +76,14 @@ public class PlanServiceImpl implements PlanService{
     }
 
     @Override
-    public PlanListResponseDTO getPlans(LocalDateTime dateTime, Long userId) {
+    public PlanListResponseDTO getPlans(LocalDate date, Long userId) {
         try {
-            if(dateTime == null) dateTime = LocalDateTime.now();
-            List<Plan> plans = planRepositoryFacade.findPlans(dateTime);
+            if(date == null) { date = LocalDate.now(); }
+
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+            List<Plan> plans = planRepositoryFacade.findPlansByDateRange(startOfDay, endOfDay, userId);
             List<PlanResponseDTO> planResponseDTOs = planConverter.toListPlanResponseDTO(plans);
 
             return PlanListResponseDTO.builder()

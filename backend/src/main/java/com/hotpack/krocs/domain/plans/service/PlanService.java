@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public interface PlanService {
     PlanResponseDTO createPlan(PlanCreateRequestDTO requestDTO, Long userId, Long goalId);
 
-    PlanListResponseDTO getPlans(LocalDateTime dateTime, Long userId);
+    PlanListResponseDTO getPlans(LocalDate date, Long userId);
 
     PlanResponseDTO getPlanById(Long planId, Long userId);
 

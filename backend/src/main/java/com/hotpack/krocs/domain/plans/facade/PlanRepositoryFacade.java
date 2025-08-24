@@ -29,8 +29,8 @@ public class PlanRepositoryFacade {
             .orElseThrow(() -> new SubPlanException(SubPlanExceptionType.SUB_PLAN_PLAN_NOT_FOUND));
     }
 
-    public List<Plan> findPlans(LocalDateTime dateTime) {
-        return planRepository.findPlans(dateTime);
+    public List<Plan> findPlansByDateRange(LocalDateTime startOfDay, LocalDateTime endOfDay, Long userId) {
+        return planRepository.findPlansByDateRange(startOfDay, endOfDay, userId);
     }
 
     @Transactional

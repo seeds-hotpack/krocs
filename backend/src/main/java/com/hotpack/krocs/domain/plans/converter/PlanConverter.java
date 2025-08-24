@@ -35,14 +35,16 @@ public class PlanConverter {
         }
 
         return Plan.builder()
-                .goal(goal)
-                .subGoal(subGoal)
-                .title(requestDTO.getTitle())
-                .startDateTime(startDateTime)
-                .endDateTime(endDateTime)
-                .allDay(requestDTO.getAllDay())
-                .isCompleted(false)
-                .build();
+            .goal(goal)
+            .subGoal(subGoal)
+            .title(requestDTO.getTitle())
+            .planCategory(requestDTO.getPlanCategory())
+            .color(requestDTO.getColor())
+            .startDateTime(startDateTime)
+            .endDateTime(endDateTime)
+            .allDay(requestDTO.getAllDay())
+            .isCompleted(false)
+            .build();
     }
 
     public Plan toEntity(PlanCreateRequestDTO requestDTO, Goal goal, SubGoal subGoal, User user) {
@@ -60,15 +62,17 @@ public class PlanConverter {
         }
 
         return Plan.builder()
-                .user(user)
-                .goal(goal)
-                .subGoal(subGoal)
-                .title(requestDTO.getTitle())
-                .startDateTime(startDateTime)
-                .endDateTime(endDateTime)
-                .allDay(requestDTO.getAllDay())
-                .isCompleted(false)
-                .build();
+            .user(user)
+            .goal(goal)
+            .subGoal(subGoal)
+            .planCategory(requestDTO.getPlanCategory())
+            .color(requestDTO.getColor())
+            .title(requestDTO.getTitle())
+            .startDateTime(startDateTime)
+            .endDateTime(endDateTime)
+            .allDay(requestDTO.getAllDay())
+            .isCompleted(false)
+            .build();
     }
 
     public PlanResponseDTO toEntity(Plan plan) {
@@ -81,6 +85,8 @@ public class PlanConverter {
         PlanResponseDTO.PlanResponseDTOBuilder builder = PlanResponseDTO.builder()
             .planId(plan.getPlanId())
             .title(plan.getTitle())
+            .planCategory(plan.getPlanCategory())
+            .color(plan.getColor())
             .subPlans(subPlanResponseDTOs)
             .startDateTime(plan.getStartDateTime())
             .endDateTime(plan.getEndDateTime())
@@ -107,9 +113,12 @@ public class PlanConverter {
             .collect(Collectors.toList());
     }
 
-    public PlanUpdateRequestDTO toUpdatePlanRequestDTO(PlanUpdateRequestDTO request, Boolean allDay, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public PlanUpdateRequestDTO toUpdatePlanRequestDTO(PlanUpdateRequestDTO request, Boolean allDay,
+        LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return PlanUpdateRequestDTO.builder()
             .title(request.getTitle())
+            .planCategory(request.getPlanCategory())
+            .color(request.getColor())
             .startDateTime(startDateTime)
             .endDateTime(endDateTime)
             .allDay(allDay)

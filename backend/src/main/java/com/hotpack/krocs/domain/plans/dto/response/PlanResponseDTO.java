@@ -2,7 +2,11 @@ package com.hotpack.krocs.domain.plans.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hotpack.krocs.domain.plans.domain.Color;
+import com.hotpack.krocs.domain.plans.domain.PlanCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
@@ -23,6 +27,13 @@ public class PlanResponseDTO {
     private List<SubPlanResponseDTO> subPlans;
 
     private String title;
+
+    @JsonProperty("plan_category")
+    private PlanCategory planCategory;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Color color = Color.BLUE;
 
     @Schema(
         description = "시작 일시",

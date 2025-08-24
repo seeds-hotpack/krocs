@@ -2,15 +2,30 @@ package com.hotpack.krocs.domain.plans.domain;
 
 import com.hotpack.krocs.domain.goals.domain.Goal;
 import com.hotpack.krocs.domain.goals.domain.SubGoal;
-import com.hotpack.krocs.domain.goals.dto.request.GoalUpdateRequestDTO;
 import com.hotpack.krocs.domain.plans.dto.request.PlanUpdateRequestDTO;
 import com.hotpack.krocs.domain.user.domain.User;
 import com.hotpack.krocs.global.common.entity.BaseTimeEntity;
-import jakarta.persistence.*;
-import java.util.List;
-import lombok.*;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "plans", indexes = {
@@ -47,6 +62,16 @@ public class Plan extends BaseTimeEntity {
     @Column(name = "title", nullable = false, length = 200)
     private String title;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "plan_category", nullable = false)
+    @Builder.Default
+    private PlanCategory planCategory = PlanCategory.ETC;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "color", nullable = false)
+    @Builder.Default
+    private Color color = Color.BLUE;
+
     @Column(name = "start_datetime")
     private LocalDateTime startDateTime;
 
@@ -75,6 +100,14 @@ public class Plan extends BaseTimeEntity {
     public void updateFrom(PlanUpdateRequestDTO request, Goal goal, SubGoal subGoal) {
         if (request.getTitle() != null) {
             this.title = request.getTitle();
+        }
+
+        if (request.getPlanCategory() != null) {
+            this.planCategory = request.getPlanCategory();
+        }
+
+        if (request.getColor() != null) {
+            this.color = request.getColor();
         }
 
         if (request.getStartDateTime() != null) {
